@@ -1,4 +1,10 @@
-import { LOGO_ASCII, ANIMATION_DURATION, logoElement, buttonContainer, logoLines } from "./constants.js";
+import {
+  LOGO_ASCII,
+  ANIMATION_DURATION,
+  logoElement,
+  buttonContainer,
+  logoLines,
+} from "./constants.js";
 import { STATIC_CHARS, GLITCH_CHARS } from "./constants.js";
 import { easeInOutCubic } from "./utilities.js";
 
@@ -7,8 +13,13 @@ export const LogoAnimation = {
   characterSeeds: [],
 
   init() {
-    const totalCharacters = logoLines.reduce((sum, line) => sum + line.length, 0);
-    this.characterSeeds = Array.from({ length: totalCharacters }, () => Math.random());
+    const totalCharacters = logoLines.reduce(
+      (sum, line) => sum + line.length,
+      0,
+    );
+    this.characterSeeds = Array.from({ length: totalCharacters }, () =>
+      Math.random(),
+    );
   },
 
   render(timestamp) {
@@ -33,17 +44,21 @@ export const LogoAnimation = {
   _renderFrame(progress, elapsed) {
     let charIndex = 0;
 
-    return logoLines.map((line) => {
-      let result = "";
-      for (let i = 0; i < line.length; i++) {
-        result += this._renderChar(line[i], charIndex, progress, elapsed);
-        charIndex++;
-      }
-      return result;
-    }).join("\n");
+    return logoLines
+      .map((line) => {
+        let result = "";
+        for (let i = 0; i < line.length; i++) {
+          result += this._renderChar(line[i], charIndex, progress, elapsed);
+          charIndex++;
+        }
+        return result;
+      })
+      .join("\n");
   },
 
   _renderChar(char, index, progress, elapsed) {
+    if (char === " ") return " ";
+
     const seed = this.characterSeeds[index];
     const threshold = seed * 0.7 + 0.15;
     const noisePhase = (seed * 1000 + elapsed * 0.01) % 1;
@@ -55,7 +70,10 @@ export const LogoAnimation = {
     } else if (progress > threshold - 0.25) {
       const intensity = 1 - (progress - (threshold - 0.25)) / 0.33;
       return Math.random() < 0.3 + intensity * 0.5
-        ? STATIC_CHARS[~~((noisePhase + Math.random()) * STATIC_CHARS.length) % STATIC_CHARS.length]
+        ? STATIC_CHARS[
+            ~~((noisePhase + Math.random()) * STATIC_CHARS.length) %
+              STATIC_CHARS.length
+          ]
         : GLITCH_CHARS[~~(Math.random() * GLITCH_CHARS.length)];
     } else if (progress > threshold - 0.5) {
       return Math.random() < 0.15

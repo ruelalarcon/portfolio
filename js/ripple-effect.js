@@ -7,6 +7,8 @@ export const RippleEffect = {
     ripples: [],
     sparks: [],
     trails: [],
+    globalMouseX: 0,
+    globalMouseY: 0,
     mouseX: 0,
     mouseY: 0,
     lastMouseX: 0,
@@ -26,50 +28,29 @@ export const RippleEffect = {
     this.charWidth = rect.width / logoLines[0].length;
     this.charHeight = rect.height / logoLines.length;
 
-    logoElement.style.cursor = "crosshair";
-
+    this._initGlobalMouseTracking();
     this._attachEventListeners();
+    this._startAnimation();
   },
 
-  _attachEventListeners() {
-    logoElement.addEventListener("mouseenter", () => this._onMouseEnter());
-    logoElement.addEventListener("mouseleave", () => this._onMouseLeave());
-    logoElement.addEventListener("mousemove", (e) => this._onMouseMove(e));
-    logoElement.addEventListener("click", (e) => this._onClick(e));
+  _initGlobalMouseTracking() {
+    // Use a single global mousemove listener to track cursor position
+    document.addEventListener("mousemove", (e) => {
+      this.state.globalMouseX = e.clientX;
+      this.state.globalMouseY = e.clientY;
+    });
   },
 
-  _onMouseEnter() {
-    if (!VideoPlayer.isPlaying) {
-      this.state.isHovering = true;
-      if (!this.state.isAnimating) {
-        this.state.lastFrameTime = performance.now();
-        requestAnimationFrame((ts) => this._animate(ts));
-      }
+  _startAnimation() {
+    if (!this.state.isAnimating) {
+      this.state.isAnimating = true;
+      this.state.lastFrameTime = performance.now();
+      requestAnimationFrame((ts) => this._animate(ts));
     }
   },
 
-  _onMouseLeave() {
-    this.state.isHovering = false;
-    this.state.trails = [];
-  },
-
-  _onMouseMove(event) {
-    if (VideoPlayer.isPlaying) return;
-
-    const rect = logoElement.getBoundingClientRect();
-    this.state.mouseX = (event.clientX - rect.left) / this.charWidth;
-    this.state.mouseY = (event.clientY - rect.top) / this.charHeight;
-
-    const velocity = Math.sqrt(
-      (this.state.mouseX - this.state.lastMouseX) ** 2 +
-      (this.state.mouseY - this.state.lastMouseY) ** 2
-    );
-
-    this.state.lastMouseX = this.state.mouseX;
-    this.state.lastMouseY = this.state.mouseY;
-
-    this._addTrail(velocity);
-    this._maybeAddRipple(velocity);
+  _attachEventListeners() {
+    logoElement.addEventListener("mousedown", (e) => this._onClick(e));
   },
 
   _onClick(event) {
@@ -105,6 +86,77 @@ export const RippleEffect = {
         lifetime: 0.5 + Math.random() * 0.7,
       });
     }
+  },
+
+  _animate(timestamp) {
+    if (VideoPlayer.isPlaying) {
+      this.state.isAnimating = false;
+      return;
+    }
+
+    timestamp = timestamp || performance.now();
+
+    const deltaTime = this.state.lastFrameTime
+      ? Math.min((timestamp - this.state.lastFrameTime) / 1000, 0.1)
+      : 0.016;
+
+    this.state.lastFrameTime = timestamp;
+    this.state.globalTime += deltaTime;
+
+    this._updateMousePosition();
+    this._updateEffects(deltaTime);
+    this._cleanupOldEffects(timestamp);
+    this._updateSparks(deltaTime);
+
+    this._renderFrame(timestamp);
+    requestAnimationFrame((ts) => this._animate(ts));
+  },
+
+  _updateMousePosition() {
+    const rect = logoElement.getBoundingClientRect();
+    this.state.mouseX = (this.state.globalMouseX - rect.left) / this.charWidth;
+    this.state.mouseY = (this.state.globalMouseY - rect.top) / this.charHeight;
+
+    // Check if hovering over the logo
+    this.state.isHovering =
+      this.state.globalMouseX >= rect.left &&
+      this.state.globalMouseX <= rect.right &&
+      this.state.globalMouseY >= rect.top &&
+      this.state.globalMouseY <= rect.bottom;
+
+    if (!this.state.isHovering) {
+      this.state.trails = [];
+    }
+  },
+
+  _updateEffects(deltaTime) {
+    if (!this.state.isHovering || VideoPlayer.isPlaying) return;
+
+    const velocity = Math.sqrt(
+      (this.state.mouseX - this.state.lastMouseX) ** 2 +
+        (this.state.mouseY - this.state.lastMouseY) ** 2,
+    );
+
+    this.state.lastMouseX = this.state.mouseX;
+    this.state.lastMouseY = this.state.mouseY;
+    // Only create effects if mouse is actually moving
+    if (velocity < 0.01) return;
+
+    // Check if hovering over a space
+    const charX = Math.floor(this.state.mouseX);
+    const charY = Math.floor(this.state.mouseY);
+    if (
+      charY >= 0 &&
+      charY < logoLines.length &&
+      charX >= 0 &&
+      charX < logoLines[charY].length
+    ) {
+      const hoveredChar = logoLines[charY][charX];
+      if (hoveredChar === " ") return;
+    }
+
+    this._addTrail(velocity);
+    this._maybeAddRipple(velocity);
   },
 
   _addTrail(velocity) {
@@ -147,40 +199,15 @@ export const RippleEffect = {
     }
   },
 
-  _animate(timestamp) {
-    if (VideoPlayer.isPlaying) return;
-
-    this.state.isAnimating = true;
-    timestamp = timestamp || performance.now();
-
-    const deltaTime = this.state.lastFrameTime
-      ? Math.min((timestamp - this.state.lastFrameTime) / 1000, 0.1)
-      : 0.016;
-
-    this.state.lastFrameTime = timestamp;
-    this.state.globalTime += deltaTime;
-
-    this._cleanupOldEffects(timestamp);
-    this._updateSparks(deltaTime);
-
-    if (!this.state.isHovering && !this.state.ripples.length &&
-        !this.state.sparks.length && !this.state.trails.length) {
-      logoElement.innerHTML = LOGO_ASCII;
-      this.state.isAnimating = false;
-      return;
-    }
-
-    this._renderFrame(timestamp);
-    requestAnimationFrame((ts) => this._animate(ts));
-  },
-
   _cleanupOldEffects(now) {
     if (now - this.state.lastCleanupTime < 100) return;
 
     this.state.lastCleanupTime = now;
-    this.state.ripples = this.state.ripples.filter(r => now - r.time <= 2500);
-    this.state.sparks = this.state.sparks.filter(s => now - s.time <= s.lifetime * 1000);
-    this.state.trails = this.state.trails.filter(t => now - t.time <= 400);
+    this.state.ripples = this.state.ripples.filter((r) => now - r.time <= 2500);
+    this.state.sparks = this.state.sparks.filter(
+      (s) => now - s.time <= s.lifetime * 1000,
+    );
+    this.state.trails = this.state.trails.filter((t) => now - t.time <= 400);
   },
 
   _updateSparks(deltaTime) {
@@ -265,7 +292,10 @@ export const RippleEffect = {
     if (this.state.isHovering && char !== " ") {
       intensity = Math.min(
         1,
-        intensity + (Math.sin(x * 0.4 + y * 0.6 + this.state.globalTime * 5) * 0.04 + 0.04) * noise
+        intensity +
+          (Math.sin(x * 0.4 + y * 0.6 + this.state.globalTime * 5) * 0.04 +
+            0.04) *
+            noise,
       );
     }
 
@@ -324,19 +354,24 @@ export const RippleEffect = {
     for (let ring = 0; ring < ringCount; ring++) {
       const ringSpeed = baseSpeed - ring * 3;
       const ringRadius = age * ringSpeed;
-      const ringWidth = 1 + ring * 0.4 + Math.sin(this.state.globalTime * 5 + ring) * 0.3;
+      const ringWidth =
+        1 + ring * 0.4 + Math.sin(this.state.globalTime * 5 + ring) * 0.3;
       const ringDistance = Math.abs(distance - ringRadius);
 
       if (ringDistance < ringWidth) {
         const wave = Math.cos((ringDistance / ringWidth) * Math.PI * 0.5);
         const fade = Math.pow(Math.max(0, 1 - age / 2.5), 1.5);
         const ringFade = 1 - ring * 0.15;
-        const pulse = 0.9 + Math.sin(this.state.globalTime * 12 + ring * 2.5) * 0.1;
+        const pulse =
+          0.9 + Math.sin(this.state.globalTime * 12 + ring * 2.5) * 0.1;
         const impactIntensity = wave * fade * ringFade * pulse;
 
         if (impactIntensity > 0) {
           totalIntensity += impactIntensity * 0.7;
-          const hueShift = age * 100 + ring * 60 + Math.sin(distance * 0.5 + this.state.globalTime * 4) * 50;
+          const hueShift =
+            age * 100 +
+            ring * 60 +
+            Math.sin(distance * 0.5 + this.state.globalTime * 4) * 50;
           totalHue += (ripple.hue + hueShift) * impactIntensity;
           totalWeight += impactIntensity;
           if (ring === 0) maxGlow = Math.max(maxGlow, impactIntensity * 0.9);
