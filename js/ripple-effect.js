@@ -1,6 +1,5 @@
 import { LOGO_ASCII, logoElement, logoLines } from "./constants.js";
 import { noiseFunction } from "./utilities.js";
-import { VideoPlayer } from "./video-player.js";
 
 export const RippleEffect = {
   state: {
@@ -54,7 +53,7 @@ export const RippleEffect = {
   },
 
   _onClick(event) {
-    if (VideoPlayer.isPlaying || !this.state.isHovering) return;
+    if (!this.state.isHovering) return;
 
     const rect = logoElement.getBoundingClientRect();
     const clickX = (event.clientX - rect.left) / this.charWidth;
@@ -89,11 +88,6 @@ export const RippleEffect = {
   },
 
   _animate(timestamp) {
-    if (VideoPlayer.isPlaying) {
-      this.state.isAnimating = false;
-      return;
-    }
-
     timestamp = timestamp || performance.now();
 
     const deltaTime = this.state.lastFrameTime
@@ -148,7 +142,7 @@ export const RippleEffect = {
   },
 
   _updateEffects(deltaTime) {
-    if (!this.state.isHovering || VideoPlayer.isPlaying) return;
+    if (!this.state.isHovering) return;
 
     const velocity = Math.sqrt(
       (this.state.mouseX - this.state.lastMouseX) ** 2 +

@@ -1,14 +1,6 @@
-import {
-  LOGO_ASCII,
-  ASCII_CHARS,
-  GLYPHS,
-  logoElement,
-  buttonContainer,
-  logoLines,
-} from "./constants.js";
+import { ASCII_CHARS } from "../js/constants.js";
 
-export const VideoPlayer = {
-  isPlaying: false,
+export const StandaloneVideoPlayer = {
   video: null,
   canvas: null,
   context: null,
@@ -17,15 +9,16 @@ export const VideoPlayer = {
   brightnessBuffer: null,
   animationFrameId: 0,
   playbarElement: null,
+  logoElement: null,
 
-  play(videoUrl) {
-    if (this.isPlaying) return;
-
-    this.isPlaying = true;
-    logoElement.style.cursor = "default";
-    buttonContainer
-      .querySelectorAll(".btn")
-      .forEach((btn) => btn.classList.add("disabled"));
+  play(videoUrl, logoEl, playbarContainer) {
+    this.logoElement = logoEl;
+    this.playbarElement = document.createElement("div");
+    this.playbarElement.id = "playbar";
+    playbarContainer.insertBefore(
+      this.playbarElement,
+      playbarContainer.firstChild,
+    );
 
     this._setupVideo(videoUrl);
   },
@@ -51,7 +44,6 @@ export const VideoPlayer = {
       once: true,
     });
     this.video.addEventListener("ended", () => this._onVideoEnded());
-    this.video.addEventListener("error", () => this._onVideoError());
 
     this.video.load();
   },
@@ -64,17 +56,11 @@ export const VideoPlayer = {
     this.canvas.height = this.videoHeight;
     this.brightnessBuffer = new Uint8Array(this.videoWidth * this.videoHeight);
 
-    this._createPlaybar();
-    this._morphToLoading();
+    this._setupPlaybarControls();
+    this.video.play();
   },
 
-  _createPlaybar() {
-    this.playbarElement = document.createElement("div");
-    this.playbarElement.id = "playbar";
-
-    logoElement.parentNode.insertBefore(this.playbarElement, buttonContainer);
-
-    // Set up click handler once
+  _setupPlaybarControls() {
     this.playbarElement.addEventListener("click", (e) => {
       const text = this.playbarElement.textContent;
       const rect = this.playbarElement.getBoundingClientRect();
@@ -84,15 +70,13 @@ export const VideoPlayer = {
 
       const buttonEnd = text.indexOf("]") + 1;
 
-      // Check if clicked on button (first part before the progress bar)
       if (clickCharIndex < buttonEnd) {
         this._togglePlayPause();
       } else {
-        // Clicked on progress bar
         const barStart = text.indexOf("[", buttonEnd);
         if (barStart === -1) return;
 
-        const barClickIndex = clickCharIndex - barStart - 1; // -1 for opening bracket
+        const barClickIndex = clickCharIndex - barStart - 1;
         const barWidth = 90;
 
         if (barClickIndex >= 0 && barClickIndex < barWidth) {
@@ -150,47 +134,8 @@ export const VideoPlayer = {
     this._updatePlaybar();
   },
 
-  _morphToLoading() {
-    const targetText = "";
-    const padding = ~~((this.videoWidth - targetText.length) / 2);
-    let progress = 0;
-
-    const morphStep = () => {
-      progress += 0.1;
-      let output = "";
-
-      for (let y = 0; y < this.videoHeight; y++) {
-        for (let x = 0; x < this.videoWidth; x++) {
-          const targetChar =
-            y === ~~(this.videoHeight / 2) &&
-            x >= padding &&
-            x < padding + targetText.length
-              ? targetText[x - padding]
-              : " ";
-          output +=
-            Math.random() < progress
-              ? targetChar
-              : GLYPHS[~~(Math.random() * GLYPHS.length)];
-        }
-        if (y < this.videoHeight - 1) output += "\n";
-      }
-
-      logoElement.textContent = output;
-      progress < 1 ? requestAnimationFrame(morphStep) : this.video.play();
-    };
-
-    morphStep();
-  },
-
   _renderFrame() {
-    if (this.video.ended) {
-      this.isPlaying = false;
-      logoElement.style.cursor = "crosshair";
-      this._morphBackToLogo();
-      return;
-    }
-
-    if (this.video.paused) {
+    if (this.video.ended || this.video.paused) {
       this._updatePlaybar();
       this.animationFrameId = requestAnimationFrame(() => this._renderFrame());
       return;
@@ -204,7 +149,6 @@ export const VideoPlayer = {
       this.videoHeight,
     ).data;
 
-    // Calculate brightness
     for (
       let i = 0, length = this.videoWidth * this.videoHeight;
       i < length;
@@ -218,7 +162,6 @@ export const VideoPlayer = {
         8;
     }
 
-    // Render ASCII art
     let output = "";
     const charCount = ASCII_CHARS.length - 1;
 
@@ -237,75 +180,12 @@ export const VideoPlayer = {
       if (y < this.videoHeight - 1) output += "\n";
     }
 
-    logoElement.innerHTML = output;
+    this.logoElement.innerHTML = output;
     this._updatePlaybar();
     this.animationFrameId = requestAnimationFrame(() => this._renderFrame());
   },
 
-  _morphBackToLogo() {
-    cancelAnimationFrame(this.animationFrameId);
-
-    // Remove playbar
-    if (this.playbarElement) {
-      this.playbarElement.remove();
-      this.playbarElement = null;
-    }
-
-    let progress = 0;
-
-    const morphStep = () => {
-      progress += 0.05;
-      let output = "";
-
-      for (let y = 0; y < logoLines.length; y++) {
-        for (let x = 0; x < logoLines[y].length; x++) {
-          output +=
-            Math.random() < progress
-              ? logoLines[y][x]
-              : GLYPHS[~~(Math.random() * GLYPHS.length)];
-        }
-        if (y < logoLines.length - 1) output += "\n";
-      }
-
-      logoElement.textContent = output;
-
-      if (progress < 1) {
-        requestAnimationFrame(morphStep);
-      } else {
-        this._onMorphComplete();
-      }
-    };
-
-    morphStep();
-  },
-
-  _onMorphComplete() {
-    logoElement.textContent = LOGO_ASCII;
-    buttonContainer
-      .querySelectorAll(".btn")
-      .forEach((btn) => btn.classList.remove("disabled"));
-
-    const videoButton = document.getElementById("videoBtn");
-    if (videoButton) {
-      videoButton.classList.add("revealed");
-    }
-  },
-
   _onVideoEnded() {
-    this.isPlaying = false;
-    logoElement.style.cursor = "crosshair";
-    buttonContainer
-      .querySelectorAll(".btn")
-      .forEach((btn) => btn.classList.remove("disabled"));
-    this._morphBackToLogo();
-  },
-
-  _onVideoError() {
-    this.isPlaying = false;
-    logoElement.style.cursor = "crosshair";
-    buttonContainer
-      .querySelectorAll(".btn")
-      .forEach((btn) => btn.classList.remove("disabled"));
-    logoElement.textContent = LOGO_ASCII;
+    cancelAnimationFrame(this.animationFrameId);
   },
 };
