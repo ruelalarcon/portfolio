@@ -14,15 +14,14 @@ export const RippleEffect = {
     lastMouseY: 0,
     isHovering: false,
     isAnimating: false,
-    lastFrameTime: 0,
     globalTime: 0,
+    lastFrameTime: 0,
     lastCleanupTime: 0,
   },
 
   charWidth: 0,
   charHeight: 0,
   charElements: [],
-  charCache: new Map(), // Cache for character states
 
   init() {
     const rect = logoElement.getBoundingClientRect();
