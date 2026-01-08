@@ -1,5 +1,4 @@
 import {
-  LOGO_ASCII,
   ANIMATION_DURATION,
   logoElement,
   buttonContainer,
@@ -12,8 +11,10 @@ export const LogoAnimation = {
   startTime: null,
   characterSeeds: [],
   charElements: [],
+  duration: ANIMATION_DURATION,
 
-  init() {
+  init(duration = ANIMATION_DURATION) {
+    this.duration = duration;
     const totalCharacters = logoLines.reduce(
       (sum, line) => sum + line.length,
       0,
@@ -48,7 +49,7 @@ export const LogoAnimation = {
     if (!this.startTime) this.startTime = timestamp;
 
     const elapsed = timestamp - this.startTime;
-    const rawProgress = Math.min(elapsed / ANIMATION_DURATION, 1);
+    const rawProgress = Math.min(elapsed / this.duration, 1);
     const progress = easeInOutCubic(rawProgress);
 
     this._renderFrame(progress, elapsed);
