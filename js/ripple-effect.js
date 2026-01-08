@@ -21,15 +21,23 @@ export const RippleEffect = {
 
   charWidth: 0,
   charHeight: 0,
+  charElements: [],
+  charCache: new Map(), // Cache for character states
 
   init() {
     const rect = logoElement.getBoundingClientRect();
     this.charWidth = rect.width / logoLines[0].length;
     this.charHeight = rect.height / logoLines.length;
 
+    this._cacheCharElements();
     this._initGlobalMouseTracking();
     this._attachEventListeners();
     this._startAnimation();
+  },
+
+  _cacheCharElements() {
+    // Cache all span elements that were created by LogoAnimation
+    this.charElements = Array.from(logoElement.querySelectorAll("span"));
   },
 
   _initGlobalMouseTracking() {
@@ -219,26 +227,26 @@ export const RippleEffect = {
   },
 
   _renderFrame(now) {
-    let output = "";
+    let charIndex = 0;
 
     for (let y = 0; y < logoLines.length; y++) {
       for (let x = 0; x < logoLines[y].length; x++) {
-        output += this._renderCharacter(x, y, logoLines[y][x], now);
+        this._updateCharacter(charIndex, x, y, logoLines[y][x], now);
+        charIndex++;
       }
-      if (y < logoLines.length - 1) output += "\n";
     }
-
-    logoElement.innerHTML = output;
   },
 
-  _renderCharacter(x, y, char, now) {
+  _updateCharacter(index, x, y, char, now) {
+    const element = this.charElements[index];
+    if (!element) return;
+
     const effects = this._calculateEffects(x, y, char, now);
 
     if (effects.intensity > 0.01 && char !== " ") {
-      return this._renderStyledChar(char, effects);
+      this._applyStyledChar(element, char, effects);
     } else {
-      const charClass = char === " " ? "char char-space" : "char char-text";
-      return `<span class="${charClass}">${char === " " ? "&nbsp;" : char}</span>`;
+      this._resetChar(element, char);
     }
   },
 
@@ -416,26 +424,49 @@ export const RippleEffect = {
     return { intensity: 0, glow: 0 };
   },
 
-  _renderStyledChar(char, effects) {
+  _applyStyledChar(element, char, effects) {
+    // Update text content only if changed
+    if (element.textContent !== char) {
+      element.textContent = char;
+    }
+
     const saturation = Math.min(100, 50 + effects.intensity * 60);
     const lightness = 40 + effects.intensity * 55;
     const colorMix = Math.min(1, effects.intensity * 2.5);
     const finalSaturation = saturation * colorMix;
     const finalLightness = lightness * colorMix + 95 * (1 - colorMix);
 
-    let style = `color:hsl(${effects.blendedHue},${finalSaturation}%,${Math.min(finalLightness, 95)}%);`;
+    // Build style string
+    let styleStr = `color:hsl(${effects.blendedHue},${finalSaturation}%,${Math.min(finalLightness, 95)}%);`;
 
     if (effects.glowIntensity > 0.1) {
       const glowSize1 = ~~(effects.glowIntensity * 12);
       const glowSize2 = ~~(effects.glowIntensity * 24);
       const hue2 = (effects.blendedHue + 60) % 360;
-      style += `text-shadow:0 0 ${glowSize1}px hsl(${effects.blendedHue},100%,70%),0 0 ${glowSize2}px hsl(${hue2},100%,50%);`;
+      styleStr += `text-shadow:0 0 ${glowSize1}px hsl(${effects.blendedHue},100%,70%),0 0 ${glowSize2}px hsl(${hue2},100%,50%);`;
     }
 
     if (effects.scale > 1.05) {
-      style += `transform:scale(${effects.scale.toFixed(2)});`;
+      styleStr += `transform:scale(${effects.scale.toFixed(2)});`;
     }
 
-    return `<span class="char char-text" style="${style}">${char}</span>`;
+    // Only update if style changed
+    if (element.getAttribute("style") !== styleStr) {
+      element.setAttribute("style", styleStr);
+    }
+  },
+
+  _resetChar(element, char) {
+    const displayChar = char === " " ? "\u00A0" : char;
+
+    // Update text content only if changed
+    if (element.textContent !== displayChar) {
+      element.textContent = displayChar;
+    }
+
+    // Remove style only if it exists
+    if (element.hasAttribute("style")) {
+      element.removeAttribute("style");
+    }
   },
 };

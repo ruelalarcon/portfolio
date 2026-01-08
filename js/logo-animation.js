@@ -11,6 +11,7 @@ import { easeInOutCubic } from "./utilities.js";
 export const LogoAnimation = {
   startTime: null,
   characterSeeds: [],
+  charElements: [],
 
   init() {
     const totalCharacters = logoLines.reduce(
@@ -20,6 +21,27 @@ export const LogoAnimation = {
     this.characterSeeds = Array.from({ length: totalCharacters }, () =>
       Math.random(),
     );
+    this._createCharElements();
+  },
+
+  _createCharElements() {
+    let output = "";
+    let charIndex = 0;
+
+    for (let y = 0; y < logoLines.length; y++) {
+      for (let x = 0; x < logoLines[y].length; x++) {
+        const char = logoLines[y][x];
+        const charClass = char === " " ? "char char-space" : "char char-text";
+        output += `<span class="${charClass}" data-idx="${charIndex}">${char === " " ? "&nbsp;" : " "}</span>`;
+        charIndex++;
+      }
+      if (y < logoLines.length - 1) output += "\n";
+    }
+
+    logoElement.innerHTML = output;
+
+    // Cache all span elements
+    this.charElements = Array.from(logoElement.querySelectorAll("span"));
   },
 
   render(timestamp) {
@@ -29,12 +51,12 @@ export const LogoAnimation = {
     const rawProgress = Math.min(elapsed / ANIMATION_DURATION, 1);
     const progress = easeInOutCubic(rawProgress);
 
-    logoElement.textContent = this._renderFrame(progress, elapsed);
+    this._renderFrame(progress, elapsed);
 
     if (rawProgress < 1) {
       requestAnimationFrame((ts) => this.render(ts));
     } else {
-      logoElement.textContent = LOGO_ASCII;
+      this._renderFinalFrame();
       buttonContainer.classList.add("show");
       // RippleEffect will be initialized from main.js
       this._onComplete?.();
@@ -44,20 +66,37 @@ export const LogoAnimation = {
   _renderFrame(progress, elapsed) {
     let charIndex = 0;
 
-    return logoLines
-      .map((line) => {
-        let result = "";
-        for (let i = 0; i < line.length; i++) {
-          result += this._renderChar(line[i], charIndex, progress, elapsed);
-          charIndex++;
+    for (let y = 0; y < logoLines.length; y++) {
+      for (let x = 0; x < logoLines[y].length; x++) {
+        const char = logoLines[y][x];
+        const newChar = this._renderChar(char, charIndex, progress, elapsed);
+        const element = this.charElements[charIndex];
+
+        if (element && element.textContent !== newChar) {
+          element.textContent = newChar;
         }
-        return result;
-      })
-      .join("\n");
+
+        charIndex++;
+      }
+    }
+  },
+
+  _renderFinalFrame() {
+    let charIndex = 0;
+    for (let y = 0; y < logoLines.length; y++) {
+      for (let x = 0; x < logoLines[y].length; x++) {
+        const char = logoLines[y][x];
+        const element = this.charElements[charIndex];
+        if (element) {
+          element.textContent = char === " " ? "\u00A0" : char;
+        }
+        charIndex++;
+      }
+    }
   },
 
   _renderChar(char, index, progress, elapsed) {
-    if (char === " ") return " ";
+    if (char === " ") return "\u00A0";
 
     const seed = this.characterSeeds[index];
     const threshold = seed * 0.7 + 0.15;
@@ -78,8 +117,8 @@ export const LogoAnimation = {
     } else if (progress > threshold - 0.5) {
       return Math.random() < 0.15
         ? STATIC_CHARS[~~(Math.random() * STATIC_CHARS.length)]
-        : " ";
+        : "\u00A0";
     }
-    return " ";
+    return "\u00A0";
   },
 };
