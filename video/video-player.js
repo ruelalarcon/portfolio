@@ -623,7 +623,8 @@ export const StandaloneVideoPlayer = {
   },
 
   _onVideoEnded() {
-    cancelAnimationFrame(this.animationFrameId);
+    this.video.currentTime = 0;
+    this.video.play();
   },
 
   _setupSelection(charWidth, charHeight, displayCharWidth, displayCharHeight) {
