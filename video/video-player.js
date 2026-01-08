@@ -1,4 +1,4 @@
-import { ASCII_CHARS } from "../js/constants.js";
+import { ASCII_CHARS, GLYPHS } from "../js/constants.js";
 
 export const StandaloneVideoPlayer = {
   video: null,
@@ -25,6 +25,11 @@ export const StandaloneVideoPlayer = {
   selectionOverlay: null,
   charWidth: 0,
   charHeight: 0,
+
+  // Button morph tracking
+  buttonMorphing: false,
+  buttonTargetText: "",
+  buttonMorphAnimationId: null,
 
   play(videoUrl, videoEl, playbarContainer) {
     this.videoElement = videoEl;
@@ -468,8 +473,10 @@ export const StandaloneVideoPlayer = {
   _togglePlayPause() {
     if (this.video.paused) {
       this.video.play();
+      this._morphButton("[ Pause ]");
     } else {
       this.video.pause();
+      this._morphButton(" [ Play ]");
     }
     this._updatePlaybar();
   },
@@ -774,5 +781,80 @@ export const StandaloneVideoPlayer = {
     }
 
     return text;
+  },
+
+  _getMorphChar(charProgress, startChar, targetChar) {
+    const phase = charProgress * 4;
+
+    if (phase < 1) {
+      return Math.random() < 0.3
+        ? GLYPHS[~~(Math.random() * GLYPHS.length)]
+        : startChar;
+    } else if (phase < 2) {
+      return GLYPHS[~~(Math.random() * GLYPHS.length)];
+    } else if (phase < 3) {
+      return Math.random() < 0.5
+        ? targetChar
+        : GLYPHS[~~(Math.random() * GLYPHS.length)];
+    } else {
+      return Math.random() < 0.15
+        ? GLYPHS[~~(Math.random() * GLYPHS.length)]
+        : targetChar;
+    }
+  },
+
+  _morphButton(targetText, duration = 400) {
+    if (this.buttonMorphing && this.buttonTargetText === targetText) return;
+
+    if (this.buttonMorphAnimationId) {
+      cancelAnimationFrame(this.buttonMorphAnimationId);
+    }
+
+    this.buttonMorphing = true;
+    this.buttonTargetText = targetText;
+
+    const fullText = this.playbarElement.textContent;
+    const startText = fullText.substring(0, targetText.length);
+    const progressBarText = fullText.substring(targetText.length);
+
+    const startTimestamp = performance.now();
+    const characterDelays = Array.from(
+      { length: targetText.length },
+      () => Math.random() * 0.5,
+    );
+
+    const animate = (timestamp) => {
+      const elapsed = timestamp - startTimestamp;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+
+      let result = "";
+      for (let i = 0; i < targetText.length; i++) {
+        const charDelay = characterDelays[i];
+        const charProgress = (easedProgress - charDelay * 0.3) / 0.7;
+        const targetChar = targetText[i];
+        const startChar = startText[i];
+
+        if (charProgress >= 1) {
+          result += targetChar;
+        } else if (charProgress > 0) {
+          result += this._getMorphChar(charProgress, startChar, targetChar);
+        } else {
+          result += startChar;
+        }
+      }
+
+      this.playbarElement.textContent = result + progressBarText;
+
+      if (progress < 1) {
+        this.buttonMorphAnimationId = requestAnimationFrame(animate);
+      } else {
+        this.playbarElement.textContent = targetText + progressBarText;
+        this.buttonMorphing = false;
+        this.buttonMorphAnimationId = null;
+      }
+    };
+
+    this.buttonMorphAnimationId = requestAnimationFrame(animate);
   },
 };
