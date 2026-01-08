@@ -31,6 +31,12 @@ export const StandaloneVideoPlayer = {
   buttonTargetText: "",
   buttonMorphAnimationId: null,
 
+  // Seek transition tracking
+  isSeeking: false,
+  seekStartTime: null,
+  seekTargetTime: null,
+  seekAnimationId: null,
+
   play(videoUrl, videoEl, playbarContainer) {
     this.videoElement = videoEl;
     this.playbarElement = document.createElement("div");
@@ -426,14 +432,7 @@ export const StandaloneVideoPlayer = {
             }
 
             if (canSeek) {
-              const wasPlaying = !this.video.paused;
-              this.video.currentTime = targetTime;
-              if (wasPlaying) {
-                this.video
-                  .play()
-                  .catch((err) => console.error("Play error:", err));
-              }
-              this._updatePlaybar();
+              this._smoothSeek(targetTime);
             }
           }
         }
@@ -479,6 +478,52 @@ export const StandaloneVideoPlayer = {
       this._morphButton(" [ Play ]");
     }
     this._updatePlaybar();
+  },
+
+  _smoothSeek(targetTime) {
+    // Cancel any ongoing seek animation
+    if (this.seekAnimationId) {
+      cancelAnimationFrame(this.seekAnimationId);
+    }
+
+    const startTime = this.video.currentTime;
+    const startTimestamp = performance.now();
+    const duration = 200; // 0.2s in milliseconds
+    const wasPlaying = !this.video.paused;
+
+    // Pause video during seek
+    this.video.pause();
+    this.isSeeking = true;
+    this.seekStartTime = startTime;
+    this.seekTargetTime = targetTime;
+
+    const animate = (timestamp) => {
+      const elapsed = timestamp - startTimestamp;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Ease-out cubic for smooth deceleration
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+
+      // Interpolate between start and target time
+      const currentTime = startTime + (targetTime - startTime) * easedProgress;
+      this.video.currentTime = currentTime;
+
+      if (progress < 1) {
+        this.seekAnimationId = requestAnimationFrame(animate);
+      } else {
+        // Ensure we land exactly on target
+        this.video.currentTime = targetTime;
+        this.isSeeking = false;
+        this.seekAnimationId = null;
+
+        // Resume playback if it was playing before
+        if (wasPlaying) {
+          this.video.play().catch((err) => console.error("Play error:", err));
+        }
+      }
+    };
+
+    this.seekAnimationId = requestAnimationFrame(animate);
   },
 
   _renderFrame() {
