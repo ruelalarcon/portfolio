@@ -17,6 +17,15 @@ export const StandaloneVideoPlayer = {
   program: null,
   buffers: null,
 
+  // Selection tracking
+  isSelecting: false,
+  selectionStart: null,
+  selectionEnd: null,
+  currentFrame: null,
+  selectionOverlay: null,
+  charWidth: 0,
+  charHeight: 0,
+
   play(videoUrl, videoEl, playbarContainer) {
     this.videoElement = videoEl;
     this.playbarElement = document.createElement("div");
@@ -76,6 +85,10 @@ export const StandaloneVideoPlayer = {
     const charWidth = Math.ceil(metrics.width);
     const charHeight = Math.ceil(fontSize * 1.2);
 
+    // Store for selection rendering
+    this.charWidth = charWidth;
+    this.charHeight = charHeight;
+
     // Create WebGL canvas with high res textures
     this.glCanvas = document.createElement("canvas");
     this.glCanvas.width = this.videoWidth * charWidth;
@@ -96,6 +109,30 @@ export const StandaloneVideoPlayer = {
     // Clear and add WebGL canvas
     this.videoElement.innerHTML = "";
     this.videoElement.appendChild(this.glCanvas);
+
+    // Create selection overlay
+    this.selectionOverlay = document.createElement("canvas");
+    this.selectionOverlay.width = this.glCanvas.width;
+    this.selectionOverlay.height = this.glCanvas.height;
+    this.selectionOverlay.style.position = "absolute";
+    this.selectionOverlay.style.top = "0";
+    this.selectionOverlay.style.left = "0";
+    this.selectionOverlay.style.width = this.glCanvas.style.width;
+    this.selectionOverlay.style.height = this.glCanvas.style.height;
+    this.selectionOverlay.style.pointerEvents = "none";
+    this.videoElement.style.position = "relative";
+    this.videoElement.appendChild(this.selectionOverlay);
+
+    // Set text cursor
+    this.glCanvas.style.cursor = "text";
+
+    // Setup selection handlers
+    this._setupSelection(
+      charWidth,
+      charHeight,
+      displayCharWidth,
+      displayCharHeight,
+    );
 
     this.gl = this.glCanvas.getContext("webgl", {
       alpha: false,
@@ -466,6 +503,11 @@ export const StandaloneVideoPlayer = {
     const colors = new Float32Array(totalPixels * 12); // 4 vertices * 3 components
     const charIndices = new Float32Array(totalPixels * 4); // 4 vertices
 
+    // Store current frame for text selection
+    if (!this.currentFrame) {
+      this.currentFrame = new Array(totalPixels);
+    }
+
     for (let i = 0; i < totalPixels; i++) {
       const pixelIndex = i << 2;
       const r = imageData[pixelIndex] / 255;
@@ -478,6 +520,9 @@ export const StandaloneVideoPlayer = {
           imageData[pixelIndex + 2] * 29) >>
         8;
       const charIdx = ~~((brightness * charCount) / 255);
+
+      // Store character for selection
+      this.currentFrame[i] = ASCII_CHARS[charIdx];
 
       // Set color for all 4 vertices of this quad
       const ci = i * 12;
@@ -530,6 +575,11 @@ export const StandaloneVideoPlayer = {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
     gl.drawElements(gl.TRIANGLES, totalPixels * 6, gl.UNSIGNED_SHORT, 0);
 
+    // Redraw selection overlay if active
+    if (this.selectionStart && this.selectionEnd) {
+      this._redrawSelection();
+    }
+
     this._updatePlaybar();
     this.animationFrameId = requestAnimationFrame(() => this._renderFrame());
   },
@@ -574,5 +624,154 @@ export const StandaloneVideoPlayer = {
 
   _onVideoEnded() {
     cancelAnimationFrame(this.animationFrameId);
+  },
+
+  _setupSelection(charWidth, charHeight, displayCharWidth, displayCharHeight) {
+    const getCharCoords = (clientX, clientY) => {
+      const rect = this.glCanvas.getBoundingClientRect();
+      const x = Math.floor((clientX - rect.left) / displayCharWidth);
+      const y = Math.floor((clientY - rect.top) / displayCharHeight);
+      return {
+        x: Math.max(0, Math.min(x, this.videoWidth - 1)),
+        y: Math.max(0, Math.min(y, this.videoHeight - 1)),
+        index: y * this.videoWidth + x,
+      };
+    };
+
+    let hasMoved = false;
+
+    const onMouseMove = (e) => {
+      if (this.isSelecting) {
+        hasMoved = true;
+        this.selectionEnd = getCharCoords(e.clientX, e.clientY);
+        this._drawSelection(charWidth, charHeight);
+      }
+    };
+
+    const onMouseUp = () => {
+      if (this.isSelecting) {
+        this.isSelecting = false;
+
+        // Clear selection if it was just a click (no drag)
+        if (!hasMoved) {
+          this.selectionStart = null;
+          this.selectionEnd = null;
+          const ctx = this.selectionOverlay.getContext("2d");
+          ctx.clearRect(
+            0,
+            0,
+            this.selectionOverlay.width,
+            this.selectionOverlay.height,
+          );
+        }
+
+        hasMoved = false;
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+      }
+    };
+
+    this.glCanvas.addEventListener("mousedown", (e) => {
+      this.isSelecting = true;
+      hasMoved = false;
+      this.selectionStart = getCharCoords(e.clientX, e.clientY);
+      this.selectionEnd = this.selectionStart;
+
+      // Add document-level listeners for drag outside
+      document.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("mouseup", onMouseUp);
+    });
+
+    // Clear selection when clicking outside
+    document.addEventListener("mousedown", (e) => {
+      if (
+        !this.glCanvas.contains(e.target) &&
+        !this.selectionOverlay.contains(e.target)
+      ) {
+        this.selectionStart = null;
+        this.selectionEnd = null;
+        const ctx = this.selectionOverlay.getContext("2d");
+        ctx.clearRect(
+          0,
+          0,
+          this.selectionOverlay.width,
+          this.selectionOverlay.height,
+        );
+      }
+    });
+
+    // Copy handler
+    document.addEventListener("copy", (e) => {
+      if (this.selectionStart && this.selectionEnd && this.currentFrame) {
+        e.preventDefault();
+        const text = this._getSelectedText();
+        e.clipboardData.setData("text/plain", text);
+      }
+    });
+  },
+
+  _drawSelection(charWidth, charHeight) {
+    this._renderSelection(charWidth, charHeight);
+  },
+
+  _redrawSelection() {
+    this._renderSelection(this.charWidth, this.charHeight);
+  },
+
+  _renderSelection(charWidth, charHeight) {
+    const ctx = this.selectionOverlay.getContext("2d");
+    ctx.clearRect(
+      0,
+      0,
+      this.selectionOverlay.width,
+      this.selectionOverlay.height,
+    );
+
+    if (!this.selectionStart || !this.selectionEnd || !this.currentFrame)
+      return;
+
+    const start = Math.min(this.selectionStart.index, this.selectionEnd.index);
+    const end = Math.max(this.selectionStart.index, this.selectionEnd.index);
+
+    // Windows selection style: #0236a0 background
+    ctx.fillStyle = "#0236a0";
+
+    for (let i = start; i <= end; i++) {
+      const x = (i % this.videoWidth) * charWidth;
+      const y = Math.floor(i / this.videoWidth) * charHeight;
+      ctx.fillRect(x, y, charWidth, charHeight);
+    }
+
+    // Draw white text over selection
+    ctx.fillStyle = "white";
+    ctx.font = `48px 'Cascadia Code', monospace`;
+    ctx.textBaseline = "top";
+    ctx.textAlign = "left";
+
+    for (let i = start; i <= end; i++) {
+      const char = this.currentFrame[i];
+      const x = (i % this.videoWidth) * charWidth;
+      const y = Math.floor(i / this.videoWidth) * charHeight;
+      ctx.fillText(char, x, y);
+    }
+  },
+
+  _getSelectedText() {
+    if (!this.currentFrame || !this.selectionStart || !this.selectionEnd)
+      return "";
+
+    const start = Math.min(this.selectionStart.index, this.selectionEnd.index);
+    const end = Math.max(this.selectionStart.index, this.selectionEnd.index);
+
+    let text = "";
+    for (let i = start; i <= end; i++) {
+      const x = i % this.videoWidth;
+      text += this.currentFrame[i];
+      if (x === this.videoWidth - 1 && i < end) {
+        text += "\n";
+      }
+    }
+
+    return text;
   },
 };
