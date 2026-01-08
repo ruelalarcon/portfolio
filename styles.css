@@ -27,9 +27,23 @@ body {
     line-height: 1.15;
     margin-bottom: 3rem;
     white-space: pre;
-    cursor: text;
+    cursor: default;
     transition: height 0.4s ease;
     font-family: "Cascadia Code", monospace;
+}
+
+#logo .char {
+    display: inline-block;
+    width: 1ch;
+    text-align: center;
+}
+
+#logo .char-text {
+    cursor: text;
+}
+
+#logo .char-space {
+    cursor: default;
 }
 
 #logo s {

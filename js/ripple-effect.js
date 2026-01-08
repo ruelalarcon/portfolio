@@ -54,7 +54,7 @@ export const RippleEffect = {
   },
 
   _onClick(event) {
-    if (VideoPlayer.isPlaying) return;
+    if (VideoPlayer.isPlaying || !this.state.isHovering) return;
 
     const rect = logoElement.getBoundingClientRect();
     const clickX = (event.clientX - rect.left) / this.charWidth;
@@ -117,12 +117,30 @@ export const RippleEffect = {
     this.state.mouseX = (this.state.globalMouseX - rect.left) / this.charWidth;
     this.state.mouseY = (this.state.globalMouseY - rect.top) / this.charHeight;
 
-    // Check if hovering over the logo
-    this.state.isHovering =
+    // Check if hovering over the logo AND over a non-space character
+    const isOverLogo =
       this.state.globalMouseX >= rect.left &&
       this.state.globalMouseX <= rect.right &&
       this.state.globalMouseY >= rect.top &&
       this.state.globalMouseY <= rect.bottom;
+
+    if (isOverLogo) {
+      const charX = Math.floor(this.state.mouseX);
+      const charY = Math.floor(this.state.mouseY);
+      if (
+        charY >= 0 &&
+        charY < logoLines.length &&
+        charX >= 0 &&
+        charX < logoLines[charY].length
+      ) {
+        const hoveredChar = logoLines[charY][charX];
+        this.state.isHovering = hoveredChar !== " ";
+      } else {
+        this.state.isHovering = false;
+      }
+    } else {
+      this.state.isHovering = false;
+    }
 
     if (!this.state.isHovering) {
       this.state.trails = [];
@@ -141,19 +159,6 @@ export const RippleEffect = {
     this.state.lastMouseY = this.state.mouseY;
     // Only create effects if mouse is actually moving
     if (velocity < 0.01) return;
-
-    // Check if hovering over a space
-    const charX = Math.floor(this.state.mouseX);
-    const charY = Math.floor(this.state.mouseY);
-    if (
-      charY >= 0 &&
-      charY < logoLines.length &&
-      charX >= 0 &&
-      charX < logoLines[charY].length
-    ) {
-      const hoveredChar = logoLines[charY][charX];
-      if (hoveredChar === " ") return;
-    }
 
     this._addTrail(velocity);
     this._maybeAddRipple(velocity);
@@ -238,7 +243,8 @@ export const RippleEffect = {
     if (effects.intensity > 0.01 && char !== " ") {
       return this._renderStyledChar(char, effects);
     } else {
-      return `<span style="display:inline-block;width:1ch">${char === " " ? "&nbsp;" : char}</span>`;
+      const charClass = char === " " ? "char char-space" : "char char-text";
+      return `<span class="${charClass}">${char === " " ? "&nbsp;" : char}</span>`;
     }
   },
 
@@ -436,6 +442,6 @@ export const RippleEffect = {
       style += `transform:scale(${effects.scale.toFixed(2)});`;
     }
 
-    return `<span style="${style}display:inline-block;width:1ch;text-align:center">${char}</span>`;
+    return `<span class="char char-text" style="${style}">${char}</span>`;
   },
 };
