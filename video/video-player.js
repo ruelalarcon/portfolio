@@ -119,6 +119,8 @@ export const StandaloneVideoPlayer = {
 
     // Clear and add WebGL canvas
     this.videoElement.innerHTML = "";
+    this.glCanvas.style.opacity = "0";
+    this.glCanvas.style.transition = "opacity 0.5s ease-in-out";
     this.videoElement.appendChild(this.glCanvas);
 
     // Create selection overlay
@@ -241,6 +243,11 @@ export const StandaloneVideoPlayer = {
     gl.clearColor(rgb[0], rgb[1], rgb[2], 1.0);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+    // Trigger fade-in animation
+    requestAnimationFrame(() => {
+      this.glCanvas.style.opacity = "1";
+    });
   },
 
   _createShader(gl, type, source) {
@@ -629,7 +636,7 @@ export const StandaloneVideoPlayer = {
 
     // Redraw selection overlay if active
     if (this.selectionStart && this.selectionEnd) {
-      this._redrawSelection();
+      this._renderSelection(this.charWidth, this.charHeight);
     }
 
     this._updatePlaybar();
@@ -691,13 +698,25 @@ export const StandaloneVideoPlayer = {
       };
     };
 
+    const clearSelection = () => {
+      this.selectionStart = null;
+      this.selectionEnd = null;
+      const ctx = this.selectionOverlay.getContext("2d");
+      ctx.clearRect(
+        0,
+        0,
+        this.selectionOverlay.width,
+        this.selectionOverlay.height,
+      );
+    };
+
     let hasMoved = false;
 
     const onMouseMove = (e) => {
       if (this.isSelecting) {
         hasMoved = true;
         this.selectionEnd = getCharCoords(e.clientX, e.clientY);
-        this._drawSelection(charWidth, charHeight);
+        this._renderSelection(charWidth, charHeight);
       }
     };
 
@@ -707,15 +726,7 @@ export const StandaloneVideoPlayer = {
 
         // Clear selection if it was just a click (no drag)
         if (!hasMoved) {
-          this.selectionStart = null;
-          this.selectionEnd = null;
-          const ctx = this.selectionOverlay.getContext("2d");
-          ctx.clearRect(
-            0,
-            0,
-            this.selectionOverlay.width,
-            this.selectionOverlay.height,
-          );
+          clearSelection();
         }
 
         hasMoved = false;
@@ -724,51 +735,33 @@ export const StandaloneVideoPlayer = {
       }
     };
 
-    this.glCanvas.addEventListener("mousedown", (e) => {
+    const onMouseDown = (e) => {
+      // Allow selection to start from anywhere on the page
       this.isSelecting = true;
       hasMoved = false;
       this.selectionStart = getCharCoords(e.clientX, e.clientY);
       this.selectionEnd = this.selectionStart;
 
-      // Add document-level listeners for drag outside
+      // Add document-level listeners for drag
       document.addEventListener("mousemove", onMouseMove);
       document.addEventListener("mouseup", onMouseUp);
-    });
 
-    // Clear selection when clicking outside
-    document.addEventListener("mousedown", (e) => {
-      if (
-        !this.glCanvas.contains(e.target) &&
-        !this.selectionOverlay.contains(e.target)
-      ) {
-        this.selectionStart = null;
-        this.selectionEnd = null;
-        const ctx = this.selectionOverlay.getContext("2d");
-        ctx.clearRect(
-          0,
-          0,
-          this.selectionOverlay.width,
-          this.selectionOverlay.height,
-        );
+      // Only prevent default if clicking on the video to avoid breaking page interactions
+      if (this.videoElement.contains(e.target)) {
+        e.preventDefault();
       }
-    });
+    };
 
-    // Copy handler
-    document.addEventListener("copy", (e) => {
+    const onCopy = (e) => {
       if (this.selectionStart && this.selectionEnd && this.currentFrame) {
         e.preventDefault();
         const text = this._getSelectedText();
         e.clipboardData.setData("text/plain", text);
       }
-    });
-  },
+    };
 
-  _drawSelection(charWidth, charHeight) {
-    this._renderSelection(charWidth, charHeight);
-  },
-
-  _redrawSelection() {
-    this._renderSelection(this.charWidth, this.charHeight);
+    document.addEventListener("mousedown", onMouseDown);
+    document.addEventListener("copy", onCopy);
   },
 
   _renderSelection(charWidth, charHeight) {
