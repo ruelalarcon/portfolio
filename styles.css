@@ -115,3 +115,16 @@ body {
     color: #fff;
     opacity: 1;
 }
+
+/* Playbar */
+#playbar {
+    color: #fff;
+    font-family: "Cascadia Code", monospace;
+    font-size: 12px;
+    margin-bottom: 3rem;
+    cursor: pointer;
+    user-select: none;
+    white-space: pre;
+    display: inline-block;
+    font-variant-ligatures: none;
+}
