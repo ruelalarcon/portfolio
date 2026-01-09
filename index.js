@@ -22,7 +22,8 @@ LogoAnimation._onComplete = () => {
 };
 
 // Determine animation duration based on previous page
-const animationDuration = previousPage === "home" ? 2200 : 800;
+const animationDuration =
+  previousPage === "home" || previousPage === null ? 2200 : 800;
 
 // Start logo animation
 LogoAnimation.init(animationDuration);
