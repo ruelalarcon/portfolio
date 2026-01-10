@@ -2,7 +2,7 @@ import { StandaloneVideoPlayer } from "./video-player.js";
 import { TextMorph } from "../js/text-morph.js";
 import { NavigationTracker } from "../js/navigation-tracker.js";
 
-const logoElement = document.getElementById("logo");
+const videoElement = document.getElementById("video");
 const buttonContainer = document.getElementById("buttons");
 
 // Initialize navigation tracking
@@ -19,4 +19,4 @@ document.querySelectorAll(".btn").forEach((button) => {
 });
 
 // Auto-play video when page loads
-StandaloneVideoPlayer.play("../video.mp4", logoElement, buttonContainer);
+StandaloneVideoPlayer.play("../video.mp4", videoElement, buttonContainer);

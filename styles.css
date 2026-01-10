@@ -92,6 +92,10 @@ body {
     color: #333;
 }
 
+#video {
+    margin-bottom: 3rem;
+}
+
 /* Video Button */
 #videoBtn {
     color: #333;
