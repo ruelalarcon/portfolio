@@ -6,7 +6,7 @@ import { ASCII_CHARS } from "../js/constants.js";
 /**
  * Main video player that coordinates rendering, selection, and controls
  */
-export const StandaloneVideoPlayer = {
+export const VideoPlayer = {
   video: null,
   canvas: null,
   context: null,

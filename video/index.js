@@ -1,4 +1,4 @@
-import { StandaloneVideoPlayer } from "./video-player.js";
+import { VideoPlayer } from "./video-player.js";
 import { TextMorph } from "../js/text-morph.js";
 import { NavigationTracker } from "../js/navigation-tracker.js";
 
@@ -19,4 +19,4 @@ document.querySelectorAll(".btn").forEach((button) => {
 });
 
 // Auto-play video when page loads
-StandaloneVideoPlayer.play("../video.mp4", videoElement, buttonContainer);
+VideoPlayer.play("../video.mp4", videoElement, buttonContainer);
