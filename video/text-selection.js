@@ -99,7 +99,7 @@ export class TextSelection {
       this.isSelecting = true;
       hasMoved = false;
       this.selectionStart = getCharCoords(e.clientX, e.clientY);
-      this.selectionEnd = this.selectionStart;
+      this.selectionEnd = null; // Don't set end until we actually drag
 
       // Add document-level listeners for drag
       document.addEventListener("mousemove", onMouseMove);
