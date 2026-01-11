@@ -12,14 +12,16 @@ export class WebGLASCIIRenderer {
     this.totalCells = gridWidth * gridHeight;
 
     // Configuration
-    this.charSet = options.charSet || ".:-=+*#%@";
+    if (!options.charSet) {
+      throw new Error("WebGLASCIIRenderer requires a charSet in options");
+    }
+
+    this.charSet = options.charSet;
     this.font = options.font || "'Cascadia Code', monospace";
     this.textureFontSize = options.textureFontSize || 48;
     this.displayFontSize = options.displayFontSize || 12;
     this.backgroundColor = options.backgroundColor || null; // Auto-detect if null
     this.enableTextSelection = options.enableTextSelection !== false;
-    this.cursor =
-      options.cursor || (this.enableTextSelection ? "text" : "default");
 
     // WebGL state
     this.gl = null;
@@ -78,7 +80,6 @@ export class WebGLASCIIRenderer {
     this.glCanvas.style.width = `${this.gridWidth * this.displayCharWidth}px`;
     this.glCanvas.style.height = `${this.gridHeight * this.displayCharHeight}px`;
     this.glCanvas.style.imageRendering = "auto";
-    this.glCanvas.style.cursor = this.cursor;
 
     // Setup container
     container.innerHTML = "";

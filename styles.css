@@ -94,6 +94,7 @@ body {
 
 #video {
     margin-bottom: 3rem;
+    cursor: text;
 }
 
 /* Video Button */
