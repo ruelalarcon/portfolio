@@ -93,8 +93,19 @@ export class DOMASCIIRenderer {
 
     this.container.innerHTML = output;
 
-    // Cache all span elements
+    // Cache all span elements and initialize state tracking
     this.charElements = Array.from(this.container.querySelectorAll("span"));
+
+    // Cache for avoiding redundant updates
+    this.charCache = new Array(this.totalCells);
+    this.colorCache = new Array(this.totalCells);
+    this.transformCache = new Array(this.totalCells);
+
+    for (let i = 0; i < this.totalCells; i++) {
+      this.charCache[i] = " ";
+      this.colorCache[i] = "rgb(255, 255, 255)";
+      this.transformCache[i] = null;
+    }
   }
 
   /**
@@ -118,32 +129,27 @@ export class DOMASCIIRenderer {
       );
     }
 
-    // Update each character element
+    // Update each character element (with caching to skip unchanged)
     for (let i = 0; i < this.totalCells; i++) {
       const element = this.charElements[i];
       if (!element) continue;
 
       const char = chars[i];
       const color = colors[i];
-      const transform = transforms?.[i] || {};
+      const transform = transforms?.[i];
 
-      // Update character
+      // Convert to display formats
       const displayChar = char === " " ? "\u00A0" : char;
-      if (element.textContent !== displayChar) {
-        element.textContent = displayChar;
-      }
 
-      // Update color
+      // Build color string (cheap int operations)
       const r = Math.round(color[0] * 255);
       const g = Math.round(color[1] * 255);
       const b = Math.round(color[2] * 255);
       const colorStr = `rgb(${r}, ${g}, ${b})`;
-      if (element.style.color !== colorStr) {
-        element.style.color = colorStr;
-      }
 
-      // Update transformations
-      if (transforms && transforms[i]) {
+      // Build transform string if needed
+      let transformStr = null;
+      if (transform) {
         const scale = transform.scale || 1.0;
         const scaleX =
           transform.scaleX !== undefined ? transform.scaleX : scale;
@@ -151,14 +157,32 @@ export class DOMASCIIRenderer {
           transform.scaleY !== undefined ? transform.scaleY : scale;
         const offsetX = transform.offsetX || 0;
         const offsetY = transform.offsetY || 0;
+        transformStr = `translate(${offsetX}px, ${offsetY}px) scale(${scaleX}, ${scaleY})`;
+      }
 
-        const transformStr = `translate(${offsetX}px, ${offsetY}px) scale(${scaleX}, ${scaleY})`;
-        if (element.style.transform !== transformStr) {
-          element.style.transform = transformStr;
-          element.style.transformOrigin = "center center";
+      // Check what changed
+      const charChanged = this.charCache[i] !== displayChar;
+      const colorChanged = this.colorCache[i] !== colorStr;
+      const transformChanged = this.transformCache[i] !== transformStr;
+
+      // Only update if something changed
+      if (charChanged || colorChanged || transformChanged) {
+        // Batch style updates using cssText for better performance
+        let cssText = `color: ${colorStr};`;
+
+        if (transformStr) {
+          cssText += ` transform: ${transformStr}; transform-origin: center center;`;
         }
-      } else if (element.style.transform) {
-        element.style.transform = "";
+
+        element.style.cssText = cssText;
+
+        if (charChanged) {
+          element.textContent = displayChar;
+          this.charCache[i] = displayChar;
+        }
+
+        this.colorCache[i] = colorStr;
+        this.transformCache[i] = transformStr;
       }
     }
   }
