@@ -1,4 +1,9 @@
-import { GLYPHS } from "./constants.js";
+/**
+ * Text morphing animation utility
+ * Standalone module with no external dependencies
+ */
+
+const GLYPHS = "░▒▓█▀▄▌▐╔╗╚╝║═╠╣╦╩╬├┤┬┴┼│─■□◊◦•○●";
 
 export const TextMorph = {
   morph(element, targetText, duration = 400) {

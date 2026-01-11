@@ -1,43 +1,56 @@
-import { LOGO_ASCII, logoElement, logoLines } from "./constants.js";
-import { noiseFunction } from "./utilities.js";
+/**
+ * Interactive ripple effect for logo
+ * Standalone module with integrated constants
+ */
 
-export const RippleEffect = {
-  state: {
-    ripples: [],
-    sparks: [],
-    trails: [],
-    globalMouseX: 0,
-    globalMouseY: 0,
-    mouseX: 0,
-    mouseY: 0,
-    lastMouseX: 0,
-    lastMouseY: 0,
-    isHovering: false,
-    isAnimating: false,
-    globalTime: 0,
-    lastFrameTime: 0,
-    lastCleanupTime: 0,
-  },
+import { noiseFunction } from "../core/math.js";
 
-  charWidth: 0,
-  charHeight: 0,
-  charElements: [],
+// Logo data
+const LOGO_ASCII = atob(
+  "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAsLCAgICAgICAgICAgICAgICAgICAgICAsLCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApgN01NIiIiTXEuICAgICAgICAgICAgICAgICAgICBgN01NICAgICAgICAgICAgZGIgICAgICBgN01NICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgTU0gICBgTU0uICAgICAgICAgICAgICAgICAgICAgTU0gICAgICAgICAgIDtNTTogICAgICAgTU0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICBNTSAgICxNOSBgN01NIiBgN01NICAuZ1AiWWEgICBNTSAgICAgICAgICAsVl5NTS4gICAgICBNTSAgICw2IlliLiAgYDdNYixvZDggLHA2ImJvICAgLHBXIldxLmA3TU1wTU1NYi4gIAogIE1NbW1kTTkgICAgTU0gICAgTU0gLE0nICAgWWIgIE1NICAgICAgICAgLE0gIGBNTSAgICAgIE1NICA4KSAgIE1NICAgIE1NJyAiJzZNJyAgT08gIDZXJyAgIGBXYiBNTSAgICBNTSAgCiAgTU0gIFlNLiAgICBNTSAgICBNTSA4TSIiIiIiIiAgTU0gICAgICAgICBBYm1tbXFNQSAgICAgTU0gICAscG05TU0gICAgTU0gICAgOE0gICAgICAgOE0gICAgIE04IE1NICAgIE1NICAKICBNTSAgIGBNYi4gIE1NICAgIE1NIFlNLiAgICAsICBNTSAgICAgICAgQScgICAgIFZNTCAgICBNTSAgOE0gICBNTSAgICBNTSAgICBZTS4gICAgLCBZQS4gICAsQTkgTU0gICAgTU0gIAouSk1NTC4gLkpNTS4gYE1ib2QiWU1MLmBNYm1tZCcuSk1NTC4gICAgLkFNQS4gICAuQU1NQS4uSk1NTC5gTW9vOV5Zby4uSk1NTC4gICBZTWJtZCcgICBgWWJtZDknLkpNTUwgIEpNTUwu",
+);
+const LOGO_LINES = LOGO_ASCII.split("\n");
+
+export class RippleEffect {
+  constructor(logoElement) {
+    this.logoElement = logoElement;
+    this.state = {
+      ripples: [],
+      sparks: [],
+      trails: [],
+      globalMouseX: 0,
+      globalMouseY: 0,
+      mouseX: 0,
+      mouseY: 0,
+      lastMouseX: 0,
+      lastMouseY: 0,
+      isHovering: false,
+      isAnimating: false,
+      globalTime: 0,
+      lastFrameTime: 0,
+      lastCleanupTime: 0,
+    };
+
+    this.charWidth = 0;
+    this.charHeight = 0;
+    this.charElements = [];
+  }
 
   init() {
-    const rect = logoElement.getBoundingClientRect();
-    this.charWidth = rect.width / logoLines[0].length;
-    this.charHeight = rect.height / logoLines.length;
+    const rect = this.logoElement.getBoundingClientRect();
+    this.charWidth = rect.width / LOGO_LINES[0].length;
+    this.charHeight = rect.height / LOGO_LINES.length;
 
     this._cacheCharElements();
     this._initGlobalMouseTracking();
     this._attachEventListeners();
     this._startAnimation();
-  },
+  }
 
   _cacheCharElements() {
     // Cache all span elements that were created by LogoAnimation
-    this.charElements = Array.from(logoElement.querySelectorAll("span"));
-  },
+    this.charElements = Array.from(this.logoElement.querySelectorAll("span"));
+  }
 
   _initGlobalMouseTracking() {
     // Use a single global mousemove listener to track cursor position
@@ -45,7 +58,7 @@ export const RippleEffect = {
       this.state.globalMouseX = e.clientX;
       this.state.globalMouseY = e.clientY;
     });
-  },
+  }
 
   _startAnimation() {
     if (!this.state.isAnimating) {
@@ -53,16 +66,16 @@ export const RippleEffect = {
       this.state.lastFrameTime = performance.now();
       requestAnimationFrame((ts) => this._animate(ts));
     }
-  },
+  }
 
   _attachEventListeners() {
-    logoElement.addEventListener("mousedown", (e) => this._onClick(e));
-  },
+    this.logoElement.addEventListener("mousedown", (e) => this._onClick(e));
+  }
 
   _onClick(event) {
     if (!this.state.isHovering) return;
 
-    const rect = logoElement.getBoundingClientRect();
+    const rect = this.logoElement.getBoundingClientRect();
     const clickX = (event.clientX - rect.left) / this.charWidth;
     const clickY = (event.clientY - rect.top) / this.charHeight;
 
@@ -92,7 +105,7 @@ export const RippleEffect = {
         lifetime: 0.5 + Math.random() * 0.7,
       });
     }
-  },
+  }
 
   _animate(timestamp) {
     timestamp = timestamp || performance.now();
@@ -111,10 +124,10 @@ export const RippleEffect = {
 
     this._renderFrame(timestamp);
     requestAnimationFrame((ts) => this._animate(ts));
-  },
+  }
 
   _updateMousePosition() {
-    const rect = logoElement.getBoundingClientRect();
+    const rect = this.logoElement.getBoundingClientRect();
     this.state.mouseX = (this.state.globalMouseX - rect.left) / this.charWidth;
     this.state.mouseY = (this.state.globalMouseY - rect.top) / this.charHeight;
 
@@ -130,11 +143,11 @@ export const RippleEffect = {
       const charY = Math.floor(this.state.mouseY);
       if (
         charY >= 0 &&
-        charY < logoLines.length &&
+        charY < LOGO_LINES.length &&
         charX >= 0 &&
-        charX < logoLines[charY].length
+        charX < LOGO_LINES[charY].length
       ) {
-        const hoveredChar = logoLines[charY][charX];
+        const hoveredChar = LOGO_LINES[charY][charX];
         this.state.isHovering = hoveredChar !== " ";
       } else {
         this.state.isHovering = false;
@@ -146,7 +159,7 @@ export const RippleEffect = {
     if (!this.state.isHovering) {
       this.state.trails = [];
     }
-  },
+  }
 
   _updateEffects(deltaTime) {
     if (!this.state.isHovering) return;
@@ -163,7 +176,7 @@ export const RippleEffect = {
 
     this._addTrail(velocity);
     this._maybeAddRipple(velocity);
-  },
+  }
 
   _addTrail(velocity) {
     this.state.trails.push({
@@ -174,7 +187,7 @@ export const RippleEffect = {
     });
 
     if (this.state.trails.length > 20) this.state.trails.shift();
-  },
+  }
 
   _maybeAddRipple(velocity) {
     if (Math.random() < Math.min(0.8, 0.3 + velocity * 0.15)) {
@@ -203,7 +216,7 @@ export const RippleEffect = {
         });
       }
     }
-  },
+  }
 
   _cleanupOldEffects(now) {
     if (now - this.state.lastCleanupTime < 100) return;
@@ -214,7 +227,7 @@ export const RippleEffect = {
       (s) => now - s.time <= s.lifetime * 1000,
     );
     this.state.trails = this.state.trails.filter((t) => now - t.time <= 400);
-  },
+  }
 
   _updateSparks(deltaTime) {
     for (const spark of this.state.sparks) {
@@ -223,18 +236,18 @@ export const RippleEffect = {
       spark.velocityX *= 0.95;
       spark.velocityY *= 0.95;
     }
-  },
+  }
 
   _renderFrame(now) {
     let charIndex = 0;
 
-    for (let y = 0; y < logoLines.length; y++) {
-      for (let x = 0; x < logoLines[y].length; x++) {
-        this._updateCharacter(charIndex, x, y, logoLines[y][x], now);
+    for (let y = 0; y < LOGO_LINES.length; y++) {
+      for (let x = 0; x < LOGO_LINES[y].length; x++) {
+        this._updateCharacter(charIndex, x, y, LOGO_LINES[y][x], now);
         charIndex++;
       }
     }
-  },
+  }
 
   _updateCharacter(index, x, y, char, now) {
     const element = this.charElements[index];
@@ -247,7 +260,7 @@ export const RippleEffect = {
     } else {
       this._resetChar(element, char);
     }
-  },
+  }
 
   _calculateEffects(x, y, char, now) {
     let intensity = 0;
@@ -310,7 +323,7 @@ export const RippleEffect = {
     blendedHue = (blendedHue + this.state.globalTime * 15) % 360;
 
     return { intensity, blendedHue, glowIntensity, scale };
-  },
+  }
 
   _calculateTrailImpact(x, y, trail, now) {
     const dx = x - trail.x;
@@ -326,7 +339,7 @@ export const RippleEffect = {
       };
     }
     return { intensity: 0, glow: 0 };
-  },
+  }
 
   _calculateHoverImpact(x, y) {
     const dx = x - this.state.mouseX;
@@ -341,7 +354,7 @@ export const RippleEffect = {
       };
     }
     return { intensity: 0, glow: 0 };
-  },
+  }
 
   _calculateRippleImpact(x, y, ripple, now) {
     const dx = x - ripple.x;
@@ -404,7 +417,7 @@ export const RippleEffect = {
       glow: maxGlow,
       scale,
     };
-  },
+  }
 
   _calculateSparkImpact(x, y, spark, now) {
     const dx = x - spark.x;
@@ -421,7 +434,7 @@ export const RippleEffect = {
       };
     }
     return { intensity: 0, glow: 0 };
-  },
+  }
 
   _applyStyledChar(element, char, effects) {
     // Update text content only if changed
@@ -453,7 +466,7 @@ export const RippleEffect = {
     if (element.getAttribute("style") !== styleStr) {
       element.setAttribute("style", styleStr);
     }
-  },
+  }
 
   _resetChar(element, char) {
     const displayChar = char === " " ? "\u00A0" : char;
@@ -467,5 +480,5 @@ export const RippleEffect = {
     if (element.hasAttribute("style")) {
       element.removeAttribute("style");
     }
-  },
-};
+  }
+}

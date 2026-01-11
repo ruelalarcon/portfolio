@@ -1,8 +1,10 @@
-import { GLYPHS } from "../js/constants.js";
-
 /**
- * Handles playbar UI and controls for the video player
+ * Video playbar controls
+ * Standalone module with integrated constants
  */
+
+const GLYPHS = "░▒▓█▀▄▌▐╔╗╚╝║═╠╣╦╩╬├┤┬┴┼│─■□◊◦•○●";
+
 export class Playbar {
   constructor(video, container) {
     this.video = video;
@@ -256,7 +258,7 @@ export class Playbar {
    * Check if currently seeking
    * @returns {boolean} True if seeking
    */
-  isSeeking() {
+  isSeekingVideo() {
     return this.isSeeking;
   }
 }

@@ -1,6 +1,6 @@
-import { VideoPlayer } from "./video-player.js";
-import { TextMorph } from "../js/text-morph.js";
-import { NavigationTracker } from "../js/navigation-tracker.js";
+import { VideoPlayer } from "../js/video/video-player.js";
+import { TextMorph } from "../js/lib/text-morph.js";
+import { NavigationTracker } from "../js/core/navigation.js";
 
 const videoElement = document.getElementById("video");
 const buttonContainer = document.getElementById("buttons");
@@ -19,4 +19,5 @@ document.querySelectorAll(".btn").forEach((button) => {
 });
 
 // Auto-play video when page loads
-VideoPlayer.play("../video.mp4", videoElement, buttonContainer);
+const videoPlayer = new VideoPlayer();
+videoPlayer.play("../video.mp4", videoElement, buttonContainer);

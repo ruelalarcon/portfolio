@@ -1,6 +1,7 @@
 /**
  * Universal navigation tracking system
  * Tracks page navigation using sessionStorage
+ * Standalone module with no dependencies
  */
 export const NavigationTracker = {
   /**

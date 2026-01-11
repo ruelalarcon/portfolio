@@ -1,7 +1,7 @@
-import { TextMorph } from "./js/text-morph.js";
-import { LogoAnimation } from "./js/logo-animation.js";
-import { RippleEffect } from "./js/ripple-effect.js";
-import { NavigationTracker } from "./js/navigation-tracker.js";
+import { TextMorph } from "./js/lib/text-morph.js";
+import { LogoAnimation } from "./js/home/logo-animation.js";
+import { RippleEffect } from "./js/home/ripple-effect.js";
+import { NavigationTracker } from "./js/core/navigation.js";
 
 // Initialize navigation tracking
 const previousPage = NavigationTracker.init("home");
@@ -16,9 +16,17 @@ document.querySelectorAll(".btn").forEach((button) => {
   );
 });
 
+// Get DOM elements
+const logoElement = document.getElementById("logo");
+const buttonContainer = document.getElementById("buttons");
+
+// Initialize logo animation
+const logoAnimation = new LogoAnimation(logoElement, buttonContainer);
+
 // Initialize ripple effect after logo animation completes
-LogoAnimation._onComplete = () => {
-  RippleEffect.init();
+logoAnimation.onComplete = () => {
+  const rippleEffect = new RippleEffect(logoElement);
+  rippleEffect.init();
 };
 
 // Determine animation duration based on previous page
@@ -26,5 +34,5 @@ const animationDuration =
   previousPage === "home" || previousPage === null ? 2200 : 800;
 
 // Start logo animation
-LogoAnimation.init(animationDuration);
-requestAnimationFrame((ts) => LogoAnimation.render(ts));
+logoAnimation.init(animationDuration);
+requestAnimationFrame((ts) => logoAnimation.render(ts));
