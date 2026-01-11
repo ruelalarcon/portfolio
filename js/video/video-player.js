@@ -3,7 +3,7 @@
  * Manages video playback, rendering, and controls
  */
 
-import { WebGLASCIIRenderer } from "../lib/webgl-ascii/renderer.js";
+import { WebGLASCIIRenderer } from "../lib/ascii-renderer/webgl.js";
 import { Playbar } from "./playbar.js";
 
 const ASCII_CHARS = ".:-=+*#%@";

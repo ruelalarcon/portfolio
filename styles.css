@@ -38,22 +38,6 @@ body {
     text-align: center;
 }
 
-#logo .char-text {
-    cursor: text;
-}
-
-#logo .char-space {
-    cursor: default;
-}
-
-#logo s {
-    text-decoration: none;
-    font-style: normal;
-    display: inline-block;
-    cursor: text;
-    width: 1ch;
-}
-
 /* Buttons */
 .buttons {
     opacity: 0;

@@ -1,6 +1,5 @@
 import { TextMorph } from "./js/lib/text-morph.js";
-import { LogoAnimation } from "./js/home/logo-animation.js";
-import { RippleEffect } from "./js/home/ripple-effect.js";
+import { Logo } from "./js/home/logo.js";
 import { NavigationTracker } from "./js/core/navigation.js";
 
 // Initialize navigation tracking
@@ -20,19 +19,12 @@ document.querySelectorAll(".btn").forEach((button) => {
 const logoElement = document.getElementById("logo");
 const buttonContainer = document.getElementById("buttons");
 
-// Initialize logo animation
-const logoAnimation = new LogoAnimation(logoElement, buttonContainer);
-
-// Initialize ripple effect after logo animation completes
-logoAnimation.onComplete = () => {
-  const rippleEffect = new RippleEffect(logoElement);
-  rippleEffect.init();
-};
+// Initialize logo (combines animation and ripple effects)
+const logo = new Logo(logoElement, buttonContainer);
 
 // Determine animation duration based on previous page
 const animationDuration =
   previousPage === "home" || previousPage === null ? 2200 : 800;
 
-// Start logo animation
-logoAnimation.init(animationDuration);
-requestAnimationFrame((ts) => logoAnimation.render(ts));
+// Start logo
+logo.init(animationDuration);
