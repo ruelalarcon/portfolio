@@ -16,6 +16,11 @@ const LOGO_LINES = LOGO_ASCII.split("\n");
 const STATIC_CHARS = "░▒▓█▀▄▌▐■□▪▫●○◐◑◒◓";
 const GLITCH_CHARS = "╔╗╚╝║═╠╣╦╩╬├┤┬┴┼│─";
 
+// Complete character set for renderer (all unique chars in logo + animation chars)
+const ALL_CHARS = [...new Set(LOGO_ASCII + STATIC_CHARS + GLITCH_CHARS)].join(
+  "",
+);
+
 // Default animation duration
 const DEFAULT_ANIMATION_DURATION = 2200;
 
@@ -69,7 +74,7 @@ export class Logo {
 
     // Initialize renderer
     this.renderer = new DOMASCIIRenderer(this.gridWidth, this.gridHeight, {
-      charSet: LOGO_ASCII,
+      charSet: ALL_CHARS,
       font: "'Cascadia Code', monospace",
       displayFontSize: 12,
       enableTextSelection: true,
@@ -165,6 +170,7 @@ export class Logo {
   _renderFrame(timestamp) {
     const chars = new Array(this.totalCells);
     const colors = new Array(this.totalCells);
+    const transforms = new Array(this.totalCells);
 
     if (this.isAnimating) {
       // Animation phase: glitch reveal
@@ -183,6 +189,7 @@ export class Logo {
             elapsed,
           );
           colors[charIndex] = [1, 1, 1]; // White during animation
+          transforms[charIndex] = {}; // No transforms during animation
           charIndex++;
         }
       }
@@ -229,16 +236,23 @@ export class Logo {
             colors[charIndex] = [1, 1, 1];
           }
 
+          // Apply scale transform through renderer
+          if (effects.scale > 1.0) {
+            transforms[charIndex] = { scale: effects.scale };
+          } else {
+            transforms[charIndex] = {};
+          }
+
           charIndex++;
         }
       }
     }
 
-    this.renderer.render({ chars, colors });
+    this.renderer.render({ chars, colors, transforms });
 
-    // Apply additional effects (glow, scale) via direct DOM manipulation
+    // Apply glow effects via direct DOM manipulation (not supported by WebGL)
     if (!this.isAnimating) {
-      this._applyAdditionalEffects(timestamp);
+      this._applyGlowEffects(timestamp);
     }
   }
 
@@ -567,9 +581,13 @@ export class Logo {
     return { intensity: 0, glow: 0 };
   }
 
-  _applyAdditionalEffects(now) {
-    // Apply glow and scale effects via direct DOM manipulation
+  _applyGlowEffects(now) {
+    // Apply text-shadow glow effects via direct DOM manipulation
+    // (not supported by WebGL renderer, so this is DOM-specific enhancement)
     const charElements = this.renderer.charElements;
+
+    // Skip if using WebGL renderer (no charElements property)
+    if (!charElements) return;
 
     let charIndex = 0;
     for (let y = 0; y < this.gridHeight; y++) {
@@ -579,7 +597,7 @@ export class Logo {
         const element = charElements[charIndex];
 
         if (element && effects.intensity > 0.01 && originalChar !== " ") {
-          // Apply glow
+          // Apply glow via text-shadow
           if (effects.glowIntensity > 0.1) {
             const glowSize1 = ~~(effects.glowIntensity * 12);
             const glowSize2 = ~~(effects.glowIntensity * 24);
@@ -588,17 +606,9 @@ export class Logo {
           } else if (element.style.textShadow) {
             element.style.textShadow = "";
           }
-
-          // Apply scale
-          if (effects.scale > 1.05) {
-            element.style.transform = `scale(${effects.scale.toFixed(2)})`;
-          } else if (element.style.transform) {
-            element.style.transform = "";
-          }
-        } else if (element) {
-          // Clear effects
-          if (element.style.textShadow) element.style.textShadow = "";
-          if (element.style.transform) element.style.transform = "";
+        } else if (element && element.style.textShadow) {
+          // Clear glow
+          element.style.textShadow = "";
         }
 
         charIndex++;

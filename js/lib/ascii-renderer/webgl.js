@@ -1,7 +1,6 @@
 /**
  * WebGL-based character grid renderer
  * General-purpose module for rendering colored character grids with transformations
- * No external dependencies
  */
 
 export class WebGLASCIIRenderer {
@@ -127,15 +126,18 @@ export class WebGLASCIIRenderer {
       attribute float aCharIndex;
       attribute vec2 aScale;
       attribute vec2 aOffset;
+      attribute vec2 aCenter;
 
       varying vec2 vTexCoord;
       varying vec3 vColor;
       varying float vCharIndex;
 
       void main() {
-        // Apply scale and offset transformations
-        vec2 scaledPos = aPosition * aScale + aOffset;
-        gl_Position = vec4(scaledPos, 0.0, 1.0);
+        // Apply scale relative to character center, then offset
+        vec2 localPos = aPosition - aCenter;
+        vec2 scaledPos = localPos * aScale;
+        vec2 finalPos = scaledPos + aCenter + aOffset;
+        gl_Position = vec4(finalPos, 0.0, 1.0);
         vTexCoord = aTexCoord;
         vColor = aColor;
         vCharIndex = aCharIndex;
@@ -280,12 +282,14 @@ export class WebGLASCIIRenderer {
       charIndex: gl.createBuffer(),
       scale: gl.createBuffer(),
       offset: gl.createBuffer(),
+      center: gl.createBuffer(),
       indices: gl.createBuffer(),
     };
 
     // Generate static geometry for all character quads
     const positions = new Float32Array(this.totalCells * 8);
     const texCoords = new Float32Array(this.totalCells * 8);
+    const centers = new Float32Array(this.totalCells * 8);
     const indices = new Uint16Array(this.totalCells * 6);
 
     const cellWidth = 2.0 / this.gridWidth;
@@ -299,7 +303,7 @@ export class WebGLASCIIRenderer {
       const py = 1.0 - y * cellHeight;
 
       const vi = i * 8;
-      // Quad vertices (centered at origin for transformations)
+      // Quad vertices
       const halfW = cellWidth / 2;
       const halfH = cellHeight / 2;
       const cx = px + halfW;
@@ -313,6 +317,16 @@ export class WebGLASCIIRenderer {
       positions[vi + 5] = cy - halfH;
       positions[vi + 6] = cx - halfW;
       positions[vi + 7] = cy - halfH;
+
+      // Center position for each vertex (same for all 4 vertices of the quad)
+      centers[vi] = cx;
+      centers[vi + 1] = cy;
+      centers[vi + 2] = cx;
+      centers[vi + 3] = cy;
+      centers[vi + 4] = cx;
+      centers[vi + 5] = cy;
+      centers[vi + 6] = cx;
+      centers[vi + 7] = cy;
 
       // Texture coordinates
       texCoords[vi] = 0;
@@ -341,6 +355,9 @@ export class WebGLASCIIRenderer {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.texCoord);
     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.center);
+    gl.bufferData(gl.ARRAY_BUFFER, centers, gl.STATIC_DRAW);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
@@ -474,6 +491,11 @@ export class WebGLASCIIRenderer {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.offset);
     gl.enableVertexAttribArray(offsetLoc);
     gl.vertexAttribPointer(offsetLoc, 2, gl.FLOAT, false, 0, 0);
+
+    const centerLoc = gl.getAttribLocation(this.program, "aCenter");
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.center);
+    gl.enableVertexAttribArray(centerLoc);
+    gl.vertexAttribPointer(centerLoc, 2, gl.FLOAT, false, 0, 0);
 
     // Draw
     gl.clear(gl.COLOR_BUFFER_BIT);

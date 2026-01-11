@@ -2,7 +2,7 @@
  * DOM-based character grid renderer
  * General-purpose module for rendering colored character grids with transformations
  * Provides the same API as WebGLASCIIRenderer but uses DOM elements
- * No external dependencies
+ * Less performance compared to WebGL but provides all DOM element capabilities
  */
 
 export class DOMASCIIRenderer {
