@@ -64,13 +64,11 @@ export class WebGLASCIIRenderer {
     this.charWidth = Math.ceil(metrics.width);
     this.charHeight = Math.ceil(this.textureFontSize * 1.2);
 
-    // Calculate display dimensions
-    this.displayCharWidth = Math.ceil(
-      (this.charWidth * this.displayFontSize) / this.textureFontSize,
-    );
-    this.displayCharHeight = Math.ceil(
-      (this.charHeight * this.displayFontSize) / this.textureFontSize,
-    );
+    // Calculate display dimensions (no rounding to match DOM renderer)
+    this.displayCharWidth =
+      (this.charWidth * this.displayFontSize) / this.textureFontSize;
+    this.displayCharHeight =
+      (this.charHeight * this.displayFontSize) / this.textureFontSize;
 
     // Create WebGL canvas
     this.glCanvas = document.createElement("canvas");
