@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Ruel N. Alarcon</title>
+        <title>ruel@alarcon:~$</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
@@ -13,6 +13,17 @@
         <link rel="stylesheet" href="styles.css" />
     </head>
     <body>
+        <div class="crt-container">
+            <div class="crt-overlay"></div>
+            <div class="crt-scanlines"></div>
+            <div class="crt-flicker"></div>
+        </div>
+
+        <header class="terminal-header">
+            <span class="header-text">ruel@alarcon:~$</span>
+            <span class="header-time" id="header-time"></span>
+        </header>
+
         <div class="container">
             <div id="logo"></div>
             <div class="buttons" id="buttons">
@@ -44,6 +55,10 @@
                 >
             </div>
         </div>
+
+        <footer class="terminal-footer">
+            <span>uwu~</span>
+        </footer>
 
         <script type="module" src="index.js"></script>
     </body>
