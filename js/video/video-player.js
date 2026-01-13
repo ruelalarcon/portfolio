@@ -65,7 +65,7 @@ export class VideoPlayer {
   async _onVideoLoaded(playbarContainer) {
     const aspectRatio = this.video.videoWidth / this.video.videoHeight;
     this.videoWidth = 106;
-    this.videoHeight = 34;
+    this.videoHeight = 35;
     this.canvas.width = this.videoWidth;
     this.canvas.height = this.videoHeight;
 
@@ -84,6 +84,15 @@ export class VideoPlayer {
       enableTextSelection: true,
     });
     const { canvas } = await this.renderer.init(this.videoElement);
+
+    // Render initial frame with default character (first ASCII char) so canvas isn't black
+    const totalPixels = this.videoWidth * this.videoHeight;
+    const defaultChar = ASCII_CHARS[0];
+    const defaultColor = [0.5, 0.5, 0.5]; // Medium gray
+    this.renderer.render({
+      chars: new Array(totalPixels).fill(defaultChar),
+      colors: new Array(totalPixels).fill(defaultColor),
+    });
 
     // Handle fade-in animation
     canvas.style.opacity = "0";

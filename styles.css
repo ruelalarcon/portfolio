@@ -367,6 +367,13 @@ body {
     opacity: 1;
 }
 
+/* Video page button override - restore vertical layout */
+body:has(#video) .buttons {
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 3rem;
+}
+
 /* Playbar */
 #playbar {
     color: #fff;
