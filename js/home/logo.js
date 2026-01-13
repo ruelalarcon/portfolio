@@ -25,9 +25,8 @@ const ALL_CHARS = [...new Set(LOGO_ASCII + STATIC_CHARS + GLITCH_CHARS)].join(
 const DEFAULT_ANIMATION_DURATION = 2200;
 
 export class Logo {
-  constructor(containerElement, buttonContainer) {
+  constructor(containerElement) {
     this.containerElement = containerElement;
-    this.buttonContainer = buttonContainer;
 
     // Calculate grid dimensions
     this.gridWidth = LOGO_LINES[0].length;
@@ -43,6 +42,9 @@ export class Logo {
     this.characterSeeds = [];
     this.isAnimating = true;
     this.animationComplete = false;
+
+    // Callback for when animation finishes
+    this.onAnimationComplete = null;
 
     // Ripple effect state
     this.rippleState = {
@@ -207,8 +209,11 @@ export class Logo {
       if (rawProgress >= 1 && !this.animationComplete) {
         this.animationComplete = true;
         this.isAnimating = false;
-        this.buttonContainer.classList.add("show");
-        this.onComplete?.();
+
+        // Trigger callback if set
+        if (this.onAnimationComplete) {
+          this.onAnimationComplete();
+        }
       }
     } else {
       // Ripple effect phase - calculate all effects once and cache

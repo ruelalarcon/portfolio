@@ -228,24 +228,28 @@ body {
     text-align: center;
 }
 
-/* Buttons */
-.buttons {
+/* Content Container */
+.content {
     opacity: 0;
-    transition:
-        opacity 0.8s ease-out,
-        transform 0.4s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    align-items: center;
+    transition: opacity 0.8s ease-out;
 }
 
-.buttons.show {
+.content.show {
     opacity: 1;
 }
 
+/* Buttons */
+.buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
 .btn {
-    display: block;
+    display: inline-block;
     padding: 0.6rem 0;
     color: #555;
     text-decoration: none;
@@ -269,6 +273,31 @@ body {
 #video {
     margin-bottom: 3rem;
     cursor: text;
+}
+
+/* Description Text */
+.description {
+    transition: opacity 0.3s ease-out;
+    color: #666;
+    font-size: 14px;
+    font-family: "Cascadia Code", monospace;
+    margin-top: 0.5rem;
+    min-height: 2.5em;
+}
+
+.description .cursor {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    0%,
+    50% {
+        opacity: 1;
+    }
+    50.1%,
+    100% {
+        opacity: 0;
+    }
 }
 
 /* Video Button */

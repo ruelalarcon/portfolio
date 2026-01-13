@@ -27,20 +27,40 @@ const previousPage = NavigationTracker.init("home");
 
 // Setup button hover effects
 document.querySelectorAll(".btn").forEach((button) => {
-  button.addEventListener("mouseenter", () =>
-    TextMorph.morph(button, button.dataset.hover),
-  );
-  button.addEventListener("mouseleave", () =>
-    TextMorph.morph(button, button.dataset.default),
-  );
+  button.addEventListener("mouseenter", () => {
+    TextMorph.morph(button, button.dataset.hover);
+
+    // Update description text from button's data-description attribute
+    const descriptionElement = document.getElementById("description");
+    if (descriptionElement && button.dataset.description) {
+      descriptionElement.innerHTML =
+        button.dataset.description + '<span class="cursor">_</span>';
+    }
+  });
+
+  button.addEventListener("mouseleave", () => {
+    TextMorph.morph(button, button.dataset.default);
+
+    // Reset description text to default from description's data-default attribute
+    const descriptionElement = document.getElementById("description");
+    if (descriptionElement && descriptionElement.dataset.default) {
+      descriptionElement.innerHTML =
+        descriptionElement.dataset.default + '<span class="cursor">_</span>';
+    }
+  });
 });
 
 // Get DOM elements
 const logoElement = document.getElementById("logo");
-const buttonContainer = document.getElementById("buttons");
+const contentElement = document.getElementById("content");
 
 // Initialize logo (combines animation and ripple effects)
-const logo = new Logo(logoElement, buttonContainer);
+const logo = new Logo(logoElement);
+
+// Set up callback to reveal content when animation finishes
+logo.onAnimationComplete = () => {
+  contentElement.classList.add("show");
+};
 
 // Determine animation duration based on previous page
 const animationDuration =
