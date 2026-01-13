@@ -65,7 +65,7 @@ export class VideoPlayer {
   async _onVideoLoaded(playbarContainer) {
     const aspectRatio = this.video.videoWidth / this.video.videoHeight;
     this.videoWidth = 106;
-    this.videoHeight = ~~(this.videoWidth / aspectRatio / 2);
+    this.videoHeight = 34;
     this.canvas.width = this.videoWidth;
     this.canvas.height = this.videoHeight;
 

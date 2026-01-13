@@ -56,19 +56,28 @@ export class WebGLASCIIRenderer {
     // Wait for fonts to load
     await document.fonts.ready;
 
-    // Measure character dimensions
-    const measureCanvas = document.createElement("canvas");
-    const measureCtx = measureCanvas.getContext("2d");
-    measureCtx.font = `${this.textureFontSize}px ${this.font}`;
-    const metrics = measureCtx.measureText("@");
-    this.charWidth = Math.ceil(metrics.width);
-    this.charHeight = Math.ceil(this.textureFontSize * 1.2);
+    // Measure character dimensions using actual DOM rendering (same method as DOMASCIIRenderer)
+    // This ensures 1:1 sizing between both renderers
+    const measureSpan = document.createElement("span");
+    measureSpan.style.font = `${this.displayFontSize}px ${this.font}`;
+    measureSpan.style.lineHeight = "1";
+    measureSpan.style.position = "absolute";
+    measureSpan.style.visibility = "hidden";
+    measureSpan.textContent = "@";
+    document.body.appendChild(measureSpan);
 
-    // Calculate display dimensions (no rounding to match DOM renderer)
-    this.displayCharWidth =
-      (this.charWidth * this.displayFontSize) / this.textureFontSize;
-    this.displayCharHeight =
-      (this.charHeight * this.displayFontSize) / this.textureFontSize;
+    const rect = measureSpan.getBoundingClientRect();
+    this.displayCharWidth = rect.width;
+    this.displayCharHeight = rect.height;
+    document.body.removeChild(measureSpan);
+
+    // Calculate texture dimensions by scaling up from display dimensions
+    this.charWidth = Math.ceil(
+      (this.displayCharWidth * this.textureFontSize) / this.displayFontSize,
+    );
+    this.charHeight = Math.ceil(
+      (this.displayCharHeight * this.textureFontSize) / this.displayFontSize,
+    );
 
     // Create WebGL canvas
     this.glCanvas = document.createElement("canvas");

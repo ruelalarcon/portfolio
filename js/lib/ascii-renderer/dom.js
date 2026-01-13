@@ -42,6 +42,7 @@ export class DOMASCIIRenderer {
     // Measure character dimensions
     const measureSpan = document.createElement("span");
     measureSpan.style.font = `${this.displayFontSize}px ${this.font}`;
+    measureSpan.style.lineHeight = "1";
     measureSpan.style.position = "absolute";
     measureSpan.style.visibility = "hidden";
     measureSpan.textContent = "@";
