@@ -61,6 +61,15 @@ export class Logo {
       lastCleanupTime: 0,
     };
 
+    // Performance: Reuse arrays to avoid allocations
+    this.frameChars = new Array(this.totalCells);
+    this.frameColors = new Array(this.totalCells);
+    this.frameTransforms = new Array(this.totalCells);
+    this.effectsCache = new Array(this.totalCells);
+
+    // Performance: Pre-compute aspect ratio constant (characters are taller than wide)
+    this.aspectRatio = 2.2;
+
     this.onComplete = null;
   }
 
@@ -168,9 +177,9 @@ export class Logo {
   }
 
   _renderFrame(timestamp) {
-    const chars = new Array(this.totalCells);
-    const colors = new Array(this.totalCells);
-    const transforms = new Array(this.totalCells);
+    const chars = this.frameChars;
+    const colors = this.frameColors;
+    const transforms = this.frameTransforms;
 
     if (this.isAnimating) {
       // Animation phase: glitch reveal
@@ -202,7 +211,7 @@ export class Logo {
         this.onComplete?.();
       }
     } else {
-      // Ripple effect phase
+      // Ripple effect phase - calculate all effects once and cache
       let charIndex = 0;
       for (let y = 0; y < this.gridHeight; y++) {
         for (let x = 0; x < this.gridWidth; x++) {
@@ -213,6 +222,9 @@ export class Logo {
             originalChar,
             timestamp,
           );
+
+          // Cache effects for _applyGlowEffects
+          this.effectsCache[charIndex] = effects;
 
           chars[charIndex] = originalChar;
 
@@ -406,6 +418,11 @@ export class Logo {
   }
 
   _calculateRippleEffects(x, y, char, now) {
+    // Early exit for space characters (no effects needed)
+    if (char === " ") {
+      return { intensity: 0, blendedHue: 0, glowIntensity: 0, scale: 1 };
+    }
+
     let intensity = 0;
     let blendedHue = 0;
     let hueWeight = 0;
@@ -414,46 +431,31 @@ export class Logo {
 
     const noise = noiseFunction(x, y, this.rippleState.globalTime) * 0.5 + 0.5;
 
-    // Trail effects
-    for (const trail of this.rippleState.trails) {
-      const impact = this._calculateTrailImpact(x, y, trail, now);
-      intensity = Math.min(1, intensity + impact.intensity);
-      blendedHue += trail.hue * impact.intensity;
-      hueWeight += impact.intensity;
-      glowIntensity = Math.max(glowIntensity, impact.glow);
+    // Trail effects (only if trails exist)
+    if (this.rippleState.trails.length > 0) {
+      for (const trail of this.rippleState.trails) {
+        const impact = this._calculateTrailImpact(x, y, trail, now);
+        if (impact.intensity > 0) {
+          intensity = Math.min(1, intensity + impact.intensity);
+          blendedHue += trail.hue * impact.intensity;
+          hueWeight += impact.intensity;
+          glowIntensity = Math.max(glowIntensity, impact.glow);
+        }
+      }
     }
 
     // Hover effects
     if (this.rippleState.isHovering) {
       const impact = this._calculateHoverImpact(x, y);
-      intensity = Math.min(1, intensity + impact.intensity);
-      blendedHue +=
-        ((this.rippleState.globalTime * 80) % 360) * impact.intensity;
-      hueWeight += impact.intensity;
-      glowIntensity = Math.max(glowIntensity, impact.glow);
-    }
+      if (impact.intensity > 0) {
+        intensity = Math.min(1, intensity + impact.intensity);
+        blendedHue +=
+          ((this.rippleState.globalTime * 80) % 360) * impact.intensity;
+        hueWeight += impact.intensity;
+        glowIntensity = Math.max(glowIntensity, impact.glow);
+      }
 
-    // Ripple effects
-    for (const ripple of this.rippleState.ripples) {
-      const impact = this._calculateRippleImpact(x, y, ripple, now);
-      intensity = Math.min(1, intensity + impact.intensity);
-      blendedHue += impact.hue;
-      hueWeight += impact.weight;
-      glowIntensity = Math.max(glowIntensity, impact.glow);
-      scale = Math.max(scale, impact.scale);
-    }
-
-    // Spark effects
-    for (const spark of this.rippleState.sparks) {
-      const impact = this._calculateSparkImpact(x, y, spark, now);
-      intensity = Math.min(1, intensity + impact.intensity);
-      blendedHue += spark.hue * impact.intensity;
-      hueWeight += impact.intensity;
-      glowIntensity = Math.max(glowIntensity, impact.glow);
-    }
-
-    // Ambient noise when hovering
-    if (this.rippleState.isHovering && char !== " ") {
+      // Ambient noise when hovering
       intensity = Math.min(
         1,
         intensity +
@@ -464,6 +466,33 @@ export class Logo {
       );
     }
 
+    // Ripple effects (only if ripples exist)
+    if (this.rippleState.ripples.length > 0) {
+      for (const ripple of this.rippleState.ripples) {
+        const impact = this._calculateRippleImpact(x, y, ripple, now);
+        if (impact.intensity > 0) {
+          intensity = Math.min(1, intensity + impact.intensity);
+          blendedHue += impact.hue;
+          hueWeight += impact.weight;
+          glowIntensity = Math.max(glowIntensity, impact.glow);
+          scale = Math.max(scale, impact.scale);
+        }
+      }
+    }
+
+    // Spark effects (only if sparks exist)
+    if (this.rippleState.sparks.length > 0) {
+      for (const spark of this.rippleState.sparks) {
+        const impact = this._calculateSparkImpact(x, y, spark, now);
+        if (impact.intensity > 0) {
+          intensity = Math.min(1, intensity + impact.intensity);
+          blendedHue += spark.hue * impact.intensity;
+          hueWeight += impact.intensity;
+          glowIntensity = Math.max(glowIntensity, impact.glow);
+        }
+      }
+    }
+
     if (hueWeight > 0) blendedHue /= hueWeight;
     blendedHue = (blendedHue + this.rippleState.globalTime * 15) % 360;
 
@@ -472,39 +501,44 @@ export class Logo {
 
   _calculateTrailImpact(x, y, trail, now) {
     const dx = x - trail.x;
-    const dy = (y - trail.y) * 2.2;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    const age = (now - trail.time) / 400;
+    const dy = (y - trail.y) * this.aspectRatio;
+    const distanceSq = dx * dx + dy * dy;
 
-    if (distance < 3 && age < 1) {
-      const impactIntensity = (1 - distance / 3) * (1 - age) * 0.7;
-      return {
-        intensity: impactIntensity,
-        glow: impactIntensity * 0.5,
-      };
-    }
-    return { intensity: 0, glow: 0 };
+    // Early exit using squared distance (avoid sqrt)
+    if (distanceSq >= 9) return { intensity: 0, glow: 0 }; // 3^2 = 9
+
+    const age = (now - trail.time) / 400;
+    if (age >= 1) return { intensity: 0, glow: 0 };
+
+    const distance = Math.sqrt(distanceSq);
+    const impactIntensity = (1 - distance / 3) * (1 - age) * 0.7;
+    return {
+      intensity: impactIntensity,
+      glow: impactIntensity * 0.5,
+    };
   }
 
   _calculateHoverImpact(x, y) {
     const dx = x - this.rippleState.mouseX;
-    const dy = (y - this.rippleState.mouseY) * 2.2;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const dy = (y - this.rippleState.mouseY) * this.aspectRatio;
+    const distanceSq = dx * dx + dy * dy;
 
-    if (distance < 5) {
-      const impactIntensity = (1 - distance / 5) * 0.6;
-      return {
-        intensity: impactIntensity,
-        glow: impactIntensity * 0.7,
-      };
-    }
-    return { intensity: 0, glow: 0 };
+    // Early exit using squared distance (avoid sqrt)
+    if (distanceSq >= 25) return { intensity: 0, glow: 0 }; // 5^2 = 25
+
+    const distance = Math.sqrt(distanceSq);
+    const impactIntensity = (1 - distance / 5) * 0.6;
+    return {
+      intensity: impactIntensity,
+      glow: impactIntensity * 0.7,
+    };
   }
 
   _calculateRippleImpact(x, y, ripple, now) {
     const dx = x - ripple.x;
-    const dy = (y - ripple.y) * 2.2;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const dy = (y - ripple.y) * this.aspectRatio;
+    const distanceSq = dx * dx + dy * dy;
+    const distance = Math.sqrt(distanceSq);
     const age = Math.max(0, (now - ripple.time) / 1000);
 
     const ringCount = ripple.pattern === 0 ? 5 : ripple.pattern === 1 ? 3 : 4;
@@ -566,19 +600,22 @@ export class Logo {
 
   _calculateSparkImpact(x, y, spark, now) {
     const dx = x - spark.x;
-    const dy = (y - spark.y) * 2.2;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const dy = (y - spark.y) * this.aspectRatio;
+    const distanceSq = dx * dx + dy * dy;
+
+    // Early exit using squared distance (avoid sqrt)
+    if (distanceSq >= 9) return { intensity: 0, glow: 0 }; // 3^2 = 9
+
     const age = (now - spark.time) / 1000;
     const fade = Math.max(0, 1 - age / spark.lifetime);
+    if (fade <= 0) return { intensity: 0, glow: 0 };
 
-    if (distance < 3 && fade > 0) {
-      const impactIntensity = (1 - distance / 3) * fade;
-      return {
-        intensity: impactIntensity * 0.9,
-        glow: impactIntensity * 0.7,
-      };
-    }
-    return { intensity: 0, glow: 0 };
+    const distance = Math.sqrt(distanceSq);
+    const impactIntensity = (1 - distance / 3) * fade;
+    return {
+      intensity: impactIntensity * 0.9,
+      glow: impactIntensity * 0.7,
+    };
   }
 
   _applyGlowEffects(now) {
@@ -593,7 +630,15 @@ export class Logo {
     for (let y = 0; y < this.gridHeight; y++) {
       for (let x = 0; x < this.gridWidth; x++) {
         const originalChar = LOGO_LINES[y][x];
-        const effects = this._calculateRippleEffects(x, y, originalChar, now);
+        // Use cached effects from _renderFrame
+        const effects = this.effectsCache[charIndex];
+
+        // Skip if effects not yet calculated (during animation phase)
+        if (!effects) {
+          charIndex++;
+          continue;
+        }
+
         const element = charElements[charIndex];
 
         if (element && effects.intensity > 0.01 && originalChar !== " ") {

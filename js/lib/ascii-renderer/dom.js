@@ -168,22 +168,25 @@ export class DOMASCIIRenderer {
 
       // Only update if something changed
       if (charChanged || colorChanged || transformChanged) {
-        // Batch style updates using cssText for better performance
-        let cssText = `color: ${colorStr};`;
-
-        if (transformStr) {
-          cssText += ` transform: ${transformStr}; transform-origin: center center;`;
-        }
-
-        element.style.cssText = cssText;
-
+        // Update character first (cheapest operation)
         if (charChanged) {
           element.textContent = displayChar;
           this.charCache[i] = displayChar;
         }
 
-        this.colorCache[i] = colorStr;
-        this.transformCache[i] = transformStr;
+        // Update styles only if style properties changed
+        if (colorChanged || transformChanged) {
+          // Batch style updates using cssText for better performance
+          let cssText = `color: ${colorStr};`;
+
+          if (transformStr) {
+            cssText += ` transform: ${transformStr}; transform-origin: center center;`;
+          }
+
+          element.style.cssText = cssText;
+          this.colorCache[i] = colorStr;
+          this.transformCache[i] = transformStr;
+        }
       }
     }
   }
