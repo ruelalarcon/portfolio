@@ -20,7 +20,6 @@ export class DOMASCIIRenderer {
     this.charSet = options.charSet;
     this.font = options.font || "'Cascadia Code', monospace";
     this.displayFontSize = options.displayFontSize || 12;
-    this.backgroundColor = options.backgroundColor || null;
     this.enableTextSelection = options.enableTextSelection !== false;
 
     // DOM state
@@ -63,10 +62,6 @@ export class DOMASCIIRenderer {
     container.style.whiteSpace = "pre";
     container.style.userSelect = this.enableTextSelection ? "text" : "none";
     container.style.cursor = this.enableTextSelection ? "text" : "default";
-
-    if (this.backgroundColor) {
-      container.style.backgroundColor = this.backgroundColor;
-    }
 
     // Create character grid
     this._createCharElements();

@@ -19,7 +19,6 @@ export class WebGLASCIIRenderer {
     this.font = options.font || "'Cascadia Code', monospace";
     this.textureFontSize = options.textureFontSize || 48;
     this.displayFontSize = options.displayFontSize || 12;
-    this.backgroundColor = options.backgroundColor || null; // Auto-detect if null
     this.enableTextSelection = options.enableTextSelection !== false;
 
     // WebGL state
@@ -214,9 +213,8 @@ export class WebGLASCIIRenderer {
     // Setup buffers
     this._setupBuffers();
 
-    // Get background color
-    const bgColor =
-      this.backgroundColor || getComputedStyle(document.body).backgroundColor;
+    // Get background color from document body
+    const bgColor = getComputedStyle(document.body).backgroundColor;
     const rgb = bgColor.match(/\d+/g).map((n) => parseInt(n) / 255);
     gl.clearColor(rgb[0], rgb[1], rgb[2], 1.0);
     gl.enable(gl.BLEND);
@@ -248,9 +246,8 @@ export class WebGLASCIIRenderer {
     charCanvas.height = this.charHeight * atlasRows;
     const ctx = charCanvas.getContext("2d");
 
-    // Background
-    const bgColor =
-      this.backgroundColor || getComputedStyle(document.body).backgroundColor;
+    // Background from document body
+    const bgColor = getComputedStyle(document.body).backgroundColor;
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, charCanvas.width, charCanvas.height);
 
