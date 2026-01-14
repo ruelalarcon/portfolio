@@ -10,11 +10,9 @@ body {
     background: #0a0a0a;
     color: #fff;
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 /* CRT Container */
@@ -204,10 +202,55 @@ body {
     z-index: 100;
 }
 
+/* Section Layout */
+.section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    position: relative;
+}
+
+/* Hero Section - centered vertically like original */
+.hero-section {
+    padding-top: 2.5rem;
+    padding-bottom: 1.5rem;
+}
+
+/* Projects and About Sections */
+.projects-section,
+.about-section {
+    padding-top: 6rem;
+    padding-bottom: 4rem;
+}
+
 /* Container */
 .container {
     text-align: center;
-    padding: 2.5rem 2rem 1.5rem;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Section Titles */
+.section-title {
+    font-size: 18px;
+    color: #888;
+    margin-bottom: 3rem;
+    font-weight: normal;
+    font-family: "Cascadia Code", monospace;
+}
+
+/* Section Content */
+.section-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.placeholder-text {
+    color: #555;
+    font-size: 14px;
 }
 
 /* Logo */
