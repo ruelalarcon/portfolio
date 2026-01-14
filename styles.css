@@ -374,7 +374,7 @@ body {
     display: inline;
 }
 
-.hero__description-text.highlighted {
+.hero__description-text .highlighted {
     background: #444;
     color: #fff;
 }
