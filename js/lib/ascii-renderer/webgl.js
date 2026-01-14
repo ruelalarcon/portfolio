@@ -89,8 +89,14 @@ export class WebGLASCIIRenderer {
 
     // Setup container
     container.innerHTML = "";
-    container.style.position = "relative";
-    container.appendChild(this.glCanvas);
+
+    // Create wrapper for canvas + overlay positioning
+    const canvasWrapper = document.createElement("div");
+    canvasWrapper.style.position = "relative";
+    canvasWrapper.style.display = "inline-block";
+
+    canvasWrapper.appendChild(this.glCanvas);
+    container.appendChild(canvasWrapper);
 
     // Initialize WebGL
     this.gl = this.glCanvas.getContext("webgl", {
@@ -531,14 +537,15 @@ export class WebGLASCIIRenderer {
     this.selectionOverlay.style.height = this.glCanvas.style.height;
     this.selectionOverlay.style.pointerEvents = "none";
 
-    container.appendChild(this.selectionOverlay);
+    // Append to the canvas wrapper (parent of glCanvas)
+    this.glCanvas.parentElement.appendChild(this.selectionOverlay);
 
     this._setupSelectionHandlers();
   }
 
   _setupSelectionHandlers() {
     const getCharCoords = (clientX, clientY) => {
-      const rect = this.glCanvas.getBoundingClientRect();
+      const rect = this.selectionOverlay.getBoundingClientRect();
       const x = Math.floor((clientX - rect.left) / this.displayCharWidth);
       const y = Math.floor((clientY - rect.top) / this.displayCharHeight);
       return {
