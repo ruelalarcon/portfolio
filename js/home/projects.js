@@ -38,6 +38,7 @@ class Projects {
 
     this.projects = Array.from(articles).map((article) => {
       const pid = parseInt(article.dataset.pid) || 0;
+      const command = article.dataset.command || "";
       const name = article.querySelector("h3")?.textContent || "";
       const paragraphs = article.querySelectorAll("p");
       const description = paragraphs[0]?.textContent || "";
@@ -48,7 +49,7 @@ class Projects {
         url: link.href,
       }));
 
-      return { pid, name, description, tech, links };
+      return { pid, command, name, description, tech, links };
     });
 
     // Remove the data element from DOM
@@ -64,7 +65,7 @@ class Projects {
     const rows = this.projects
       .map(
         (project, index) =>
-          `<div class="process-item" data-index="${index}"><span class="process-col process-col--pid">${project.pid}</span><span class="process-col process-col--name">${project.name}</span></div>`,
+          `<div class="process-item" data-index="${index}"><span class="process-col process-col--pid">${project.pid}</span><span class="process-col process-col--name">${project.command}</span></div>`,
       )
       .join("");
 
