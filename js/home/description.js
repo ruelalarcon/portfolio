@@ -14,8 +14,10 @@ import { wait } from "../core/async.js";
 export class Description {
   constructor(descriptionElement) {
     this.element = descriptionElement;
-    this.textContent = descriptionElement.querySelector(".text-content");
-    this.cursor = descriptionElement.querySelector(".cursor");
+    this.textContent = descriptionElement.querySelector(
+      ".hero__description-text",
+    );
+    this.cursor = descriptionElement.querySelector(".terminal-cursor");
     this.currentAnimation = null;
     this.defaultText = descriptionElement.dataset.default || "";
 
@@ -128,8 +130,8 @@ export class Description {
     if (animation.cancel) return;
 
     // Switch to block mode cursor (normal mode) for editing
-    this.cursor.classList.remove("insert");
-    this.cursor.classList.add("block", "animating");
+    this.cursor.classList.remove("terminal-cursor--insert");
+    this.cursor.classList.add("terminal-cursor--block", "animating");
     this.cursor.textContent = "█";
     await wait(this.settings.pauseInNormalMode);
     if (animation.cancel) return;
@@ -156,8 +158,8 @@ export class Description {
     }
 
     // Switch to insert mode cursor immediately (like pressing 'c' to change)
-    this.cursor.classList.remove("block", "animating");
-    this.cursor.classList.add("insert");
+    this.cursor.classList.remove("terminal-cursor--block", "animating");
+    this.cursor.classList.add("terminal-cursor--insert");
     this.cursor.textContent = "";
     await wait(this.settings.pauseBeforeInsertMode);
     if (animation.cancel) return;
@@ -220,8 +222,8 @@ export class Description {
           if (animation.cancel) return;
 
           // Switch to block mode cursor (normal mode)
-          this.cursor.classList.remove("insert");
-          this.cursor.classList.add("block");
+          this.cursor.classList.remove("terminal-cursor--insert");
+          this.cursor.classList.add("terminal-cursor--block");
           this.cursor.textContent = "█";
           await wait(this.settings.pauseInNormalMode);
           if (animation.cancel) return;
@@ -259,8 +261,8 @@ export class Description {
           if (animation.cancel) return;
 
           // Switch back to insert mode for retyping
-          this.cursor.classList.remove("block");
-          this.cursor.classList.add("insert");
+          this.cursor.classList.remove("terminal-cursor--block");
+          this.cursor.classList.add("terminal-cursor--insert");
           this.cursor.textContent = "";
           await wait(this.settings.pauseBeforeInsertMode);
           if (animation.cancel) return;
@@ -328,8 +330,8 @@ export class Description {
     if (animation.cancel) return;
 
     // Switch back to block mode cursor
-    this.cursor.classList.remove("insert", "animating");
-    this.cursor.classList.add("block");
+    this.cursor.classList.remove("terminal-cursor--insert", "animating");
+    this.cursor.classList.add("terminal-cursor--block");
     this.cursor.textContent = "█";
 
     this.currentAnimation = null;

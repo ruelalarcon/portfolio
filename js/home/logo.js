@@ -301,36 +301,35 @@ export class Logo {
   }
 
   _updateMousePosition() {
-    const rect = this.containerElement.getBoundingClientRect();
-    const charWidth = rect.width / this.gridWidth;
-    const charHeight = rect.height / this.gridHeight;
+    // Get the actual position of the first character to determine grid offset
+    // This accounts for text-align: center which creates horizontal padding
+    const firstCharElement = this.renderer.charElements?.[0];
+    if (!firstCharElement) return;
 
+    const firstCharRect = firstCharElement.getBoundingClientRect();
+    const charWidth = firstCharRect.width;
+    const charHeight = firstCharRect.height;
+    const gridLeft = firstCharRect.left;
+    const gridTop = firstCharRect.top;
+
+    // Calculate mouse position relative to the actual character grid
     this.rippleState.mouseX =
-      (this.rippleState.globalMouseX - rect.left) / charWidth;
+      (this.rippleState.globalMouseX - gridLeft) / charWidth;
     this.rippleState.mouseY =
-      (this.rippleState.globalMouseY - rect.top) / charHeight;
+      (this.rippleState.globalMouseY - gridTop) / charHeight;
 
-    // Check if hovering over the logo AND over a non-space character
-    const isOverLogo =
-      this.rippleState.globalMouseX >= rect.left &&
-      this.rippleState.globalMouseX <= rect.right &&
-      this.rippleState.globalMouseY >= rect.top &&
-      this.rippleState.globalMouseY <= rect.bottom;
+    // Check if hovering over a valid character position
+    const charX = Math.floor(this.rippleState.mouseX);
+    const charY = Math.floor(this.rippleState.mouseY);
 
-    if (isOverLogo) {
-      const charX = Math.floor(this.rippleState.mouseX);
-      const charY = Math.floor(this.rippleState.mouseY);
-      if (
-        charY >= 0 &&
-        charY < LOGO_LINES.length &&
-        charX >= 0 &&
-        charX < LOGO_LINES[charY].length
-      ) {
-        const hoveredChar = LOGO_LINES[charY][charX];
-        this.rippleState.isHovering = hoveredChar !== " ";
-      } else {
-        this.rippleState.isHovering = false;
-      }
+    if (
+      charY >= 0 &&
+      charY < LOGO_LINES.length &&
+      charX >= 0 &&
+      charX < LOGO_LINES[charY].length
+    ) {
+      const hoveredChar = LOGO_LINES[charY][charX];
+      this.rippleState.isHovering = hoveredChar !== " ";
     } else {
       this.rippleState.isHovering = false;
     }

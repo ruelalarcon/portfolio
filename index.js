@@ -13,7 +13,7 @@ function updateTime() {
     minute: "2-digit",
     second: "2-digit",
   });
-  const timeElement = document.getElementById("header-time");
+  const timeElement = document.getElementById("terminalTime");
   if (timeElement) {
     timeElement.textContent = `[${timeString}]`;
   }
@@ -27,7 +27,7 @@ setInterval(updateTime, 1000);
 const previousPage = NavigationTracker.init("home");
 
 // Initialize description animation system
-const descriptionElement = document.getElementById("description");
+const descriptionElement = document.getElementById("heroDescription");
 const description = new Description(descriptionElement);
 
 // Button hover state
@@ -35,7 +35,7 @@ let currentHoveredButton = null;
 let logoAnimationComplete = false;
 
 // Setup button hover effects
-document.querySelectorAll(".btn").forEach((button) => {
+document.querySelectorAll(".nav-link").forEach((button) => {
   button.addEventListener("mouseenter", () => {
     // Don't do anything if logo animation hasn't completed yet
     if (!logoAnimationComplete) return;
@@ -64,8 +64,8 @@ document.querySelectorAll(".btn").forEach((button) => {
 });
 
 // Get DOM elements
-const logoElement = document.getElementById("logo");
-const contentElement = document.getElementById("content");
+const logoElement = document.getElementById("heroLogo");
+const contentElement = document.getElementById("heroContent");
 
 // Initialize logo (combines animation and ripple effects)
 const logo = new Logo(logoElement);

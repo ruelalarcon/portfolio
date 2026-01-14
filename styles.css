@@ -15,8 +15,11 @@ body {
     overflow-y: auto;
 }
 
-/* CRT Container */
-.crt-container {
+/* =============================================
+   CRT Effect
+   ============================================= */
+
+.crt-effect {
     position: fixed;
     top: 0;
     left: 0;
@@ -27,8 +30,7 @@ body {
     overflow: hidden;
 }
 
-/* CRT Overlay - vignette and green tint */
-.crt-overlay {
+.crt-effect__overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -50,8 +52,7 @@ body {
         );
 }
 
-/* CRT Scanlines - static pattern with moving single line */
-.crt-scanlines {
+.crt-effect__scanlines {
     position: absolute;
     top: 0;
     left: 0;
@@ -67,7 +68,7 @@ body {
     animation: scanline-move 10s linear infinite;
 }
 
-.crt-scanlines::before {
+.crt-effect__scanlines::before {
     content: "";
     position: absolute;
     top: 0;
@@ -109,8 +110,7 @@ body {
     }
 }
 
-/* CRT Flicker */
-.crt-flicker {
+.crt-effect__flicker {
     position: absolute;
     top: 0;
     left: 0;
@@ -154,7 +154,10 @@ body {
     }
 }
 
-/* Terminal Header */
+/* =============================================
+   Terminal Header
+   ============================================= */
+
 .terminal-header {
     position: fixed;
     top: 0;
@@ -175,15 +178,18 @@ body {
     backdrop-filter: blur(4px);
 }
 
-.header-text {
+.terminal-header__prompt {
     color: #666;
 }
 
-.header-time {
+.terminal-header__time {
     color: #888;
 }
 
-/* Terminal Footer */
+/* =============================================
+   Terminal Footer
+   ============================================= */
+
 .terminal-footer {
     position: fixed;
     bottom: 0;
@@ -202,39 +208,35 @@ body {
     z-index: 100;
 }
 
-/* Section Layout */
+/* =============================================
+   Main Layout
+   ============================================= */
+
+.site-main {
+    position: relative;
+}
+
+/* =============================================
+   Section Base Styles
+   ============================================= */
+
 .section {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 4rem 2rem;
+    padding: 6rem 2rem 4rem;
     position: relative;
 }
 
-/* Hero Section - centered vertically like original */
-.hero-section {
-    padding-top: 2.5rem;
-    padding-bottom: 1.5rem;
-}
-
-/* Projects and About Sections */
-.projects-section,
-.about-section {
-    padding-top: 6rem;
-    padding-bottom: 4rem;
-}
-
-/* Container */
-.container {
+.section__container {
     text-align: center;
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-/* Section Titles */
-.section-title {
+.section__title {
     font-size: 18px;
     color: #888;
     margin-bottom: 3rem;
@@ -242,19 +244,35 @@ body {
     font-family: "Cascadia Code", monospace;
 }
 
-/* Section Content */
-.section-content {
+.section__content {
     max-width: 800px;
     margin: 0 auto;
 }
 
-.placeholder-text {
+.placeholder {
     color: #555;
     font-size: 14px;
 }
 
-/* Logo */
-#logo {
+/* =============================================
+   Hero Section
+   ============================================= */
+
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 2rem 1.5rem;
+    position: relative;
+}
+
+.hero__container {
+    text-align: center;
+    width: 100%;
+}
+
+.hero__logo {
     color: #fff;
     font-size: 12px;
     line-height: 1.15;
@@ -265,24 +283,22 @@ body {
     font-family: "Cascadia Code", monospace;
 }
 
-#logo .char {
+.hero__logo .char {
     display: inline-block;
     width: 1ch;
     text-align: center;
 }
 
-/* Content Container */
-.content {
+.hero__content {
     opacity: 0;
     transition: opacity 0.8s ease-out;
 }
 
-.content.show {
+.hero__content.show {
     opacity: 1;
 }
 
-/* Buttons */
-.buttons {
+.hero__nav {
     display: flex;
     flex-direction: row;
     gap: 1.5rem;
@@ -291,7 +307,7 @@ body {
     margin-bottom: 2rem;
 }
 
-.btn {
+.nav-link {
     display: inline-block;
     padding: 0.6rem 0;
     color: #555;
@@ -303,23 +319,40 @@ body {
     font-family: "Cascadia Code", monospace;
 }
 
-.btn:hover {
+.nav-link:hover {
     color: #fff;
 }
 
-.btn.disabled {
+.nav-link.disabled {
     opacity: 0.3;
     pointer-events: none;
     color: #333;
 }
 
-#video {
-    margin-bottom: 3rem;
-    cursor: text;
+.nav-link--secret {
+    color: #333;
+    opacity: 0.4;
+    transition:
+        color 0.3s,
+        opacity 0.3s;
 }
 
-/* Description Text */
-.description {
+.nav-link--secret:hover {
+    color: #555;
+    opacity: 0.7;
+}
+
+.nav-link--secret.revealed {
+    color: #555;
+    opacity: 1;
+}
+
+.nav-link--secret.revealed:hover {
+    color: #fff;
+    opacity: 1;
+}
+
+.hero__description {
     color: #666;
     font-size: 0;
     font-family: "Cascadia Code", monospace;
@@ -332,25 +365,38 @@ body {
     overflow: visible;
 }
 
-.description .text-content,
-.description .cursor {
+.hero__description-text,
+.terminal-cursor {
     font-size: 14px;
 }
 
-.description .cursor {
+.hero__description-text {
+    display: inline;
+}
+
+.hero__description-text.highlighted {
+    background: #444;
+    color: #fff;
+}
+
+/* =============================================
+   Terminal Cursor
+   ============================================= */
+
+.terminal-cursor {
     animation: blink 1s step-end infinite;
     display: inline-block;
     vertical-align: baseline;
 }
 
-.description .cursor.block {
+.terminal-cursor--block {
     background: #666;
     color: #666;
     padding: 0;
     margin: 0;
 }
 
-.description .cursor.insert {
+.terminal-cursor--insert {
     background: transparent;
     color: transparent;
     border-left: 3px solid #666;
@@ -362,17 +408,8 @@ body {
     vertical-align: bottom;
 }
 
-.description .cursor.animating {
+.terminal-cursor.animating {
     animation: none;
-}
-
-.description .text-content {
-    display: inline;
-}
-
-.description .highlighted {
-    background: #444;
-    color: #fff;
 }
 
 @keyframes blink {
@@ -386,38 +423,21 @@ body {
     }
 }
 
-/* Video Button */
-#videoBtn {
-    color: #333;
-    opacity: 0.4;
-    transition:
-        color 0.3s,
-        opacity 0.3s;
+/* =============================================
+   Video Page Specific Styles
+   ============================================= */
+
+#video {
+    margin-bottom: 3rem;
+    cursor: text;
 }
 
-#videoBtn:hover {
-    color: #555;
-    opacity: 0.7;
-}
-
-#videoBtn.revealed {
-    color: #555;
-    opacity: 1;
-}
-
-#videoBtn.revealed:hover {
-    color: #fff;
-    opacity: 1;
-}
-
-/* Video page button override - restore vertical layout */
-body:has(#video) .buttons {
+body:has(#video) .hero__nav {
     flex-direction: column;
     gap: 0.8rem;
     margin-bottom: 3rem;
 }
 
-/* Playbar */
 #playbar {
     color: #fff;
     font-family: "Cascadia Code", monospace;

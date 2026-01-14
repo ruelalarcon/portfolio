@@ -13,114 +13,120 @@
         <link rel="stylesheet" href="styles.css" />
     </head>
     <body>
-        <div class="crt-container">
-            <div class="crt-overlay"></div>
-            <div class="crt-scanlines"></div>
-            <div class="crt-flicker"></div>
+        <!-- CRT Effect Overlay -->
+        <div class="crt-effect">
+            <div class="crt-effect__overlay"></div>
+            <div class="crt-effect__scanlines"></div>
+            <div class="crt-effect__flicker"></div>
         </div>
 
+        <!-- Terminal Header -->
         <header class="terminal-header">
-            <span class="header-text">ruel@alarcon:~$</span>
-            <span class="header-time" id="header-time"></span>
+            <span class="terminal-header__prompt">ruel@alarcon:~$</span>
+            <time class="terminal-header__time" id="terminalTime"></time>
         </header>
 
-        <!-- Hero Section -->
-        <section id="hero" class="section hero-section">
-            <div class="container">
-                <div id="logo"></div>
-                <div class="content" id="content">
-                    <div class="buttons" id="buttons">
-                        <a
-                            href="https://github.com/ruelalarcon"
-                            class="btn"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            data-default="[ github ]"
-                            data-hover="[ github/ruelalarcon ]"
-                            data-description="This is my primary github. You can find my open source projects here."
-                            >[ github ]</a
+        <!-- Main Content -->
+        <main class="site-main">
+            <!-- Hero Section -->
+            <section class="hero" id="hero">
+                <div class="hero__container">
+                    <div class="hero__logo" id="heroLogo"></div>
+                    <div class="hero__content" id="heroContent">
+                        <nav class="hero__nav">
+                            <a
+                                href="https://github.com/ruelalarcon"
+                                class="nav-link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                data-default="[ github ]"
+                                data-hover="[ github/ruelalarcon ]"
+                                data-description="This is my primary github. You can find my open source projects here."
+                                >[ github ]</a
+                            >
+                            <a
+                                href="https://github.com/riptxde"
+                                class="nav-link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                data-default="[ alt ]"
+                                data-hover="[ github/riptxde ]"
+                                data-description="This is my secondary github, where I go by my alias 'riptxde'. Those who know me as riptxde usually don't know my real name, but you can verify my identity regardless by matching the SHA256 hash of 'ruelalarcon' to my profile description."
+                                >[ alt ]</a
+                            >
+                            <a
+                                href="https://www.linkedin.com/in/ruelnalarcon/"
+                                class="nav-link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                data-default="[ linkedin ]"
+                                data-hover="[ linkedin/ruelnalarcon ]"
+                                data-description="My professional profile. Feel free to connect with me and check out my very occasional posts."
+                                >[ linkedin ]</a
+                            >
+                            <a
+                                href="https://riptxde.itch.io/"
+                                class="nav-link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                data-default="[ itch.io ]"
+                                data-hover="[ riptxde.itch.io ]"
+                                data-description="My game development portfolio, where you can find a few games I've created with my groupmates for University and for Game Jams."
+                                >[ itch.io ]</a
+                            >
+                            <a
+                                href="mailto:ruel.alarcon@usask.ca"
+                                class="nav-link"
+                                data-default="[ email ]"
+                                data-hover="[ ruel.alarcon@usask.ca ]"
+                                data-description="Send me an email. I'm sure I'd love to hear from you."
+                                >[ email ]</a
+                            >
+                            <a
+                                href="video"
+                                class="nav-link nav-link--secret"
+                                id="secretLink"
+                                data-default="[ . ]"
+                                data-hover="[ ? ]"
+                                data-description="What's this?"
+                                >[ . ]</a
+                            >
+                        </nav>
+                        <div
+                            class="hero__description"
+                            id="heroDescription"
+                            data-default="Hiya there~! Try hovering over the buttons above."
                         >
-                        <a
-                            href="https://github.com/riptxde"
-                            class="btn"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            data-default="[ alt ]"
-                            data-hover="[ github/riptxde ]"
-                            data-description="This is my secondary github, where I go by my alias 'riptxde'. Those who know me as riptxde usually don't know my real name, but you can verify my identity regardless by matching the SHA256 hash of 'ruelalarcon' to my profile description."
-                            >[ alt ]</a
-                        >
-                        <a
-                            href="https://www.linkedin.com/in/ruelnalarcon/"
-                            class="btn"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            data-default="[ linkedin ]"
-                            data-hover="[ linkedin/ruelnalarcon ]"
-                            data-description="My professional profile. Feel free to connect with me and check out my very occasional posts."
-                            >[ linkedin ]</a
-                        >
-                        <a
-                            href="https://riptxde.itch.io/"
-                            class="btn"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            data-default="[ itch.io ]"
-                            data-hover="[ riptxde.itch.io ]"
-                            data-description="My game development portfolio, where you can find a few games I've created with my groupmates for University and for Game Jams."
-                            >[ itch.io ]</a
-                        >
-                        <a
-                            href="mailto:ruel.alarcon@usask.ca"
-                            class="btn"
-                            data-default="[ email ]"
-                            data-hover="[ ruel.alarcon@usask.ca ]"
-                            data-description="Send me an email. I'm sure I'd love to hear from you."
-                            >[ email ]</a
-                        >
-                        <a
-                            href="video"
-                            class="btn"
-                            id="videoBtn"
-                            data-default="[ . ]"
-                            data-hover="[ ? ]"
-                            data-description="What's this?"
-                            >[ . ]</a
-                        >
+                            <span class="hero__description-text"
+                                >Hiya there~! Try hovering over the buttons above.</span
+                            ><span class="terminal-cursor terminal-cursor--block">█</span>
+                        </div>
                     </div>
-                    <div
-                        class="description"
-                        id="description"
-                        data-default="Hiya there~! Try hovering over the buttons above."
-                    >
-                        <span class="text-content">Hiya there~! Try hovering over the buttons above.</span><span class="cursor block">█</span>
+                </div>
+            </section>
+
+            <!-- Projects Section -->
+            <section class="section projects" id="projects">
+                <div class="section__container">
+                    <h2 class="section__title">[ projects ]</h2>
+                    <div class="section__content">
+                        <p class="placeholder">Projects coming soon...</p>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Projects Section -->
-        <section id="projects" class="section projects-section">
-            <div class="container">
-                <h2 class="section-title">[ projects ]</h2>
-                <div class="section-content">
-                    <!-- Project content will go here -->
-                    <p class="placeholder-text">Projects coming soon...</p>
+            <!-- About Section -->
+            <section class="section about" id="about">
+                <div class="section__container">
+                    <h2 class="section__title">[ about me ]</h2>
+                    <div class="section__content">
+                        <p class="placeholder">About me coming soon...</p>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </main>
 
-        <!-- About Me Section -->
-        <section id="about" class="section about-section">
-            <div class="container">
-                <h2 class="section-title">[ about me ]</h2>
-                <div class="section-content">
-                    <!-- About content will go here -->
-                    <p class="placeholder-text">About me coming soon...</p>
-                </div>
-            </div>
-        </section>
-
+        <!-- Terminal Footer -->
         <footer class="terminal-footer">
             <span>uwu~</span>
         </footer>
