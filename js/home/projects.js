@@ -4,6 +4,30 @@
  * Parses project data from HTML for SEO, then removes the hidden data element
  */
 
+// GitHub language colors mapping
+const LANGUAGE_COLORS = {
+  JavaScript: "#f1e05a",
+  TypeScript: "#3178c6",
+  Python: "#3572a5",
+  C: "#555555",
+  "C++": "#f34b7d",
+  "C#": "#178600",
+  Rust: "#dea584",
+  Go: "#00add8",
+  Java: "#b07219",
+  Ruby: "#701516",
+  PHP: "#4f5d95",
+  Swift: "#f05138",
+  Kotlin: "#a97bff",
+  GDScript: "#355570",
+  HTML: "#e34c26",
+  CSS: "#563d7c",
+  Shell: "#89e051",
+  Svelte: "#ff3e00",
+  React: "#61dafb",
+  Specification: "#888888",
+};
+
 class Projects {
   constructor() {
     this.projects = [];
@@ -39,6 +63,7 @@ class Projects {
     this.projects = Array.from(articles).map((article) => {
       const pid = parseInt(article.dataset.pid) || 0;
       const command = article.dataset.command || "";
+      const language = article.dataset.language || "";
       const name = article.querySelector("h3")?.textContent || "";
       const paragraphs = article.querySelectorAll("p");
       const description = paragraphs[0]?.textContent || "";
@@ -49,7 +74,7 @@ class Projects {
         url: link.href,
       }));
 
-      return { pid, command, name, description, tech, links };
+      return { pid, command, language, name, description, tech, links };
     });
 
     // Remove the data element from DOM
@@ -60,13 +85,13 @@ class Projects {
    * Render the process list with header and project rows
    */
   _renderProcessList() {
-    const header = `<div class="process-header"><span class="process-col process-col--pid">PID</span><span class="process-col process-col--name">Command</span></div>`;
+    const header = `<div class="process-header"><span class="process-col process-col--pid">PID</span><span class="process-col process-col--language">LANG</span><span class="process-col process-col--name">COMMAND</span></div>`;
 
     const rows = this.projects
-      .map(
-        (project, index) =>
-          `<div class="process-item" data-index="${index}"><span class="process-col process-col--pid">${project.pid}</span><span class="process-col process-col--name">${project.command}</span></div>`,
-      )
+      .map((project, index) => {
+        const color = LANGUAGE_COLORS[project.language] || "#666";
+        return `<div class="process-item" data-index="${index}"><span class="process-col process-col--pid">${project.pid}</span><span class="process-col process-col--language" style="color: ${color}">${project.language}</span><span class="process-col process-col--name">${project.command}</span></div>`;
+      })
       .join("");
 
     this.listElement.innerHTML = header + rows;

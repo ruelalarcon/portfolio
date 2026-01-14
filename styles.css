@@ -438,7 +438,7 @@ body {
 
 .projects__layout {
     display: grid;
-    grid-template-columns: 350px 1fr;
+    grid-template-columns: auto 1fr;
     gap: 16px;
     max-width: 1400px;
     margin: 0 auto;
@@ -517,7 +517,7 @@ body {
 /* Process List Header */
 .process-header {
     display: grid;
-    grid-template-columns: 80px 1fr;
+    grid-template-columns: 80px 120px 1fr;
     padding: 5px 13px;
     color: #888;
     font-weight: bold;
@@ -528,7 +528,7 @@ body {
 /* Process List Items */
 .process-item {
     display: grid;
-    grid-template-columns: 80px 1fr;
+    grid-template-columns: 80px 120px 1fr;
     padding: 2px 13px;
     cursor: pointer;
     color: #666;
@@ -558,6 +558,10 @@ body {
 }
 
 .process-col--pid {
+    text-align: left;
+}
+
+.process-col--language {
     text-align: left;
 }
 
