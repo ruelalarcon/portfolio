@@ -237,7 +237,7 @@ body {
 }
 
 .section__title {
-    font-size: 18px;
+    font-size: 20px;
     color: #888;
     margin-bottom: 3rem;
     font-weight: normal;
@@ -421,6 +421,152 @@ body {
     100% {
         opacity: 0;
     }
+}
+
+/* =============================================
+   Projects Section TUI Styles
+   ============================================= */
+
+.projects__layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.projects__processes {
+    min-height: 500px;
+}
+
+.projects__details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* TUI Pane Styles */
+.tui-pane {
+    font-family: "Cascadia Code", monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    border: 1px solid #555;
+    position: relative;
+}
+
+.tui-pane__border-top {
+    position: relative;
+    height: 0;
+}
+
+.tui-pane__border-bottom {
+    display: none;
+}
+
+.tui-pane__title {
+    color: #888;
+    padding: 0 0.5ch;
+    position: absolute;
+    left: 1ch;
+    top: -0.7em;
+    background: #0a0a0a;
+    font-size: 14px;
+    z-index: 1;
+}
+
+.tui-pane__content {
+    color: #888;
+    padding: 0.8rem;
+    min-height: 60px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    text-align: left;
+}
+
+.tui-pane__content--small {
+    min-height: 40px;
+}
+
+.tui-pane__content--medium {
+    min-height: 120px;
+}
+
+.projects__details .tui-pane__content {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.tui-pane__placeholder {
+    color: #444;
+    font-style: italic;
+    display: inline-block;
+    text-align: left;
+}
+
+/* Process List Header */
+.process-header {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    padding: 0.3rem 0.8rem;
+    color: #888;
+    font-weight: bold;
+    user-select: none;
+    font-family: "Cascadia Code", monospace;
+}
+
+/* Process List Items */
+.process-item {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    padding: 0.15rem 0.8rem;
+    cursor: pointer;
+    color: #666;
+    transition:
+        background-color 0.15s,
+        color 0.15s;
+    user-select: none;
+    font-family: "Cascadia Code", monospace;
+    line-height: 1.6;
+}
+
+.process-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #888;
+}
+
+.process-item.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+/* Process columns */
+.process-col {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.process-col--pid {
+    text-align: left;
+}
+
+.process-col--name {
+    text-align: left;
+}
+
+/* Project Links */
+.project-link {
+    display: block;
+    color: #666;
+    text-decoration: none;
+    transition: color 0.15s;
+    padding: 0.2rem 0;
+}
+
+.project-link:hover {
+    color: #fff;
 }
 
 /* =============================================

@@ -2,6 +2,7 @@ import { TextMorph } from "./js/lib/text-morph.js";
 import { Logo } from "./js/home/logo.js";
 import { NavigationTracker } from "./js/core/navigation.js";
 import { Description } from "./js/home/description.js";
+import { Projects } from "./js/home/projects.js";
 
 // Update header time
 function updateTime() {
@@ -82,3 +83,7 @@ const animationDuration =
 
 // Start logo
 logo.init(animationDuration);
+
+// Initialize projects section
+const projects = new Projects();
+projects.init();

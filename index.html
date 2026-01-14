@@ -108,9 +108,98 @@
             <!-- Projects Section -->
             <section class="section projects" id="projects">
                 <div class="section__container">
-                    <h2 class="section__title">[ projects ]</h2>
-                    <div class="section__content">
-                        <p class="placeholder">Projects coming soon...</p>
+                    <h2 class="section__title">$ myprojects</h2>
+                    
+                    <!-- Project data for SEO - parsed by JS then removed -->
+                    <div id="projectsData" style="display: none">
+                        <article data-pid="12847">
+                            <h3>ASCII Portfolio</h3>
+                            <p>A minimal portfolio website featuring ASCII art, WebGL-powered video player, and terminal-style UI. Built with vanilla JavaScript ES6 modules, no build system or dependencies.</p>
+                            <p data-tech>JavaScript (ES6), WebGL, HTML5 Canvas</p>
+                            <a href="https://github.com/ruelalarcon/portfolio" rel="noopener noreferrer">GitHub</a>
+                        </article>
+                        
+                        <article data-pid="15203">
+                            <h3>Neural Network Library</h3>
+                            <p>A lightweight neural network framework built from scratch in Python. Implements backpropagation, various activation functions, and supports custom layer architectures.</p>
+                            <p data-tech>Python, NumPy, Matplotlib</p>
+                            <a href="https://github.com/ruelalarcon/neural-net" rel="noopener noreferrer">GitHub</a>
+                        </article>
+                        
+                        <article data-pid="18492">
+                            <h3>Distributed Chat System</h3>
+                            <p>Real-time chat application using WebSocket protocol with distributed message queue architecture. Supports multiple chat rooms, user authentication, and message persistence.</p>
+                            <p data-tech>Node.js, WebSocket, Redis, PostgreSQL</p>
+                            <a href="https://github.com/ruelalarcon/chat-system" rel="noopener noreferrer">GitHub</a>
+                            <a href="https://chat-demo.example.com" rel="noopener noreferrer">Demo</a>
+                        </article>
+                        
+                        <article data-pid="19284">
+                            <h3>Game Engine</h3>
+                            <p>2D game engine with entity-component system, physics simulation, and sprite rendering. Features include collision detection, particle systems, and tilemap support.</p>
+                            <p data-tech>C++, SDL2, OpenGL</p>
+                            <a href="https://github.com/riptxde/game-engine" rel="noopener noreferrer">GitHub</a>
+                        </article>
+                    </div>
+                    
+                    <div class="projects__layout">
+                        <!-- Left pane: Process list -->
+                        <div class="projects__processes">
+                            <div class="tui-pane">
+                                <div class="tui-pane__border-top">
+                                    <span class="tui-pane__title">Processes</span>
+                                </div>
+                                <div class="tui-pane__content" id="projectsList"></div>
+                                <div class="tui-pane__border-bottom"></div>
+                            </div>
+                        </div>
+
+                        <!-- Right panes: Details -->
+                        <div class="projects__details">
+                            <!-- Name pane -->
+                            <div class="tui-pane">
+                                <div class="tui-pane__border-top">
+                                    <span class="tui-pane__title">Name</span>
+                                </div>
+                                <div class="tui-pane__content tui-pane__content--small" id="projectName">
+                                    <span class="tui-pane__placeholder">Select a project</span>
+                                </div>
+                                <div class="tui-pane__border-bottom"></div>
+                            </div>
+
+                            <!-- Description pane -->
+                            <div class="tui-pane">
+                                <div class="tui-pane__border-top">
+                                    <span class="tui-pane__title">Description</span>
+                                </div>
+                                <div class="tui-pane__content tui-pane__content--medium" id="projectDescription">
+                                    <span class="tui-pane__placeholder">Select a project</span>
+                                </div>
+                                <div class="tui-pane__border-bottom"></div>
+                            </div>
+
+                            <!-- Tech Stack pane -->
+                            <div class="tui-pane">
+                                <div class="tui-pane__border-top">
+                                    <span class="tui-pane__title">Tech Stack</span>
+                                </div>
+                                <div class="tui-pane__content tui-pane__content--small" id="projectTech">
+                                    <span class="tui-pane__placeholder">Select a project</span>
+                                </div>
+                                <div class="tui-pane__border-bottom"></div>
+                            </div>
+
+                            <!-- Links pane -->
+                            <div class="tui-pane">
+                                <div class="tui-pane__border-top">
+                                    <span class="tui-pane__title">Links</span>
+                                </div>
+                                <div class="tui-pane__content tui-pane__content--small" id="projectLinks">
+                                    <span class="tui-pane__placeholder">Select a project</span>
+                                </div>
+                                <div class="tui-pane__border-bottom"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
