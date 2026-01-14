@@ -25,7 +25,7 @@ const LANGUAGE_COLORS = {
   Shell: "#89e051",
   Svelte: "#ff3e00",
   React: "#61dafb",
-  Specification: "#888888",
+  Text: "#888888",
 };
 
 class Projects {
