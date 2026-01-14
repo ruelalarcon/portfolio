@@ -53,6 +53,7 @@ class Projects {
 
   /**
    * Parse project data from hidden HTML element and remove it
+   * Automatically generates random PIDs for each project
    */
   _parseProjectsFromHTML() {
     const dataElement = document.getElementById("projectsData");
@@ -60,8 +61,14 @@ class Projects {
 
     const articles = dataElement.querySelectorAll("article");
 
+    // Generate random starting PID (10000-50000 range for realistic process IDs)
+    let currentPid = Math.floor(Math.random() * 40000) + 10000;
+
     this.projects = Array.from(articles).map((article) => {
-      const pid = parseInt(article.dataset.pid) || 0;
+      // Use current PID and increment by random amount (50-500) for next one
+      const pid = currentPid;
+      currentPid += Math.floor(Math.random() * 450) + 50;
+
       const command = article.dataset.command || "";
       const language = article.dataset.language || "";
       const name = article.querySelector("h3")?.textContent || "";
