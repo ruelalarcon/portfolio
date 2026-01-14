@@ -65,8 +65,13 @@ class Projects {
       const command = article.dataset.command || "";
       const language = article.dataset.language || "";
       const name = article.querySelector("h3")?.textContent || "";
-      const paragraphs = article.querySelectorAll("p");
-      const description = paragraphs[0]?.textContent || "";
+
+      // Check for rich HTML description container, fallback to first <p> text
+      const descriptionContainer = article.querySelector("[data-description]");
+      const description = descriptionContainer
+        ? descriptionContainer.innerHTML
+        : article.querySelector("p")?.textContent || "";
+
       const tech = article.querySelector("p[data-tech]")?.textContent || "";
 
       const links = Array.from(article.querySelectorAll("a")).map((link) => ({
@@ -132,7 +137,7 @@ class Projects {
    */
   _updateDetailPanes(project) {
     this.nameElement.textContent = project.name;
-    this.descriptionElement.textContent = project.description;
+    this.descriptionElement.innerHTML = project.description;
     this.techElement.textContent = project.tech;
     this._renderLinks(project.links);
   }
