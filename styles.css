@@ -163,7 +163,7 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    padding: 0.5rem 1rem;
+    padding: 8px 16px;
     background: linear-gradient(
         180deg,
         rgba(20, 20, 20, 0.95),
@@ -172,7 +172,7 @@ body {
     border-bottom: 1px solid #333;
     display: flex;
     justify-content: space-between;
-    font-size: 0.75rem;
+    font-size: 12px;
     color: #666;
     z-index: 100;
     backdrop-filter: blur(4px);
@@ -195,14 +195,14 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 0.3rem 1rem;
+    padding: 5px 16px;
     background: linear-gradient(
         0deg,
         rgba(20, 20, 20, 0.95),
         rgba(10, 10, 10, 0.9)
     );
     border-top: 1px solid #333;
-    font-size: 0.7rem;
+    font-size: 11px;
     color: #444;
     text-align: center;
     z-index: 100;
@@ -225,7 +225,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 6rem 2rem 4rem;
+    padding: 96px 32px 64px;
     position: relative;
 }
 
@@ -239,7 +239,7 @@ body {
 .section__title {
     font-size: 24px;
     color: #888;
-    margin-bottom: 1rem;
+    margin-bottom: 16px;
     font-weight: normal;
     font-family: "Cascadia Code", monospace;
 }
@@ -249,7 +249,7 @@ body {
     color: #666;
     text-align: center;
     max-width: 600px;
-    margin: 0 auto 3rem auto;
+    margin: 0 auto 48px auto;
     line-height: 1.6;
 }
 
@@ -272,7 +272,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2.5rem 2rem 1.5rem;
+    padding: 40px 32px 24px;
     position: relative;
 }
 
@@ -285,7 +285,7 @@ body {
     color: #fff;
     font-size: 12px;
     line-height: 1.15;
-    margin-bottom: 3rem;
+    margin-bottom: 32px;
     white-space: pre;
     cursor: default;
     transition: height 0.4s ease;
@@ -310,15 +310,15 @@ body {
 .hero__nav {
     display: flex;
     flex-direction: row;
-    gap: 1.5rem;
+    gap: 24px;
     align-items: center;
     justify-content: center;
-    margin-bottom: 2rem;
+    margin-bottom: 32px;
 }
 
 .nav-link {
     display: inline-block;
-    padding: 0.6rem 0;
+    padding: 10px 0;
     color: #555;
     text-decoration: none;
     transition:
@@ -365,7 +365,7 @@ body {
     color: #666;
     font-size: 0;
     font-family: "Cascadia Code", monospace;
-    margin-top: 0.5rem;
+    margin-top: 8px;
     height: 0;
     white-space: pre-wrap;
     max-width: 650px;
@@ -412,7 +412,7 @@ body {
     margin-left: 0;
     padding-left: 3px;
     animation: none;
-    height: 1.2em;
+    height: 16px;
     display: inline-block;
     vertical-align: bottom;
 }
@@ -439,7 +439,7 @@ body {
 .projects__layout {
     display: grid;
     grid-template-columns: 350px 1fr;
-    gap: 1.5rem;
+    gap: 16px;
     max-width: 1400px;
     margin: 0 auto;
     text-align: left;
@@ -452,7 +452,7 @@ body {
 .projects__details {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 16px;
 }
 
 /* TUI Pane Styles */
@@ -478,7 +478,7 @@ body {
     padding: 0 0.5ch;
     position: absolute;
     left: 1ch;
-    top: -0.7em;
+    top: -10px;
     background: #0a0a0a;
     font-size: 14px;
     z-index: 1;
@@ -486,7 +486,7 @@ body {
 
 .tui-pane__content {
     color: #888;
-    padding: 0.8rem;
+    padding: 13px;
     min-height: 60px;
     white-space: pre-wrap;
     word-wrap: break-word;
@@ -518,7 +518,7 @@ body {
 .process-header {
     display: grid;
     grid-template-columns: 80px 1fr;
-    padding: 0.3rem 0.8rem;
+    padding: 5px 13px;
     color: #888;
     font-weight: bold;
     user-select: none;
@@ -529,7 +529,7 @@ body {
 .process-item {
     display: grid;
     grid-template-columns: 80px 1fr;
-    padding: 0.15rem 0.8rem;
+    padding: 2px 13px;
     cursor: pointer;
     color: #666;
     transition:
@@ -565,13 +565,21 @@ body {
     text-align: left;
 }
 
+/* Project Links Container */
+#projectLinks {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
 /* Project Links */
 .project-link {
     display: block;
     color: #666;
     text-decoration: none;
     transition: color 0.15s;
-    padding: 0.2rem 0;
+    padding: 0;
+    line-height: 1.6;
 }
 
 .project-link:hover {
@@ -583,21 +591,21 @@ body {
    ============================================= */
 
 #video {
-    margin-bottom: 3rem;
+    margin-bottom: 48px;
     cursor: text;
 }
 
 body:has(#video) .hero__nav {
     flex-direction: column;
-    gap: 0.8rem;
-    margin-bottom: 3rem;
+    gap: 13px;
+    margin-bottom: 48px;
 }
 
 #playbar {
     color: #fff;
     font-family: "Cascadia Code", monospace;
     font-size: 12px;
-    margin-bottom: 3rem;
+    margin-bottom: 48px;
     cursor: pointer;
     user-select: none;
     white-space: pre;
