@@ -33,6 +33,9 @@ class Projects {
   constructor() {
     this.projects = [];
     this.selectedIndex = null;
+    this.mouseY = 0;
+    this.processItems = [];
+    this.noiseOffsets = []; // Per-process noise offsets for smooth animation
 
     // DOM element references
     this.listElement = document.getElementById("projectsList");
@@ -52,6 +55,9 @@ class Projects {
     if (this.projects.length > 0) {
       this.selectProject(0);
     }
+
+    // Track mouse position for memory proximity calculation
+    this._setupMouseTracking();
   }
 
   /**
@@ -100,19 +106,24 @@ class Projects {
    * Render the process list with header and project rows
    */
   _renderProcessList() {
-    const header = `<div class="process-header"><span class="process-col process-col--pid">PID</span><span class="process-col process-col--language">LANG</span><span class="process-col process-col--name">COMMAND</span></div>`;
+    const header = `<div class="process-header"><span class="process-col process-col--pid">PID</span><span class="process-col process-col--language">LANG</span><span class="process-col process-col--name">COMMAND</span><span class="process-col process-col--mem">MEM (MB)</span></div>`;
 
     const rows = this.projects
       .map((project, index) => {
         const color = LANGUAGE_COLORS[project.language] || "#666";
-        return `<div class="process-item" data-index="${index}"><span class="process-col process-col--pid">${project.pid}</span><span class="process-col process-col--language" style="color: ${color}">${project.language}</span><span class="process-col process-col--name">${project.command}</span></div>`;
+        return `<div class="process-item" data-index="${index}"><span class="process-col process-col--pid">${project.pid}</span><span class="process-col process-col--language" style="color: ${color}">${project.language}</span><span class="process-col process-col--name">${project.command}</span><span class="process-col process-col--mem"><span class="mem-value">0</span> <span class="mem-bar">░░░░░░</span></span></div>`;
       })
       .join("");
 
     this.listElement.innerHTML = header + rows;
 
+    // Store process item elements for memory updates
+    this.processItems = Array.from(
+      this.listElement.querySelectorAll(".process-item"),
+    );
+
     // Add click listeners to process items
-    this.listElement.querySelectorAll(".process-item").forEach((item) => {
+    this.processItems.forEach((item) => {
       item.addEventListener("click", () => {
         this.selectProject(parseInt(item.dataset.index));
       });
@@ -168,6 +179,92 @@ class Projects {
           `<a href="${link.url}" class="project-link" target="_blank" rel="noopener noreferrer">${link.label} -></a>`,
       )
       .join("");
+  }
+
+  /**
+   * Setup mouse tracking for memory proximity calculation
+   */
+  _setupMouseTracking() {
+    // Initialize random noise offsets for each process
+    this.noiseOffsets = this.projects.map(() => Math.random() * 1000);
+
+    document.addEventListener("mousemove", (e) => {
+      this.mouseY = e.clientY;
+    });
+
+    // Start animation loop
+    this._startMemoryAnimation();
+  }
+
+  /**
+   * Start continuous memory bar animation
+   */
+  _startMemoryAnimation() {
+    const animate = () => {
+      this._updateMemoryBars();
+      requestAnimationFrame(animate);
+    };
+    animate();
+  }
+
+  /**
+   * Update memory bars based on vertical proximity to cursor
+   */
+  _updateMemoryBars() {
+    const time = Date.now() / 1000; // Time in seconds
+
+    this.processItems.forEach((item, index) => {
+      const rect = item.getBoundingClientRect();
+      const itemCenterY = rect.top + rect.height / 2;
+
+      // Calculate vertical distance
+      const distance = Math.abs(this.mouseY - itemCenterY);
+
+      // Calculate proximity factor (closer = higher value)
+      // Max distance of 200px for full falloff
+      const maxDistance = 200;
+      const proximity = Math.max(0, 1 - distance / maxDistance);
+
+      // Add smooth noise for activity variation
+      // Use sine waves with different frequencies for smooth variation
+      const noiseOffset = this.noiseOffsets[index];
+      const noise1 = Math.sin((time + noiseOffset) * 0.5) * 0.5 + 0.5; // Slow wave
+      const noise2 = Math.sin((time + noiseOffset) * 1.3) * 0.5 + 0.5; // Medium wave
+      const combinedNoise = noise1 * 0.7 + noise2 * 0.3 - 0.5; // Range: -0.5 to 0.5
+
+      // Calculate base value from proximity (0-85, weighted at 85%)
+      const proximityValue = proximity * 85;
+
+      // Add noise variation
+      const noiseVariation = 20 + combinedNoise * 40;
+
+      // Combine proximity and noise, clamped to 0-99
+      const combinedValue = Math.max(
+        0,
+        Math.min(99, proximityValue + noiseVariation),
+      );
+      const memValue = Math.floor(combinedValue);
+
+      // Calculate bar fill (0-6 characters) using the same combined value
+      const barFillValue = combinedValue / 100;
+      const barFill = Math.floor(barFillValue * 6 + 0.5);
+
+      // Build bar with filled and empty characters
+      const filledBar = "█".repeat(barFill);
+      const emptyBar = "░".repeat(6 - barFill);
+      const bar = filledBar + emptyBar;
+
+      // Update DOM
+      const memValueSpan = item.querySelector(".mem-value");
+      const memBarSpan = item.querySelector(".mem-bar");
+
+      if (memValueSpan && memBarSpan) {
+        // Use non-breaking space for trailing space so HTML doesn't collapse it
+        const formattedValue = memValue.toString().padEnd(2, "\u00A0");
+        memValueSpan.textContent = formattedValue;
+        memBarSpan.textContent = bar;
+      }
+    });
   }
 }
 
