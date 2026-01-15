@@ -241,6 +241,8 @@ a {
 
 .projects {
     align-items: flex-start;
+    position: relative;
+    padding-bottom: 160px;
 }
 
 .section__container {
@@ -509,6 +511,46 @@ a {
 .hero__description-text .highlighted {
     background: #444;
     color: #fff;
+}
+
+/* =============================================
+   Scroll Indicator
+   ============================================= */
+
+.scroll-indicator {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    opacity: 0;
+    transition:
+        opacity 0.8s ease-out,
+        color 0.15s;
+    color: #555;
+    font-family: "Cascadia Code", monospace;
+    font-size: 12px;
+}
+
+.scroll-indicator.show {
+    opacity: 1;
+}
+
+.scroll-indicator:hover {
+    color: #888;
+}
+
+.scroll-indicator__text {
+    text-align: center;
+}
+
+.scroll-indicator__arrow {
+    font-size: 16px;
+    line-height: 1;
 }
 
 /* =============================================

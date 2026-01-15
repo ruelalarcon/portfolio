@@ -133,7 +133,7 @@ class About {
           "",
           "I also grew up listening to dubstep and EDM, so I've come to absolutely love electronic music, as well as genres that blend jazzy harmonies with interesting sound design, like Future Bass, Glitch Hop, and other EDM genres.",
           "",
-          "Here's one of my favorite songs: linear ring - enchanted love. Simply scroll down and hit play.",
+          "Below is one of my favorite songs! Simply scroll down and hit play.",
         ],
         delay: 0,
       },

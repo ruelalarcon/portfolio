@@ -128,10 +128,40 @@ class Projects {
     // Track mouse position for memory proximity calculation
     this._setupMouseTracking();
 
+    // Show scroll indicator
+    this._showScrollIndicator();
+
     // Call completion callback if provided
     if (this.onComplete) {
       this.onComplete();
     }
+  }
+
+  /**
+   * Create and show scroll indicator for About section
+   */
+  _showScrollIndicator() {
+    const container = document.querySelector(".projects .section__container");
+    if (!container) return;
+
+    // Create scroll indicator
+    const indicator = document.createElement("div");
+    indicator.className = "scroll-indicator show";
+    indicator.innerHTML = `
+      <span class="scroll-indicator__text">Scroll to 'About Me'</span>
+      <span class="scroll-indicator__arrow">v</span>
+    `;
+
+    // Add click handler
+    indicator.addEventListener("click", () => {
+      const aboutSection = document.getElementById("about");
+      if (aboutSection) {
+        aboutSection.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+
+    // Append to container
+    container.appendChild(indicator);
   }
 
   /**

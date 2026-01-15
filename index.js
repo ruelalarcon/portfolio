@@ -86,6 +86,12 @@ const logo = new Logo(logoElement);
 logo.onAnimationComplete = () => {
   contentElement.classList.add("show");
   logoAnimationComplete = true;
+
+  // Show scroll indicator
+  const heroScrollIndicator = document.getElementById("heroScrollIndicator");
+  if (heroScrollIndicator) {
+    heroScrollIndicator.classList.add("show");
+  }
 };
 
 // Determine animation duration based on previous page
@@ -94,6 +100,17 @@ const animationDuration =
 
 // Start logo
 logo.init(animationDuration);
+
+// Setup hero scroll indicator click handler
+const heroScrollIndicator = document.getElementById("heroScrollIndicator");
+if (heroScrollIndicator) {
+  heroScrollIndicator.addEventListener("click", () => {
+    const projectsSection = document.getElementById("projects");
+    if (projectsSection) {
+      projectsSection.scrollIntoView({ behavior: "smooth" });
+    }
+  });
+}
 
 // Initialize projects section with terminal animation
 const projectsTerminalElement = document.getElementById("projectsTerminal");
