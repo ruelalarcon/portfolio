@@ -3,6 +3,7 @@ import { Logo } from "./js/home/logo.js";
 import { NavigationTracker } from "./js/core/navigation.js";
 import { Description } from "./js/home/description.js";
 import { Projects } from "./js/home/projects.js";
+import { TerminalAnimator } from "./js/lib/terminal-animator.js";
 
 // Update header time
 function updateTime() {
@@ -84,6 +85,8 @@ const animationDuration =
 // Start logo
 logo.init(animationDuration);
 
-// Initialize projects section
+// Initialize projects section with terminal animation
+const projectsTerminalElement = document.getElementById("projectsTerminal");
+const projectsTerminalAnimator = new TerminalAnimator(projectsTerminalElement);
 const projects = new Projects();
-projects.init();
+projects.init(projectsTerminalAnimator);

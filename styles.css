@@ -234,6 +234,10 @@ a {
     position: relative;
 }
 
+.projects {
+    align-items: flex-start;
+}
+
 .section__container {
     text-align: center;
     width: 100%;
@@ -250,7 +254,48 @@ a {
 }
 
 .projects .section__title {
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+/* =============================================
+   Terminal Animation
+   ============================================= */
+
+.terminal-animation {
+    font-family: "Cascadia Code", monospace;
+    font-size: 14px;
+    color: #888;
+    text-align: left;
     margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+.terminal-line {
+    margin-bottom: 0;
+}
+
+.terminal-prompt {
+    color: #666;
+}
+
+.terminal-command {
+    color: #fff;
+}
+
+.terminal-output {
+    color: #888;
+    margin-bottom: 0;
+    white-space: pre;
+}
+
+.terminal-animation .terminal-cursor {
+    animation: blink 1s step-end infinite;
+    display: inline-block;
+    vertical-align: baseline;
+    color: #666;
+    background: #666;
+    margin-left: 1px;
 }
 
 .section__description {
@@ -446,7 +491,7 @@ a {
    ============================================= */
 
 .projects__layout {
-    display: grid;
+    display: none; /* Hidden by default, shown after terminal animation */
     grid-template-columns: auto 1fr;
     gap: 16px;
     max-width: 1400px;

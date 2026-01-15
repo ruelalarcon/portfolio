@@ -47,10 +47,76 @@ class Projects {
     );
     this.techElement = document.getElementById("projectTech");
     this.linksElement = document.getElementById("projectLinks");
+    this.layoutElement = null; // Will be set when showing TUI
   }
 
-  init() {
+  init(terminalAnimator) {
     this._parseProjectsFromHTML();
+
+    // Hide the TUI layout initially
+    this.layoutElement = document.querySelector(".projects__layout");
+    if (this.layoutElement) {
+      this.layoutElement.style.display = "none";
+    }
+
+    // Setup terminal animation sequence with view trigger
+    const sequence = [
+      { type: "command", text: "make" },
+      { type: "pause", duration: 100 },
+      {
+        type: "output",
+        lines: [
+          "gcc -c src/project_manager.c -o build/project_manager.o",
+          "gcc -c src/display_handler.c -o build/display_handler.o",
+          "gcc -c src/process_monitor.c -o build/process_monitor.o",
+          "gcc -c src/main.c -o build/main.o",
+          "gcc build/project_manager.o build/display_handler.o build/process_monitor.o build/main.o -o build/my_projects",
+          "ln -sf $(pwd)/build/my_projects /usr/local/bin/my_projects",
+          "Build complete.",
+        ],
+        delay: 50,
+      },
+      { type: "pause", duration: 400 },
+      { type: "command", text: "./my_projects --help" },
+      { type: "pause", duration: 100 },
+      {
+        type: "output",
+        lines: [
+          "my_projects v1.0.0",
+          "",
+          "DESCRIPTION:",
+          "    A top/htop-style resource monitor for displaying projects.",
+          "    Shows active projects with details including PID, language,",
+          "    command name, and memory usage.",
+          "",
+          "USAGE:",
+          "    my_projects [OPTIONS]",
+          "",
+          "OPTIONS:",
+          "    --help        Show this help message",
+          "    --version     Show version information",
+        ],
+        delay: 0,
+      },
+      { type: "pause", duration: 600 },
+      { type: "command", text: "./my_projects" },
+      { type: "pause", duration: 200 },
+      { type: "callback", fn: () => this._showTUI() },
+    ];
+
+    // Setup view trigger - animation will run every time it comes into view
+    terminalAnimator.setupViewTrigger(sequence);
+  }
+
+  /**
+   * Show the TUI layout and initialize interaction
+   */
+  _showTUI() {
+    // Show the layout
+    if (this.layoutElement) {
+      this.layoutElement.style.display = "grid";
+    }
+
     this._renderProcessList();
 
     // Show default state initially
