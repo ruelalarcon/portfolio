@@ -4,6 +4,8 @@
  * Parses project data from HTML for SEO, then removes the hidden data element
  */
 
+import { noiseFunction } from "../core/math.js";
+
 // GitHub language colors mapping
 const LANGUAGE_COLORS = {
   JavaScript: "#f1e05a",
@@ -366,18 +368,17 @@ class Projects {
       const maxDistance = 200;
       const proximity = Math.max(0, 1 - distance / maxDistance);
 
-      // Add smooth noise for activity variation
-      // Use sine waves with different frequencies for smooth variation
+      // Add smooth noise for activity variation using noiseFunction
       const noiseOffset = this.noiseOffsets[index];
-      const noise1 = Math.sin((time + noiseOffset) * 0.5) * 0.5 + 0.5; // Slow wave
-      const noise2 = Math.sin((time + noiseOffset) * 1.3) * 0.5 + 0.5; // Medium wave
-      const combinedNoise = noise1 * 0.7 + noise2 * 0.3 - 0.5; // Range: -0.5 to 0.5
+      // Use noiseFunction with offset as spatial coordinates and time
+      // Normalize output from ~[-1,1] to [-0.5, 0.5]
+      const noise = noiseFunction(noiseOffset, index, time) * 0.5;
 
       // Calculate base value from proximity (0-85, weighted at 85%)
       const proximityValue = proximity * 85;
 
       // Add noise variation
-      const noiseVariation = 20 + combinedNoise * 40;
+      const noiseVariation = 20 + noise * 40;
 
       // Combine proximity and noise, clamped to 0-99
       const combinedValue = Math.max(
