@@ -1,10 +1,9 @@
 /**
- * Main video player coordinator
- * Manages video playback, rendering, and controls
+ * Video Player for Music Section
+ * Handles video playback and ASCII rendering
  */
 
-import { WebGLASCIIRenderer } from "../lib/ascii-renderer/webgl.js";
-import { Playbar } from "./playbar.js";
+import { WebGLASCIIRenderer } from "../../../lib/ascii-renderer/webgl.js";
 
 const ASCII_CHARS = ".:-=+*#%@";
 
@@ -16,26 +15,23 @@ export class VideoPlayer {
     this.videoWidth = 0;
     this.videoHeight = 0;
     this.animationFrameId = 0;
-    this.videoElement = null;
-
     this.renderer = null;
-    this.playbar = null;
+    this.updateCallback = null;
   }
 
   /**
-   * Initialize and start playing a video
-   * @param {string} videoUrl - URL of the video to play
-   * @param {HTMLElement} videoEl - Container element for the video
-   * @param {HTMLElement} playbarContainer - Container for the playbar
+   * Initialize the video player
+   * @param {HTMLElement} container - Container element for the video canvas
+   * @param {Function} onReady - Callback when video is ready
+   * @param {Function} onUpdate - Callback to update playbar each frame
+   * @returns {HTMLVideoElement} The video element for playbar control
    */
-  play(videoUrl, videoEl, playbarContainer) {
-    this.videoElement = videoEl;
-    this._setupVideo(videoUrl, playbarContainer);
-  }
+  async init(container, onReady, onUpdate) {
+    this.updateCallback = onUpdate;
+    if (!container) return null;
 
-  _setupVideo(videoUrl, playbarContainer) {
     this.video = document.createElement("video");
-    this.video.src = videoUrl;
+    this.video.src = "video.mp4";
     this.video.crossOrigin = "anonymous";
     this.video.volume = 0.2;
     this.video.muted = false;
@@ -49,7 +45,7 @@ export class VideoPlayer {
 
     this.video.addEventListener(
       "loadedmetadata",
-      () => this._onVideoLoaded(playbarContainer),
+      () => this._onVideoLoaded(container, onReady),
       {
         once: true,
       },
@@ -60,21 +56,28 @@ export class VideoPlayer {
     this.video.addEventListener("ended", () => this._onVideoEnded());
 
     this.video.load();
+    return this.video;
   }
 
-  async _onVideoLoaded(playbarContainer) {
+  async _onVideoLoaded(container, onReady) {
     const aspectRatio = this.video.videoWidth / this.video.videoHeight;
     this.videoWidth = 106;
     this.videoHeight = 35;
     this.canvas.width = this.videoWidth;
     this.canvas.height = this.videoHeight;
 
-    await this._setupWebGL();
-    this._setupPlaybar(playbarContainer);
-    this.video.play();
+    await this._setupWebGL(container);
+
+    if (onReady) {
+      onReady();
+    }
+
+    // Don't auto-play, wait for user to click play
+    // Render first frame while paused
+    this._renderFrame();
   }
 
-  async _setupWebGL() {
+  async _setupWebGL(container) {
     // Initialize WebGL renderer with video-specific configuration
     this.renderer = new WebGLASCIIRenderer(this.videoWidth, this.videoHeight, {
       charSet: ASCII_CHARS,
@@ -83,7 +86,7 @@ export class VideoPlayer {
       displayFontSize: 12,
       enableTextSelection: true,
     });
-    const { canvas } = await this.renderer.init(this.videoElement);
+    const { canvas } = await this.renderer.init(container);
 
     // Render initial frame with default character (first ASCII char) so canvas isn't black
     const totalPixels = this.videoWidth * this.videoHeight;
@@ -102,24 +105,8 @@ export class VideoPlayer {
     });
   }
 
-  _setupPlaybar(playbarContainer) {
-    this.playbar = new Playbar(this.video, playbarContainer);
-    this.playbar.init(() => this._updatePlaybar());
-  }
-
-  _updatePlaybar() {
-    if (this.playbar) {
-      this.playbar.update();
-    }
-  }
-
   _renderFrame() {
-    if (this.video.ended || this.video.paused) {
-      this._updatePlaybar();
-      this.animationFrameId = requestAnimationFrame(() => this._renderFrame());
-      return;
-    }
-
+    // Always render the current frame, even when paused (for seeking)
     // Draw video to canvas and get image data
     this.context.drawImage(this.video, 0, 0, this.videoWidth, this.videoHeight);
     const imageData = this.context.getImageData(
@@ -135,7 +122,11 @@ export class VideoPlayer {
     // Render with WebGL
     this.renderer.render(frameData);
 
-    this._updatePlaybar();
+    // Update playbar
+    if (this.updateCallback) {
+      this.updateCallback();
+    }
+
     this.animationFrameId = requestAnimationFrame(() => this._renderFrame());
   }
 
@@ -174,5 +165,26 @@ export class VideoPlayer {
   _onVideoEnded() {
     this.video.currentTime = 0;
     this.video.play();
+  }
+
+  /**
+   * Cleanup method
+   */
+  destroy() {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
+
+    if (this.video) {
+      this.video.pause();
+      this.video.src = "";
+      this.video = null;
+    }
+
+    if (this.renderer && this.renderer.destroy) {
+      this.renderer.destroy();
+      this.renderer = null;
+    }
   }
 }

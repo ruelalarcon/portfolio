@@ -369,6 +369,7 @@ a {
 
 .about__visual {
     display: none; /* Hidden by default, shown after terminal animation */
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     min-height: 200px;
@@ -454,29 +455,6 @@ a {
     opacity: 0.3;
     pointer-events: none;
     color: #333;
-}
-
-.nav-link--secret {
-    color: #333;
-    opacity: 0.4;
-    transition:
-        color 0.3s,
-        opacity 0.3s;
-}
-
-.nav-link--secret:hover {
-    color: #555;
-    opacity: 0.7;
-}
-
-.nav-link--secret.revealed {
-    color: #555;
-    opacity: 1;
-}
-
-.nav-link--secret.revealed:hover {
-    color: #fff;
-    opacity: 1;
 }
 
 .hero__description {
@@ -865,6 +843,7 @@ body:has(#video) .hero__nav {
     color: #fff;
     font-family: "Cascadia Code", monospace;
     font-size: 12px;
+    margin-top: 36px;
     margin-bottom: 48px;
     cursor: pointer;
     user-select: none;

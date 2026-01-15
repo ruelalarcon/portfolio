@@ -10,7 +10,7 @@ export class Playbar {
     this.video = video;
     this.playbarElement = document.createElement("div");
     this.playbarElement.id = "playbar";
-    container.insertBefore(this.playbarElement, container.firstChild);
+    container.appendChild(this.playbarElement);
 
     this.buttonMorphing = false;
     this.buttonTargetText = "";
