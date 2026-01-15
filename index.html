@@ -116,9 +116,11 @@
                         <article data-command="korewa_ai" data-language="PHP">
                             <h3>korewaAI</h3>
                             <div data-description>
-                                <p>An visual-novel-styled AI chat platform where anyone can speak to (or create) user-generated anime character chatbots.</p>
+                                <p>A visual-novel-styled AI chat platform where anyone can speak to (or create) user-generated anime character chatbots.</p>
+                                <p>I've been running and maintaining this project since my first year at USASK in 2022, and over the course of the past few years, I've amassed over 95,000 users (though that sounds more impressive than it really is, because that counts any user that's ever used our service, including inactive and non-premium users).</p>
+                                <p>Anyway, korewa AI runs off of open source models such as LLama 3.1 that I've fine-tuned with cloud GPU services, and I regularly fine-tune and benchmark new open source models as they release.</p>
                             </div>
-                            <p data-tech>PHP, JavaScript</p>
+                            <p data-tech>JavaScript, PHP, PostgreSQL</p>
                             <a href="https://korewa.ai/" rel="noopener noreferrer">korewa.ai</a>
                         </article>
 
@@ -126,54 +128,72 @@
                             <h3>Desmos MIDI</h3>
                             <div data-description>
                                 <p>A Rust-based CLI tool and Web UI for converting MIDI files into formulas for Desmos.</p>
+                                <p>I'm a professional jazz pianist, and I like to dabble in electronic music production. As such, I've always been interested in the math behind sound and software I use like FL Studio. I'm also somewhat a part of the desmos community discord.</p>
+                                <p>All sounds can be composed with a collection of pure sine waves, in a process called <i>additive synthesis</i>.</p>
+                                <p>With a fast fourier transform, you can analyze a sound to find the phase and amplitude of those composite sine waves, and through that you can recreate the timbre of any instrument.</p>
+                                <p>Desmos MIDI lets you recreate instruments from audio files, assign each track of a MIDI file to an instrument, and finally convert the MIDI file into a formula you can paste into Desmos and listen to.</p>
                             </div>
                             <p data-tech>Rust, Desmos, JavaScript</p>
-                            <a href="https://github.com/ruelalarcon/desmos_midi" rel="noopener noreferrer">GitHub</a>
+                            <a href="https://github.com/ruelalarcon/desmos_midi" rel="noopener noreferrer">github</a>
                         </article>
 
                         <article data-command="spellcast_solver_cli" data-language="C">
                             <h3>Spellcast Solver CLI</h3>
                             <div data-description>
                                 <p>A high-performance C-based CLI tool for solving the Discord game Spellcast, optimizing word choices based on letter scores and special tiles.</p>
+                                <p>I made this because I had just learned about the Trie data structure from a programming blog that <i>ThePrimeagen</i> read on stream.</p>
+                                <p>I had also recently played Spellcast (one of the games you can play on discord with your friends) which is pretty much a turn-based word search, along with some powerups that both make the game a lot more interesting but also balloons the search space by a crazy factor.</p>
+                                <p>Naturally I had the overwhelming urge to wreak some havoc on my friends (in a computationally optimized manner of course). This solver is built on heavily optimized C code and utilizes OpenMP parallelization to take advantage of multiple CPU cores.</p>
                             </div>
                             <p data-tech>C, OpenMP</p>
-                            <a href="https://github.com/ruelalarcon/spellcast_solver_cli" rel="noopener noreferrer">GitHub</a>
+                            <a href="https://github.com/ruelalarcon/spellcast_solver_cli" rel="noopener noreferrer">github</a>
                         </article>
 
                         <article data-command="a_plus" data-language="Svelte">
                             <h3>A+Plus</h3>
                             <div data-description>
                                 <p>A social network for students to track course grades, share grade calculation templates, and manage course prerequisites.</p>
+                                <p>I and my friends built this for our CMPT 370 (Software Engineering) project at the University. As such, we've decked it out with a couple of useful technologies.</p>
+                                <p>In addition to using GraphQL for our API, Jest for unit tests, and Cypress for integration testing, we use a suite of software observability tools including Winston for logging, Prometheus for telemetry, and Grafana's dashboards for displaying that data.</p>
                             </div>
-                            <p data-tech>JavaScript, Node.js, Express, GraphQL, Svelte, SQLite</p>
-                            <a href="https://github.com/ruelalarcon/a_plus" rel="noopener noreferrer">GitHub</a>
+                            <p data-tech>JavaScript, Node.js, Express, GraphQL, Svelte, SQLite, Docker, Jest, Cypress, Winston, Prometheus, Grafana</p>
+                            <a href="https://github.com/ruelalarcon/a_plus" rel="noopener noreferrer">github</a>
                         </article>
 
                         <article data-command="pace" data-language="React">
                             <h3>PACE</h3>
                             <div data-description>
                                 <p>An extremely rudimentary HTML5-export-based game engine and editor for simple point-and-click adventure games.</p>
+                                <p>You see, a friend of mine has a nostalgic sweet spot for point-and-click adventure games, where the entirety of the way you interact with the game is by clicking various objects on the screen.</p>
+                                <p>Another friend of mine had also said something along the lines of "I wish I could export a web game as a js project and just add stuff with js and make it look cool with css".</p>
+                                <p>From that the idea is a bit obvious isn't it? And so, I got to work. With exports being for the web, if the engine for creating them used web technologies it'd be trivial to add a preview to the engine,</p>
+                                <p>So with a bit of reading of the electron documentation, PACE (point-and-click engine) was born.</p>
                             </div>
-                            <p data-tech>TypeScript, React, Node.js</p>
-                            <a href="https://github.com/ruelalarcon/pace" rel="noopener noreferrer">GitHub</a>
+                            <p data-tech>TypeScript, React, Node.js, Electron</p>
+                            <a href="https://github.com/ruelalarcon/pace" rel="noopener noreferrer">github</a>
                         </article>
 
                         <article data-command="devboard" data-language="React">
                             <h3>DevBoard</h3>
                             <div data-description>
                                 <p>A simple devforum and board with images and discord-esque markdown + codeblock support, built in JavaScript and Typescript using NodeJS, GraphQL and React.</p>
+                                <p>This was my final project for CMPT 353, where we all had to create a stackoverflow-style devforum, and come up with some additional feature to add to the basic requirements.</p>
+                                <p>The special feature I decided to add is the ability to write markdown and have it rendered, including things like ```c int main()...``` style codeblocks with proper syntax highlighting, etc.</p>
                             </div>
                             <p data-tech>JavaScript, TypeScript, React, Node.js, Express, GraphQL, MySQL</p>
-                            <a href="https://github.com/ruelalarcon/devboard" rel="noopener noreferrer">GitHub</a>
+                            <a href="https://github.com/ruelalarcon/devboard" rel="noopener noreferrer">github</a>
                         </article>
 
                         <article data-command="floracide" data-language="GDScript">
                             <h3>Floracide</h3>
                             <div data-description>
                                 <p>A multi-level plant-themed top-down shooter built in Godot.</p>
+                                <p>My groupmates and I built this game for CMPT 306 (Game Development) and had a blast doing so.</p>
+                                <p>I've always had a fondness for the bullet hell game genre, being a long-time <i>Touhou</i> and <i>Realm of the Mad God</i> player, so a simple bullet hell game seemed like a decent choice of genre.</p>
+                                <p>The game is designed with extensibility in mind, with it being very easy to create new enemies and levels. (A level editor with the ability to script bullet hell patterns for enemies may be planned for the future)</p>
                             </div>
                             <p data-tech>GDScript, Godot</p>
-                            <a href="https://github.com/ruelalarcon/floracide" rel="noopener noreferrer">GitHub</a>
+                            <a href="https://github.com/ruelalarcon/floracide" rel="noopener noreferrer">github</a>
                             <a href="https://riptxde.itch.io/floracide" rel="noopener noreferrer">itch.io</a>
                         </article>
 
@@ -182,83 +202,78 @@
                             <div data-description>
                                 <p>A comedic gartic-phone-styled online multiplayer game where players collaborate to create wonderful (terrible) songs with a massive collection of meme songs.</p>
                                 <p>My groupmates and I created this game in 48 hours for the <i>SaskInteractive Game Jam</i>, winning us the award for 'Best Multiplayer Game'.</p>
-                                <p>I probably slept a grand total of 3 hours in the span of those 2 days, grinding away at the client-server communication lol.</p>
+                                <p>I probably slept a grand total of 3 hours in the span of those 2 days, grinding away at the client-server communication.</p>
+                                <p>The result is a game I can only describe as hilarious brainrot with friends.</p>
                             </div>
                             <p data-tech>JavaScript, Node.js, Express</p>
                             <a href="https://tooybox.itch.io/yo-thats-heat" rel="noopener noreferrer">itch.io</a>
                         </article>
 
-                        <article data-command="cpf3d" data-language="Python">
-                            <h3>cpf3d</h3>
-                            <div data-description>
-                                <p>A package for reading and writing 3cpf files.</p>
-                            </div>
-                            <p data-tech>Python</p>
-                            <a href="https://github.com/ruelalarcon/cpf3d" rel="noopener noreferrer">GitHub</a>
-                            <a href="https://pypi.org/project/cpf3d/" rel="noopener noreferrer">PyPI</a>
-                        </article>
-
-                        <article data-command="minecraft3cpf" data-language="Python">
-                            <h3>minecraft3cpf</h3>
-                            <div data-description>
-                                <p>A python-based cli tool for converting 3cpf files into Minecraft datapacks for block animations.</p>
-                            </div>
-                            <p data-tech>Python, CLI, MCFunction</p>
-                            <a href="https://github.com/ruelalarcon/minecraft3cpf" rel="noopener noreferrer">GitHub</a>
-                        </article>
-
-                        <article data-command="mat3cpf" data-language="Python">
-                            <h3>mat3cpf</h3>
-                            <div data-description>
-                                <p>A simple python-based cli tool for converting 3cpf files into matplotlib animations.</p>
-                            </div>
-                            <p data-tech>Python, CLI, Matplotlib</p>
-                            <a href="https://github.com/ruelalarcon/mat3cpf" rel="noopener noreferrer">GitHub</a>
-                        </article>
-
-                        <article data-command="animated_surface_to_points" data-language="Python">
-                            <h3>Animated Surface to Points</h3>
-                            <div data-description>
-                                <p>A blender addon to export animated meshes to 3cpf files.</p>
-                            </div>
-                            <p data-tech>Python, Blender</p>
-                            <a href="https://github.com/ruelalarcon/animated_surface_to_points" rel="noopener noreferrer">GitHub</a>
-                        </article>
-
                         <article data-command="3cpf" data-language="Text">
                             <h3>3CPF Specification</h3>
                             <div data-description>
-                                <p>Spec for 3CPF (3D Colored Point Frames), a binary file format for storing animated colored point data designed with simplicity in mind.</p>
+                                <p>Spec for 3CPF (3D Colored Point Frames), a binary file format for storing animated colored point data designed with simplicity of reading, writing, and playing in mind.</p>
+                                <p>As far as I could tell, before creating this file format, there were no convenient file formats for animated and colored point data that did not also include massive amountts of unnecessary mesh data. Point cloud formats like <i>pcd</i> did exist but support for both animations and colors at once simply did not exist.</p>
+                                <p>In the end, I designed a new binary file format, <i>3cpf</i>, complete with a magic header number, and detailed documentation in the form of a spec document.</p>
+                                <p>I actually created this file format with a very specific goal in mind. I urge you to check out the 3cpf_projects to find out what that goal was.</p>
                             </div>
                             <p data-tech>File Format Specification</p>
-                            <a href="https://github.com/ruelalarcon/3cpf" rel="noopener noreferrer">GitHub</a>
+                            <a href="https://github.com/ruelalarcon/3cpf" rel="noopener noreferrer">github</a>
+                        </article>
+
+                        <article data-command="3cpf_projects" data-language="Python">
+                            <h3>3CPF Projects</h3>
+                            <div data-description>
+                                <p>A collection of projects I made that utilize the .3cpf file format I designed.</p>
+                                <p>This includes:</p>
+                                <ul>
+                                    <li>cpf3d, an offical python module you can install via `pip install cpf3d` for reading and writing 3cpf files</li>
+                                    <li>animated_surface_to_points, a blender addon for exporting a vertex-colored animated mesh as a 3cpf file</li>
+                                    <li>mat3cpf, a CLI tool for rendering a simple 3cpf file</li>
+                                    <li>minecraft3cpf, a CLI tool for converting a 3cpf animation into a minecraft datapack which allows you to visualize an animation with colored moving minecraft blocks</li>
+                                </ul>
+                                <p>Yes, the entire reason I created this file format and suite of projects is to make Hatsune Miku dance in minecraft.</p>
+                            </div>
+                            <p data-tech>Python, Blender, Matplotlib, MCFunction</p>
+                            <a href="https://pypi.org/project/cpf3d/" rel="noopener noreferrer">cpf3d</a>
+                            <a href="https://github.com/ruelalarcon/animated_surface_to_points" rel="noopener noreferrer">animated_surface_to_points</a>
+                            <a href="https://github.com/ruelalarcon/mat3cpf" rel="noopener noreferrer">mat3cpf</a>
+                            <a href="https://github.com/ruelalarcon/minecraft3cpf" rel="noopener noreferrer">minecraft3cpf</a>
+                            <a href="https://www.youtube.com/watch?v=7hrDonjMQtA" rel="noopener noreferrer">hatsune miku &lt;3</a>
                         </article>
 
                         <article data-command="rng_cracking_demo" data-language="JavaScript">
                             <h3>RNG Cracking Demo</h3>
                             <div data-description>
                                 <p>A demonstration of how predictable random number generators can be exploited in games, with a simple top-down 2d procedural game as an example.</p>
+                                <p>During the USASK Cybersecurity Club's session on 'advanced game exploitation', I was invited to give a presentation on the vulnerabilities of randomness and exploiting mundane game logic.</p>
+                                <p>I created this to showcase during the rng cracking portion of my presentation.</p>
                             </div>
                             <p data-tech>JavaScript, Python</p>
-                            <a href="https://github.com/ruelalarcon/rng_cracking_demo" rel="noopener noreferrer">GitHub</a>
+                            <a href="https://github.com/ruelalarcon/rng_cracking_demo" rel="noopener noreferrer">github</a>
                         </article>
 
                         <article data-command="game_logic_exploits_ctf" data-language="JavaScript">
                             <h3>Game Logic Exploits CTF</h3>
                             <div data-description>
                                 <p>Capture The Flag (CTF) challenges focused on exploiting game logic vulnerabilities.</p>
+                                <p>During the USASK Cybersecurity Club's session on 'advanced game exploitation', I gave a presentation on the vulnerabilities of randomness, and a presentation on game logic exploits.</p>
+                                <p>I also created a few of the ctf challenges for this session, including an rng cracking challenge where you predict a <i>linear congruential generator</i> to determine the outcome of every future dice roll, as well a challenge on utilizing an issue in the order of database operations to duplicate items with a forced race condition.</p> 
                             </div>
                             <p data-tech>JavaScript, Node.js</p>
-                            <a href="https://github.com/ruelalarcon/game_logic_exploits_ctf" rel="noopener noreferrer">GitHub</a>
+                            <a href="https://github.com/ruelalarcon/game_logic_exploits_ctf" rel="noopener noreferrer">github</a>
                         </article>
 
                         <article data-command="usask_class_notifier" data-language="Python">
                             <h3>USask Class Notifier</h3>
                             <div data-description>
                                 <p>A Discord bot that monitors University of Saskatchewan class seat availability and notifies users when seats become available.</p>
+                                <p>This is a bot I host that allows someone to watch a USASK class's remaining seats and get immediately notified when a seat is available to register in the class.</p>
+                                <p>It was moreso something I made for myself, but it ended up being incredibly useful to my friends who use it.</p>
+                                <p>The main difficulty actually came in reverse engineering the USASK registration backend (which is a legacy <i>Java Spring Boot</i> application with a bunch of strange design decisions that made interacting with their backend way harder than it had to be).
                             </div>
                             <p data-tech>Python, Discord API</p>
-                            <a href="https://github.com/ruelalarcon/usask_class_notifier" rel="noopener noreferrer">GitHub</a>
+                            <a href="https://github.com/ruelalarcon/usask_class_notifier" rel="noopener noreferrer">github</a>
                         </article>
                     </div>
 
