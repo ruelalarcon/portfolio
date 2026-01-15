@@ -99,8 +99,17 @@ logo.init(animationDuration);
 const projectsTerminalElement = document.getElementById("projectsTerminal");
 const projectsTerminalAnimator = new TerminalAnimator(projectsTerminalElement);
 const projects = new Projects();
-projects.init(projectsTerminalAnimator);
 
-// Initialize about section
-const about = new About();
-about.init();
+// Set up callback to initialize About section when Projects completes
+projects.onComplete = () => {
+  const aboutSection = document.getElementById("about");
+  if (aboutSection) {
+    aboutSection.classList.add("visible");
+  }
+
+  // Initialize about section
+  const about = new About();
+  about.init();
+};
+
+projects.init(projectsTerminalAnimator);

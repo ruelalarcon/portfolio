@@ -40,6 +40,7 @@ class Projects {
     this.mouseY = 0;
     this.processItems = [];
     this.noiseOffsets = []; // Per-process noise offsets for smooth animation
+    this.onComplete = null; // Callback when TUI is shown
 
     // DOM element references
     this.listElement = document.getElementById("projectsList");
@@ -126,6 +127,11 @@ class Projects {
 
     // Track mouse position for memory proximity calculation
     this._setupMouseTracking();
+
+    // Call completion callback if provided
+    if (this.onComplete) {
+      this.onComplete();
+    }
   }
 
   /**

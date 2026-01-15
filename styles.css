@@ -232,6 +232,11 @@ a {
     justify-content: center;
     padding: 96px 32px 64px;
     position: relative;
+    border-top: 1px solid #222;
+}
+
+.section:first-of-type {
+    border-top: none;
 }
 
 .projects {
@@ -324,6 +329,11 @@ a {
 
 .about {
     align-items: flex-start;
+    display: none; /* Hidden until projects section completes */
+}
+
+.about.visible {
+    display: flex;
 }
 
 .about .section__title {
