@@ -155,8 +155,15 @@ class Projects {
     // Add click handler
     indicator.addEventListener("click", () => {
       const aboutSection = document.getElementById("about");
-      if (aboutSection) {
-        aboutSection.scrollIntoView({ behavior: "smooth" });
+      const bodyContent = document.getElementById("bodyContent");
+      if (aboutSection && bodyContent) {
+        // Get the SimpleBar instance and scroll to the about section
+        const simplebarInstance = window.SimpleBar.instances.get(bodyContent);
+        if (simplebarInstance) {
+          const scrollElement = simplebarInstance.getScrollElement();
+          const targetOffset = aboutSection.offsetTop;
+          scrollElement.scrollTo({ top: targetOffset, behavior: "smooth" });
+        }
       }
     });
 

@@ -103,11 +103,18 @@ logo.init(animationDuration);
 
 // Setup hero scroll indicator click handler
 const heroScrollIndicator = document.getElementById("heroScrollIndicator");
-if (heroScrollIndicator) {
+const bodyContent = document.getElementById("bodyContent");
+if (heroScrollIndicator && bodyContent) {
   heroScrollIndicator.addEventListener("click", () => {
     const projectsSection = document.getElementById("projects");
     if (projectsSection) {
-      projectsSection.scrollIntoView({ behavior: "smooth" });
+      // Get the SimpleBar instance and scroll to the projects section
+      const simplebarInstance = window.SimpleBar.instances.get(bodyContent);
+      if (simplebarInstance) {
+        const scrollElement = simplebarInstance.getScrollElement();
+        const targetOffset = projectsSection.offsetTop;
+        scrollElement.scrollTo({ top: targetOffset, behavior: "smooth" });
+      }
     }
   });
 }
