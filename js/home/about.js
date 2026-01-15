@@ -7,11 +7,10 @@
  * Each section has its own terminal animation followed by a WebGL ASCII visualization
  */
 
-import { WebGLASCIIRenderer } from "../lib/ascii-renderer/webgl.js";
 import { TerminalAnimator } from "../lib/terminal-animator.js";
-
-// ASCII character set for WebGL renderer (simple dot pattern for now)
-const ASCII_CHARS = ".";
+import { CodingAnimation } from "./about/coding.js";
+import { AnimeAnimation } from "./about/anime.js";
+import { MusicAnimation } from "./about/music.js";
 
 /**
  * Calculate current age dynamically
@@ -36,7 +35,7 @@ function calculateAge() {
 
 class About {
   constructor() {
-    this.renderers = [];
+    this.animations = [];
     this.codingComplete = false;
     this.animeComplete = false;
   }
@@ -44,9 +43,6 @@ class About {
   init() {
     // Initialize first section - others will initialize when previous completes
     this._initCodingSection();
-
-    // Start animation loops
-    this._startAnimations();
   }
 
   /**
@@ -168,16 +164,9 @@ class About {
     if (!container) return;
     container.style.display = "flex";
 
-    const width = 80;
-    const height = 30;
-
-    const renderer = new WebGLASCIIRenderer(width, height, {
-      charSet: ASCII_CHARS,
-      displayFontSize: 12,
-    });
-
-    await renderer.init(container);
-    this.renderers.push({ renderer, width, height, index: 0 });
+    const animation = new CodingAnimation();
+    await animation.init(container);
+    this.animations.push(animation);
 
     // Mark as complete and initialize next section
     this.codingComplete = true;
@@ -191,16 +180,9 @@ class About {
     if (!container) return;
     container.style.display = "flex";
 
-    const width = 80;
-    const height = 30;
-
-    const renderer = new WebGLASCIIRenderer(width, height, {
-      charSet: ASCII_CHARS,
-      displayFontSize: 12,
-    });
-
-    await renderer.init(container);
-    this.renderers.push({ renderer, width, height, index: 1 });
+    const animation = new AnimeAnimation();
+    await animation.init(container);
+    this.animations.push(animation);
 
     // Mark as complete and initialize next section
     this.animeComplete = true;
@@ -214,69 +196,21 @@ class About {
     if (!container) return;
     container.style.display = "flex";
 
-    const width = 80;
-    const height = 30;
-
-    const renderer = new WebGLASCIIRenderer(width, height, {
-      charSet: ASCII_CHARS,
-      displayFontSize: 12,
-    });
-
-    await renderer.init(container);
-    this.renderers.push({ renderer, width, height, index: 2 });
-  }
-
-  /**
-   * Start animation loops for all renderers
-   */
-  _startAnimations() {
-    const animate = () => {
-      const time = Date.now() / 1000;
-
-      this.renderers.forEach(({ renderer, width, height, index }) => {
-        const colors = [];
-        const chars = [];
-
-        // Fill with dots and varying green colors
-        for (let y = 0; y < height; y++) {
-          for (let x = 0; x < width; x++) {
-            // Create a simple wave pattern with noise
-            const wave = Math.sin(x * 0.1 + time + index) * 0.5 + 0.5;
-            const noise =
-              Math.sin(y * 0.2 + time * 0.5 + index * 2) * 0.5 + 0.5;
-            const brightness = wave * noise;
-
-            // Green color with varying intensity [r, g, b]
-            colors.push([
-              Math.floor(brightness * 80), // R
-              Math.floor(brightness * 200 + 55), // G
-              Math.floor(brightness * 80), // B
-            ]);
-
-            // All dots for now
-            chars.push(".");
-          }
-        }
-
-        renderer.render({ chars, colors });
-      });
-
-      requestAnimationFrame(animate);
-    };
-
-    animate();
+    const animation = new MusicAnimation();
+    await animation.init(container);
+    this.animations.push(animation);
   }
 
   /**
    * Cleanup method
    */
   destroy() {
-    this.renderers.forEach(({ renderer }) => {
-      if (renderer && renderer.destroy) {
-        renderer.destroy();
+    this.animations.forEach((animation) => {
+      if (animation && animation.destroy) {
+        animation.destroy();
       }
     });
-    this.renderers = [];
+    this.animations = [];
   }
 }
 
