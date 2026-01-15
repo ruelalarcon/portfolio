@@ -5,11 +5,15 @@
 
 import { preloader } from "./preloader.js";
 import { CascadiaASCIIFilter } from "./ascii-filter.js";
+import { focusManager } from "../../../core/focus-manager.js";
 
 class Live2DLoader {
   constructor() {
     this.app = null;
     this.model = null;
+    this.hasFocus = false;
+    this.focusId = null;
+    this.canvas = null;
   }
 
   /**
@@ -44,6 +48,7 @@ class Live2DLoader {
     const canvas = document.createElement("canvas");
     canvas.id = "live2DCanvas";
     content.appendChild(canvas);
+    this.canvas = canvas; // Store reference for focus manager
 
     // Initialize PixiJS application (resize to content div, not container)
     this.app = new PIXI.Application({
@@ -87,6 +92,33 @@ class Live2DLoader {
     // Apply ASCII filter with Cascadia Code font
     const asciiFilter = new CascadiaASCIIFilter(12); // 12px cell size
     this.model.filters = [asciiFilter];
+
+    // Register with focus manager
+    this.focusId = `live2d-loader-${Date.now()}-${Math.random()}`;
+    focusManager.register(this.focusId, this.canvas, (hasFocus) => {
+      this._onFocusChange(hasFocus);
+    });
+
+    // Start with focus initially
+    this.hasFocus = true;
+  }
+
+  /**
+   * Handle focus change from FocusManager
+   * @param {boolean} hasFocus - Whether this loader now has focus
+   */
+  _onFocusChange(hasFocus) {
+    this.hasFocus = hasFocus;
+
+    if (this.app) {
+      if (hasFocus) {
+        // Resume PixiJS ticker when gaining focus
+        this.app.ticker.start();
+      } else {
+        // Pause PixiJS ticker when losing focus
+        this.app.ticker.stop();
+      }
+    }
   }
 
   /**
@@ -117,6 +149,12 @@ class Live2DLoader {
    * Cleanup method
    */
   destroy() {
+    // Unregister from focus manager
+    if (this.focusId) {
+      focusManager.unregister(this.focusId);
+      this.focusId = null;
+    }
+
     if (this.app) {
       this.app.destroy(true, {
         children: true,
@@ -126,6 +164,7 @@ class Live2DLoader {
       this.app = null;
     }
     this.model = null;
+    this.canvas = null;
   }
 }
 

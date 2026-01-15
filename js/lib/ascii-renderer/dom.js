@@ -5,6 +5,8 @@
  * Less performance compared to WebGL but provides all DOM element capabilities
  */
 
+import { focusManager } from "../../core/focus-manager.js";
+
 export class DOMASCIIRenderer {
   constructor(gridWidth, gridHeight, options = {}) {
     // Grid dimensions
@@ -21,12 +23,18 @@ export class DOMASCIIRenderer {
     this.font = options.font || "'Cascadia Code', monospace";
     this.displayFontSize = options.displayFontSize || 12;
     this.enableTextSelection = options.enableTextSelection !== false;
+    this.enableFocusOptimization = options.enableFocusOptimization !== false; // Default: enabled
 
     // DOM state
     this.container = null;
     this.charElements = [];
     this.displayCharWidth = 0;
     this.displayCharHeight = 0;
+
+    // Focus optimization state
+    this.hasFocus = false;
+    this.focusId = null;
+    this.pendingFrameData = null; // Store frame data when sleeping
   }
 
   /**
@@ -65,6 +73,19 @@ export class DOMASCIIRenderer {
 
     // Create character grid
     this._createCharElements();
+
+    // Register with focus manager if optimization is enabled
+    if (this.enableFocusOptimization) {
+      this.focusId = `dom-renderer-${Date.now()}-${Math.random()}`;
+      focusManager.register(this.focusId, this.container, (hasFocus) => {
+        this._onFocusChange(hasFocus);
+      });
+      // Start with focus initially
+      this.hasFocus = true;
+    } else {
+      // Always have focus if optimization is disabled
+      this.hasFocus = true;
+    }
 
     return {
       canvas: this.container,
@@ -105,6 +126,21 @@ export class DOMASCIIRenderer {
   }
 
   /**
+   * Handle focus change from FocusManager
+   * @param {boolean} hasFocus - Whether this renderer now has focus
+   */
+  _onFocusChange(hasFocus) {
+    const wasAsleep = !this.hasFocus;
+    this.hasFocus = hasFocus;
+
+    // If waking up and we have pending frame data, render it
+    if (wasAsleep && hasFocus && this.pendingFrameData) {
+      this._renderFrame(this.pendingFrameData);
+      this.pendingFrameData = null;
+    }
+  }
+
+  /**
    * Render the character grid
    * @param {Object} frameData - Frame data with characters, colors, and optional transformations
    * @param {Array<string>} frameData.chars - Characters for each cell (length = gridWidth * gridHeight)
@@ -117,6 +153,21 @@ export class DOMASCIIRenderer {
    * @param {number} [frameData.transforms[].offsetY] - Y offset in pixels (default: 0)
    */
   render(frameData) {
+    // If we don't have focus, store the frame data and skip rendering
+    if (!this.hasFocus) {
+      this.pendingFrameData = frameData;
+      return;
+    }
+
+    // Render immediately if we have focus
+    this._renderFrame(frameData);
+  }
+
+  /**
+   * Internal render method that actually updates the DOM
+   * @param {Object} frameData - Frame data
+   */
+  _renderFrame(frameData) {
     const { chars, colors, transforms } = frameData;
 
     if (chars.length !== this.totalCells || colors.length !== this.totalCells) {
@@ -207,5 +258,15 @@ export class DOMASCIIRenderer {
       displayCharWidth: this.displayCharWidth,
       displayCharHeight: this.displayCharHeight,
     };
+  }
+
+  /**
+   * Cleanup method - unregister from focus manager
+   */
+  destroy() {
+    if (this.enableFocusOptimization && this.focusId) {
+      focusManager.unregister(this.focusId);
+      this.focusId = null;
+    }
   }
 }

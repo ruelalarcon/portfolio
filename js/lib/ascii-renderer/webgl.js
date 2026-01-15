@@ -3,6 +3,8 @@
  * General-purpose module for rendering colored character grids with transformations
  */
 
+import { focusManager } from "../../core/focus-manager.js";
+
 export class WebGLASCIIRenderer {
   constructor(gridWidth, gridHeight, options = {}) {
     // Grid dimensions
@@ -20,6 +22,7 @@ export class WebGLASCIIRenderer {
     this.textureFontSize = options.textureFontSize || 48;
     this.displayFontSize = options.displayFontSize || 12;
     this.enableTextSelection = options.enableTextSelection !== false;
+    this.enableFocusOptimization = options.enableFocusOptimization !== false; // Default: enabled
 
     // WebGL state
     this.gl = null;
@@ -44,6 +47,11 @@ export class WebGLASCIIRenderer {
     this.selectionStart = null;
     this.selectionEnd = null;
     this.currentChars = null;
+
+    // Focus optimization state
+    this.hasFocus = false;
+    this.focusId = null;
+    this.pendingFrameData = null; // Store frame data when sleeping
   }
 
   /**
@@ -113,6 +121,19 @@ export class WebGLASCIIRenderer {
     // Optional text selection
     if (this.enableTextSelection) {
       this._initTextSelection(container);
+    }
+
+    // Register with focus manager if optimization is enabled
+    if (this.enableFocusOptimization) {
+      this.focusId = `webgl-renderer-${Date.now()}-${Math.random()}`;
+      focusManager.register(this.focusId, this.glCanvas, (hasFocus) => {
+        this._onFocusChange(hasFocus);
+      });
+      // Start with focus initially
+      this.hasFocus = true;
+    } else {
+      // Always have focus if optimization is disabled
+      this.hasFocus = true;
     }
 
     return {
@@ -388,6 +409,21 @@ export class WebGLASCIIRenderer {
   }
 
   /**
+   * Handle focus change from FocusManager
+   * @param {boolean} hasFocus - Whether this renderer now has focus
+   */
+  _onFocusChange(hasFocus) {
+    const wasAsleep = !this.hasFocus;
+    this.hasFocus = hasFocus;
+
+    // If waking up and we have pending frame data, render it
+    if (wasAsleep && hasFocus && this.pendingFrameData) {
+      this._renderFrame(this.pendingFrameData);
+      this.pendingFrameData = null;
+    }
+  }
+
+  /**
    * Render the character grid
    * @param {Object} frameData - Frame data with characters, colors, and optional transformations
    * @param {Array<string>} frameData.chars - Characters for each cell (length = gridWidth * gridHeight)
@@ -400,6 +436,21 @@ export class WebGLASCIIRenderer {
    * @param {number} [frameData.transforms[].offsetY] - Y offset in clip space (default: 0)
    */
   render(frameData) {
+    // If we don't have focus, store the frame data and skip rendering
+    if (!this.hasFocus) {
+      this.pendingFrameData = frameData;
+      return;
+    }
+
+    // Render immediately if we have focus
+    this._renderFrame(frameData);
+  }
+
+  /**
+   * Internal render method that actually performs WebGL rendering
+   * @param {Object} frameData - Frame data
+   */
+  _renderFrame(frameData) {
     const gl = this.gl;
     const { chars, colors, transforms } = frameData;
 
@@ -692,5 +743,15 @@ export class WebGLASCIIRenderer {
       displayCharWidth: this.displayCharWidth,
       displayCharHeight: this.displayCharHeight,
     };
+  }
+
+  /**
+   * Cleanup method - unregister from focus manager
+   */
+  destroy() {
+    if (this.enableFocusOptimization && this.focusId) {
+      focusManager.unregister(this.focusId);
+      this.focusId = null;
+    }
   }
 }
