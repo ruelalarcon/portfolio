@@ -19,16 +19,37 @@ class Live2DLoader {
   async init(container) {
     if (!container) return;
 
-    // Create canvas element
+    // Create TUI pane wrapper with border
+    const tuiPane = document.createElement("div");
+    tuiPane.className = "tui-pane";
+
+    const borderTop = document.createElement("div");
+    borderTop.className = "tui-pane__border-top";
+
+    const title = document.createElement("span");
+    title.className = "tui-pane__title";
+    title.textContent = "Live2D";
+
+    borderTop.appendChild(title);
+
+    const content = document.createElement("div");
+    content.className = "tui-pane__content tui-pane__content--live2d";
+    content.style.padding = "0"; // No padding for canvas
+
+    tuiPane.appendChild(borderTop);
+    tuiPane.appendChild(content);
+    container.appendChild(tuiPane);
+
+    // Create canvas element inside TUI pane content
     const canvas = document.createElement("canvas");
     canvas.id = "live2DCanvas";
-    container.appendChild(canvas);
+    content.appendChild(canvas);
 
-    // Initialize PixiJS application
+    // Initialize PixiJS application (resize to content div, not container)
     this.app = new PIXI.Application({
       view: canvas,
       autoStart: true,
-      resizeTo: container,
+      resizeTo: content,
       backgroundAlpha: 0, // Fully transparent background
       transparent: true, // Enable transparency
     });

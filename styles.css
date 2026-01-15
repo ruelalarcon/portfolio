@@ -382,6 +382,23 @@ a {
     image-rendering: crisp-edges;
 }
 
+/* Live2D TUI pane specific styles */
+.tui-pane__content--live2d {
+    min-height: 560px;
+    height: 560px;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tui-pane__content--live2d canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
 /* =============================================
    Hero Section
    ============================================= */
