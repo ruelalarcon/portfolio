@@ -61,9 +61,9 @@ class About {
       {
         type: "output",
         lines: [
-          `I'm ${age} years old and originally from the Philippines, though I moved away by the time I was 1. My beginnings as a programmer started in elementary school, where I learned the basics of Lua by editing and writing scripts for Roblox exploits.`,
+          `Hiya~ I'm currently ${age} years old and originally from the Philippines, though I moved away by the time I was 1. My beginnings as a programmer started in elementary school, where I learned the basics of Lua by editing and writing scripts for Roblox exploits. From that point I became interested in stuff like Minecraft server plugins and eventually networking.`,
           "",
-          "These days, I'm always working on my next project. I also try to keep up with newer developments in AI (not strictly LLMs) and web technologies. That said, I also have a deep fondness for lower-level code and microoptimization—there's something satisfying about squeezing out every bit of performance.",
+          "Now, I'm always working on my next project. I usually like keeping up with stuff like developments in AI (not strictly LLMs) and web technologies. That said, I also have a deep fondness for low-level code and code optimization, especially as scalability becomes more and more important for the internet.",
         ],
         delay: 0,
       },
@@ -91,9 +91,9 @@ class About {
       {
         type: "output",
         lines: [
-          "Though it's been a struggle, I usually try to schedule and watch as many seasonal animes as I can each season, watching each episode as they release week by week for dozens of shows.",
+          "Though it's been pretty difficult, even since I was a kid I'd usually try to watch as many seasonal animes as I could. Nothing beats watching an anime as it releases its episodes week by week.",
           "",
-          "Anime has been a foundational part of me as I've grown up with it, along with reading plenty of manga and light novels. It's shaped my interests, aesthetics, and even how I approach creative projects.",
+          "In general I'd say anime has been a pretty foundational part of my life, from entertainment to also being a major source of inspiration for my creative projects from music to programming.",
         ],
         delay: 0,
       },
@@ -132,7 +132,7 @@ class About {
       {
         type: "output",
         lines: [
-          "I'm also a professional jazz pianist! Very occasionally I'll be doing gigs at various places. After a first few years of classical lessons, I began self-teaching jazz piano and have been for over 10 years.",
+          "I'm also a professional jazz pianist! Though very occasionally, you may find me doing gigs at various places. After an introductory few years of classical lessons, I began self-teaching jazz piano and have been for over 10 years.",
           "",
           "I also grew up listening to dubstep and EDM, so I've come to absolutely love electronic music, as well as genres that blend jazzy harmonies with interesting sound design, like Future Bass, Glitch Hop, and other EDM genres.",
         ],
