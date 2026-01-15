@@ -654,11 +654,18 @@ export class WebGLASCIIRenderer {
     };
 
     const onCopy = (e) => {
-      if (this.selectionStart && this.selectionEnd && this.currentChars) {
+      // Only intercept copy if we have an active selection in this renderer
+      if (
+        this.selectionStart &&
+        this.selectionEnd &&
+        this.currentChars &&
+        this.selectionStart.index !== this.selectionEnd.index
+      ) {
         e.preventDefault();
         const text = this._getSelectedText();
         e.clipboardData.setData("text/plain", text);
       }
+      // Otherwise, let the browser handle the copy event normally
     };
 
     document.addEventListener("mousedown", onMouseDown);
@@ -713,7 +720,11 @@ export class WebGLASCIIRenderer {
     let text = "";
     for (let i = start; i <= end; i++) {
       const x = i % this.gridWidth;
-      text += this.currentChars[i];
+      const char = this.currentChars[i];
+      // Skip undefined characters (shouldn't happen, but safety check)
+      if (char !== undefined) {
+        text += char;
+      }
       if (x === this.gridWidth - 1 && i < end) {
         text += "\n";
       }
