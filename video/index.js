@@ -2,6 +2,11 @@ import { VideoPlayer } from "../js/video/video-player.js";
 import { TextMorph } from "../js/lib/text-morph.js";
 import { NavigationTracker } from "../js/core/navigation.js";
 
+// Disable automatic scroll restoration on page reload
+if ("scrollRestoration" in history) {
+  history.scrollRestoration = "manual";
+}
+
 // Update header time
 function updateTime() {
   const now = new Date();

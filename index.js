@@ -5,6 +5,11 @@ import { Description } from "./js/home/description.js";
 import { Projects } from "./js/home/projects.js";
 import { TerminalAnimator } from "./js/lib/terminal-animator.js";
 
+// Disable automatic scroll restoration on page reload
+if ("scrollRestoration" in history) {
+  history.scrollRestoration = "manual";
+}
+
 // Update header time
 function updateTime() {
   const now = new Date();
