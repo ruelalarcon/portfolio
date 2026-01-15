@@ -249,6 +249,10 @@ a {
     font-family: "Cascadia Code", monospace;
 }
 
+.projects .section__title {
+    margin-bottom: 32px;
+}
+
 .section__description {
     font-size: 14px;
     color: #666;
@@ -457,6 +461,11 @@ a {
     flex-direction: column;
 }
 
+.projects__processes {
+    gap: 16px;
+    width: 560px;
+}
+
 .projects__processes .tui-pane {
     display: flex;
     flex-direction: column;
@@ -553,7 +562,7 @@ a {
 /* Process List Header */
 .process-header {
     display: grid;
-    grid-template-columns: 80px 100px 1fr 85px;
+    grid-template-columns: 80px 100px auto 85px;
     column-gap: 16px;
     padding: 5px 13px;
     color: #888;
@@ -565,7 +574,7 @@ a {
 /* Process List Items */
 .process-item {
     display: grid;
-    grid-template-columns: 80px 100px 1fr 85px;
+    grid-template-columns: 80px 100px auto 85px;
     column-gap: 16px;
     padding: 2px 13px;
     cursor: pointer;
@@ -605,6 +614,7 @@ a {
 
 .process-col--name {
     text-align: left;
+    white-space: nowrap;
 }
 
 .process-col--mem {

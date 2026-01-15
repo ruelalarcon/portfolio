@@ -110,7 +110,6 @@
             <section class="section projects" id="projects">
                 <div class="section__container">
                     <h2 class="section__title">$ myprojects</h2>
-                    <p class="section__description">A collection of my recent work and personal projects.</p>
 
                     <!-- Project data for SEO - parsed by JS then removed -->
                     <div id="projectsData" style="display: none">
@@ -303,13 +302,23 @@
                     </div>
 
                     <div class="projects__layout">
-                        <!-- Left pane: Process list -->
+                        <!-- Left pane: Process list and info -->
                         <div class="projects__processes">
                             <div class="tui-pane">
                                 <div class="tui-pane__border-top">
                                     <span class="tui-pane__title">Processes</span>
                                 </div>
                                 <div class="tui-pane__content" id="projectsList"></div>
+                                <div class="tui-pane__border-bottom"></div>
+                            </div>
+
+                            <div class="tui-pane">
+                                <div class="tui-pane__border-top">
+                                    <span class="tui-pane__title">Info</span>
+                                </div>
+                                <div class="tui-pane__content tui-pane__content--small">
+                                    Click on the processes above to view my various projects. <br><br> This is a combination of projects I've released as myself, as well as projects I've released as <i>riptxde</i>. <br><br> This design is based off of linux resource monitors like top, htop, and btop (be sure to check out btop if you haven't, it's quite a visually stunning tool)
+                                </div>
                                 <div class="tui-pane__border-bottom"></div>
                             </div>
                         </div>
