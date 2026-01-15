@@ -32,7 +32,9 @@ const LANGUAGE_COLORS = {
 class Projects {
   constructor() {
     this.projects = [];
-    this.selectedIndex = null;
+    this.shownIndex = null; // Currently shown project (preview or selected)
+    this.selectedIndex = null; // Selected/locked project (clicked)
+    this.previewIndex = null; // Preview project (hovered)
     this.mouseY = 0;
     this.processItems = [];
     this.noiseOffsets = []; // Per-process noise offsets for smooth animation
@@ -51,10 +53,8 @@ class Projects {
     this._parseProjectsFromHTML();
     this._renderProcessList();
 
-    // Auto-select first project
-    if (this.projects.length > 0) {
-      this.selectProject(0);
-    }
+    // Show default state initially
+    this._showDefaultState();
 
     // Track mouse position for memory proximity calculation
     this._setupMouseTracking();
@@ -122,34 +122,98 @@ class Projects {
       this.listElement.querySelectorAll(".process-item"),
     );
 
-    // Add click listeners to process items
+    // Add hover and click listeners to process items
     this.processItems.forEach((item) => {
-      item.addEventListener("click", () => {
-        this.selectProject(parseInt(item.dataset.index));
+      item.addEventListener("mouseenter", () => {
+        this.previewProject(parseInt(item.dataset.index));
       });
+      item.addEventListener("click", () => {
+        this.toggleSelection(parseInt(item.dataset.index));
+      });
+    });
+
+    // Clear preview when mouse leaves the list
+    this.listElement.addEventListener("mouseleave", () => {
+      this.clearPreview();
     });
   }
 
   /**
-   * Select a project and update all detail panes
+   * Preview a project on hover (only if not selected)
    */
-  selectProject(index) {
-    // Ignore if already selected
-    if (index === this.selectedIndex) return;
+  previewProject(index) {
+    // If selected, ignore preview
+    if (this.selectedIndex !== null) return;
 
-    this.selectedIndex = index;
+    this.previewIndex = index;
+    this.shownIndex = index;
     const project = this.projects[index];
 
-    this._updateActiveState(index);
+    this._updateActiveState();
+    this._updateDetailPanes(project);
+  }
+
+  /**
+   * Clear preview and return to selected state or default
+   */
+  clearPreview() {
+    if (this.selectedIndex !== null) {
+      // If selected, return to selected project
+      this.shownIndex = this.selectedIndex;
+      this.previewIndex = null;
+      const project = this.projects[this.selectedIndex];
+      this._updateActiveState();
+      this._updateDetailPanes(project);
+    } else {
+      // If not selected, return to default empty state
+      this.shownIndex = null;
+      this.previewIndex = null;
+      this._updateActiveState();
+      this._showDefaultState();
+    }
+  }
+
+  /**
+   * Toggle selection on a project
+   */
+  toggleSelection(index) {
+    if (this.selectedIndex === index) {
+      // Clicking the selected item unselects it
+      this.selectedIndex = null;
+      this.previewIndex = null;
+      this.shownIndex = null;
+    } else {
+      // Select this item
+      this.selectedIndex = index;
+      this.previewIndex = null;
+      this.shownIndex = index;
+      const project = this.projects[index];
+      this._updateDetailPanes(project);
+    }
+    this._updateActiveState();
+  }
+
+  /**
+   * Select a project without toggling
+   */
+  selectProject(index) {
+    this.selectedIndex = index;
+    this.shownIndex = index;
+    const project = this.projects[index];
+    this._updateActiveState();
     this._updateDetailPanes(project);
   }
 
   /**
    * Update active state in process list
    */
-  _updateActiveState(index) {
+  _updateActiveState() {
     this.listElement.querySelectorAll(".process-item").forEach((item, i) => {
-      item.classList.toggle("active", i === index);
+      const isShown = i === this.shownIndex;
+      const isSelected = i === this.selectedIndex;
+
+      item.classList.toggle("shown", isShown);
+      item.classList.toggle("selected", isSelected);
     });
   }
 
@@ -179,6 +243,17 @@ class Projects {
           `<a href="${link.url}" class="project-link" target="_blank" rel="noopener noreferrer">${link.label} -></a>`,
       )
       .join("");
+  }
+
+  /**
+   * Show default empty state
+   */
+  _showDefaultState() {
+    const placeholderText = "Hover over a project to preview, click to view";
+    this.nameElement.innerHTML = `<span class="tui-pane__placeholder">${placeholderText}</span>`;
+    this.descriptionElement.innerHTML = `<span class="tui-pane__placeholder">${placeholderText}</span>`;
+    this.techElement.innerHTML = `<span class="tui-pane__placeholder">${placeholderText}</span>`;
+    this.linksElement.innerHTML = `<span class="tui-pane__placeholder">${placeholderText}</span>`;
   }
 
   /**
