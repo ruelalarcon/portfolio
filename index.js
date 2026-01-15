@@ -5,11 +5,15 @@ import { Description } from "./js/home/description.js";
 import { Projects } from "./js/home/projects.js";
 import { About } from "./js/home/about.js";
 import { TerminalAnimator } from "./js/lib/terminal-animator.js";
+import { preloader } from "./js/home/about/anime/preloader.js";
 
 // Disable automatic scroll restoration on page reload
 if ("scrollRestoration" in history) {
   history.scrollRestoration = "manual";
 }
+
+// Start preloading Live2D model early
+preloader.preload();
 
 // Update header time
 function updateTime() {
