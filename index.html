@@ -10,6 +10,7 @@
             href="https://fonts.googleapis.com/css2?family=Cascadia+Code:ital,wght@0,200..700;1,200..700&display=swap"
             rel="stylesheet"
         />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@6.2.7/dist/simplebar.min.css" />
         <link rel="stylesheet" href="styles.css" />
     </head>
     <body>
@@ -237,15 +238,14 @@
                         <article data-command="3cpf_projects" data-language="Python">
                             <h3>3CPF Projects</h3>
                             <div data-description>
-                                <p>A collection of projects I made that utilize the .3cpf file format I designed.</p>
-                                <p>This includes:</p>
-                                <ul>
+                                <p style="margin-bottom: 6px;">A collection of projects I made that utilize the .3cpf file format I designed. This includes:</p>
+                                <ul style="margin: 0;">
                                     <li><i>cpf3d</i>, an offical python module you can install via `pip install cpf3d` for reading and writing 3cpf files</li>
                                     <li><i>animated_surface_to_points</i>, a blender addon for exporting a vertex-colored animated mesh as a 3cpf file</li>
                                     <li><i>mat3cpf</i>, a CLI tool for rendering a simple 3cpf file</li>
                                     <li><i>minecraft3cpf</i>, a CLI tool for converting a 3cpf animation into a minecraft datapack which allows you to visualize an animation with colored moving minecraft blocks</li>
                                 </ul>
-                                <p>Yes, the entire reason I created this file format and suite of projects is to make Hatsune Miku dance in minecraft.</p>
+                                <p>Yes, the entire reason I created this file format and suite of projects was to make Hatsune Miku dance in minecraft.</p>
                             </div>
                             <p data-tech>Python, Blender, Matplotlib, MCFunction</p>
                             <a href="https://pypi.org/project/cpf3d/" rel="noopener noreferrer">cpf3d</a>
@@ -282,7 +282,7 @@
                             <div data-description>
                                 <p>A Discord bot that monitors University of Saskatchewan class seat availability and notifies users when seats become available.</p>
                                 <p>This is a bot I host that allows someone to watch a USASK class's remaining seats and get immediately notified when a seat is available to register in the class.</p>
-                                <p>It was moreso something I made for myself, but it ended up being incredibly useful to my friends who use it.</p>
+                                <p>It was, just like pretty much all of my projects, something I made for myself, but it ended up being incredibly useful to my friends who use it.</p>
                                 <p>The main difficulty actually came in reverse engineering the USASK registration backend (which is a legacy <i>Java Spring Boot</i> application with a bunch of strange design decisions that made interacting with their backend way harder than it had to be).
                             </div>
                             <p data-tech>Python, Discord API</p>
@@ -332,8 +332,12 @@
                                 <div class="tui-pane__border-top">
                                     <span class="tui-pane__title">Description</span>
                                 </div>
-                                <div class="tui-pane__content tui-pane__content--medium" id="projectDescription">
-                                    <span class="tui-pane__placeholder">Select a project</span>
+                                <div class="tui-pane__content tui-pane__content--medium">
+                                    <div id="projectDescription" data-simplebar data-simplebar-auto-hide="false">
+                                        <div id="projectDescriptionContent">
+                                            <span class="tui-pane__placeholder">Select a project</span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="tui-pane__border-bottom"></div>
                             </div>
@@ -381,6 +385,7 @@
             <span>uwu~</span>
         </footer>
 
+        <script src="https://cdn.jsdelivr.net/npm/simplebar@6.2.7/dist/simplebar.min.js"></script>
         <script type="module" src="index.js"></script>
     </body>
 </html>

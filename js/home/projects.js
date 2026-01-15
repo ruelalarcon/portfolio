@@ -37,7 +37,9 @@ class Projects {
     // DOM element references
     this.listElement = document.getElementById("projectsList");
     this.nameElement = document.getElementById("projectName");
-    this.descriptionElement = document.getElementById("projectDescription");
+    this.descriptionElement = document.getElementById(
+      "projectDescriptionContent",
+    );
     this.techElement = document.getElementById("projectTech");
     this.linksElement = document.getElementById("projectLinks");
   }

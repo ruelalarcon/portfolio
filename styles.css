@@ -448,15 +448,25 @@ a {
     max-width: 1400px;
     margin: 0 auto;
     text-align: left;
+    align-items: stretch;
 }
 
-.projects__processes {
-    min-height: 500px;
-}
-
+.projects__processes,
 .projects__details {
     display: flex;
     flex-direction: column;
+}
+
+.projects__processes .tui-pane {
+    display: flex;
+    flex-direction: column;
+}
+
+.projects__processes .tui-pane__content {
+    overflow-x: hidden;
+}
+
+.projects__details {
     gap: 16px;
 }
 
@@ -506,8 +516,31 @@ a {
     min-height: 120px;
 }
 
+.projects__details .tui-pane {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.projects__details .tui-pane:has(#projectDescription) {
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+}
+
 .projects__details .tui-pane__content {
     display: block;
+}
+
+.projects__details .tui-pane:has(#projectDescription) .tui-pane__content {
+    flex: 1;
+    min-height: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .tui-pane__placeholder {
@@ -515,62 +548,6 @@ a {
     font-style: italic;
     display: inline-block;
     text-align: left;
-}
-
-/* Rich content in description pane */
-#projectDescription p {
-    margin-bottom: 13px;
-    line-height: 1.6;
-}
-
-#projectDescription p:last-child {
-    margin-bottom: 0;
-}
-
-#projectDescription img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 13px 0;
-    border: 1px solid #555;
-}
-
-#projectDescription br {
-    display: block;
-    content: "";
-    margin: 6px 0;
-}
-
-#projectDescription strong,
-#projectDescription b {
-    color: #fff;
-    font-weight: bold;
-}
-
-#projectDescription em,
-#projectDescription i {
-    font-style: italic;
-    color: #aaa;
-}
-
-#projectDescription code {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 2px 6px;
-    border-radius: 2px;
-    font-family: "Cascadia Code", monospace;
-    font-size: 13px;
-    color: #aaa;
-}
-
-#projectDescription ul,
-#projectDescription ol {
-    margin: 13px 0;
-    padding-left: 26px;
-}
-
-#projectDescription li {
-    margin-bottom: 6px;
-    line-height: 1.6;
 }
 
 /* Process List Header */
@@ -647,6 +624,97 @@ a {
 
 .project-link:hover {
     color: #fff;
+}
+
+/* =============================================
+   SimpleBar Custom Scrollbar Styles
+   ============================================= */
+
+/* SimpleBar container needs fixed height */
+#projectDescription {
+    height: 100%;
+    max-height: 100%;
+}
+
+/* Override SimpleBar styles for terminal aesthetic */
+#projectDescription .simplebar-scrollbar::before {
+    background-color: #555;
+    opacity: 1 !important;
+    border-radius: 0;
+    left: 0;
+    right: 0;
+}
+
+#projectDescription .simplebar-track.simplebar-vertical {
+    width: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
+    right: 0;
+}
+
+#projectDescription .simplebar-track.simplebar-vertical .simplebar-scrollbar {
+    right: 0;
+    width: 10px;
+}
+
+/* Content padding */
+#projectDescriptionContent {
+    padding: 13px;
+}
+
+/* Rich content styles */
+#projectDescriptionContent p {
+    margin-bottom: 13px;
+    line-height: 1.6;
+}
+
+#projectDescriptionContent p:last-child {
+    margin-bottom: 0;
+}
+
+#projectDescriptionContent img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 13px 0;
+    border: 1px solid #555;
+}
+
+#projectDescriptionContent br {
+    display: block;
+    content: "";
+    margin: 6px 0;
+}
+
+#projectDescriptionContent strong,
+#projectDescriptionContent b {
+    color: #fff;
+    font-weight: bold;
+}
+
+#projectDescriptionContent em,
+#projectDescriptionContent i {
+    font-style: italic;
+    color: #aaa;
+}
+
+#projectDescriptionContent code {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-family: "Cascadia Code", monospace;
+    font-size: 13px;
+    color: #aaa;
+}
+
+#projectDescriptionContent ul,
+#projectDescriptionContent ol {
+    margin: 13px 0;
+    padding-left: 26px;
+}
+
+#projectDescriptionContent li {
+    margin-bottom: 6px;
+    line-height: 1.6;
 }
 
 /* =============================================
