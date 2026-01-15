@@ -9,6 +9,7 @@ const LANGUAGE_COLORS = {
   JavaScript: "#f1e05a",
   TypeScript: "#3178c6",
   Python: "#3572a5",
+  Lua: "#00a2ff",
   C: "#555555",
   "C++": "#f34b7d",
   "C#": "#178600",

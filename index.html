@@ -121,7 +121,7 @@
                                 <p>Anyway, korewa AI runs off of open source models such as LLama 3.1 that I've fine-tuned with cloud GPU services, and I regularly fine-tune and benchmark new open source models as they release.</p>
                             </div>
                             <p data-tech>JavaScript, PHP, PostgreSQL</p>
-                            <a href="https://korewa.ai/" rel="noopener noreferrer">korewa.ai</a>
+                            <a href="https://korewa.ai/" rel="noopener noreferrer">website</a>
                         </article>
 
                         <article data-command="desmos_midi" data-language="Rust">
@@ -135,6 +135,18 @@
                             </div>
                             <p data-tech>Rust, Desmos, JavaScript</p>
                             <a href="https://github.com/ruelalarcon/desmos_midi" rel="noopener noreferrer">github</a>
+                        </article>
+
+                        <article data-command="proxima" data-language="Rust">
+                            <h3>Proxima</h3>
+                            <div data-description>
+                                <p>A modern, feature-rich interface compatible with almost all publicly available roblox script executors (third-party code injection tools) with advanced tools for developers and power users.</p>
+                                <p>Proxima is one of the most comprehensive applications I've ever written, complete with features like in-game instance monitoring, RemoteEvent and RemoteFunction network traffic analysis, lua type serialization and codegen, monaco text editor integration, etc.</p>
+                                <p>Proxima began as a standalone, closed-source script executor that I had developed and maintained for a couple of my friends and myself. Unfortunately, Roblox updates very frequently, usually every week. This means maintaining a commercially viable script executor requires many hours a week in <i>Binary Ninja</i> (or whatever you use) reverse engineering every little update to Roblox's complex anti-cheat, and so Proxima would remain a private project for some time.</p>
+                                <p>Proxima's additional tooling was its primary advantage over publicly available alternatives, and so I eventually migrated Proxima from a standalone script executor to a plug-and-play UI compatible with other script executors, allowing me to release it as an open source project.</p>
+                            </div>
+                            <p data-tech>Rust, Tauri, Vue3, TypeScript, Lua</p>
+                            <a href="https://github.com/riptxde/proxima" rel="noopener noreferrer">github</a>
                         </article>
 
                         <article data-command="spellcast_solver_cli" data-language="C">
@@ -171,6 +183,7 @@
                             </div>
                             <p data-tech>TypeScript, React, Node.js, Electron</p>
                             <a href="https://github.com/ruelalarcon/pace" rel="noopener noreferrer">github</a>
+                            <a href="https://ruelalarcon.github.io/pace" rel="noopener noreferrer">docs</a>
                         </article>
 
                         <article data-command="devboard" data-language="React">
@@ -190,7 +203,7 @@
                                 <p>A multi-level plant-themed top-down shooter built in Godot.</p>
                                 <p>My groupmates and I built this game for CMPT 306 (Game Development) and had a blast doing so.</p>
                                 <p>I've always had a fondness for the bullet hell game genre, being a long-time <i>Touhou</i> and <i>Realm of the Mad God</i> player, so a simple bullet hell game seemed like a decent choice of genre.</p>
-                                <p>The game is designed with extensibility in mind, with it being very easy to create new enemies and levels. (A level editor with the ability to script bullet hell patterns for enemies may be planned for the future)</p>
+                                <p>The game is designed with extensibility in mind, with focus during development being on the ease of creating new enemies and levels. (A level editor with the ability to script bullet hell patterns for enemies may be planned for the future)</p>
                             </div>
                             <p data-tech>GDScript, Godot</p>
                             <a href="https://github.com/ruelalarcon/floracide" rel="noopener noreferrer">github</a>
@@ -200,7 +213,7 @@
                         <article data-command="yo_thats_heat" data-language="JavaScript">
                             <h3>Yo That's Heat</h3>
                             <div data-description>
-                                <p>A comedic gartic-phone-styled online multiplayer game where players collaborate to create wonderful (terrible) songs with a massive collection of meme songs.</p>
+                                <p>A comedic <i>Gartic Phone</i> inspired online multiplayer game where players collaborate to create wonderful (terrible) songs with a massive collection of meme songs.</p>
                                 <p>My groupmates and I created this game in 48 hours for the <i>SaskInteractive Game Jam</i>, winning us the award for 'Best Multiplayer Game'.</p>
                                 <p>I probably slept a grand total of 3 hours in the span of those 2 days, grinding away at the client-server communication.</p>
                                 <p>The result is a game I can only describe as hilarious brainrot with friends.</p>
@@ -227,10 +240,10 @@
                                 <p>A collection of projects I made that utilize the .3cpf file format I designed.</p>
                                 <p>This includes:</p>
                                 <ul>
-                                    <li>cpf3d, an offical python module you can install via `pip install cpf3d` for reading and writing 3cpf files</li>
-                                    <li>animated_surface_to_points, a blender addon for exporting a vertex-colored animated mesh as a 3cpf file</li>
-                                    <li>mat3cpf, a CLI tool for rendering a simple 3cpf file</li>
-                                    <li>minecraft3cpf, a CLI tool for converting a 3cpf animation into a minecraft datapack which allows you to visualize an animation with colored moving minecraft blocks</li>
+                                    <li><i>cpf3d</i>, an offical python module you can install via `pip install cpf3d` for reading and writing 3cpf files</li>
+                                    <li><i>animated_surface_to_points</i>, a blender addon for exporting a vertex-colored animated mesh as a 3cpf file</li>
+                                    <li><i>mat3cpf</i>, a CLI tool for rendering a simple 3cpf file</li>
+                                    <li><i>minecraft3cpf</i>, a CLI tool for converting a 3cpf animation into a minecraft datapack which allows you to visualize an animation with colored moving minecraft blocks</li>
                                 </ul>
                                 <p>Yes, the entire reason I created this file format and suite of projects is to make Hatsune Miku dance in minecraft.</p>
                             </div>
@@ -258,7 +271,7 @@
                             <div data-description>
                                 <p>Capture The Flag (CTF) challenges focused on exploiting game logic vulnerabilities.</p>
                                 <p>During the USASK Cybersecurity Club's session on 'advanced game exploitation', I gave a presentation on the vulnerabilities of randomness, and a presentation on game logic exploits.</p>
-                                <p>I also created a few of the ctf challenges for this session, including an rng cracking challenge where you predict a <i>linear congruential generator</i> to determine the outcome of every future dice roll, as well a challenge on utilizing an issue in the order of database operations to duplicate items with a forced race condition.</p> 
+                                <p>I also created a few of the ctf challenges for this session, including an rng cracking challenge where you predict a <i>linear congruential generator</i> to determine the outcome of every future dice roll, as well a challenge on utilizing an issue in the order of database operations to duplicate items with a forced race condition.</p>
                             </div>
                             <p data-tech>JavaScript, Node.js</p>
                             <a href="https://github.com/ruelalarcon/game_logic_exploits_ctf" rel="noopener noreferrer">github</a>
@@ -274,6 +287,18 @@
                             </div>
                             <p data-tech>Python, Discord API</p>
                             <a href="https://github.com/ruelalarcon/usask_class_notifier" rel="noopener noreferrer">github</a>
+                        </article>
+
+                        <article data-command="tidecaller" data-language="Lua">
+                            <h3>Tidecaller</h3>
+                            <div data-description>
+                                <p>Tidecaller is an admin script for roblox script executors (common third-party code injection tools), featuring a themable command palette, auto-complete, and a highly-extensible plugin system designed for luau developers.</p>
+                                <p>I designed this with the goal of creating a system where plugins can safely do anything the native code can. This includes the ability to create custom autocompletions for commands, custom datatypes, custom styling for autocompletions, etc.</p>
+                                <p>I've also created extensive documentation so that others in the community can easily create and share plugins for Tidecaller.</p>
+                            </div>
+                            <p data-tech>Lua</p>
+                            <a href="https://github.com/riptxde/tidecaller" rel="noopener noreferrer">github</a>
+                            <a href="https://riptxde.github.io/tidecaller" rel="noopener noreferrer">docs</a>
                         </article>
                     </div>
 
