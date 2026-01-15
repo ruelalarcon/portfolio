@@ -78,6 +78,27 @@ export class VideoPlayer {
   }
 
   async _setupWebGL(container) {
+    // Create TUI pane wrapper with border
+    const tuiPane = document.createElement("div");
+    tuiPane.className = "tui-pane";
+
+    const borderTop = document.createElement("div");
+    borderTop.className = "tui-pane__border-top";
+
+    const title = document.createElement("span");
+    title.className = "tui-pane__title";
+    title.textContent = "linear ring - enchanted love";
+
+    borderTop.appendChild(title);
+
+    const content = document.createElement("div");
+    content.className = "tui-pane__content";
+    content.style.padding = "0"; // No padding for canvas
+
+    tuiPane.appendChild(borderTop);
+    tuiPane.appendChild(content);
+    container.appendChild(tuiPane);
+
     // Initialize WebGL renderer with video-specific configuration
     this.renderer = new WebGLASCIIRenderer(this.videoWidth, this.videoHeight, {
       charSet: ASCII_CHARS,
@@ -86,7 +107,7 @@ export class VideoPlayer {
       displayFontSize: 12,
       enableTextSelection: true,
     });
-    const { canvas } = await this.renderer.init(container);
+    const { canvas } = await this.renderer.init(content);
 
     // Render initial frame with default character (first ASCII char) so canvas isn't black
     const totalPixels = this.videoWidth * this.videoHeight;

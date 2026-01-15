@@ -32,7 +32,7 @@ class Live2DLoader {
 
     const title = document.createElement("span");
     title.className = "tui-pane__title";
-    title.textContent = "Live2D";
+    title.textContent = "anime girl :3";
 
     borderTop.appendChild(title);
 
