@@ -286,7 +286,8 @@ a {
 .terminal-output {
     color: #888;
     margin-bottom: 0;
-    white-space: pre;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 .terminal-animation .terminal-cursor {
@@ -315,6 +316,69 @@ a {
 .placeholder {
     color: #555;
     font-size: 14px;
+}
+
+/* =============================================
+   About Section Layout
+   ============================================= */
+
+.about {
+    align-items: flex-start;
+}
+
+.about .section__title {
+    margin-bottom: 32px;
+    text-align: left;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.about__section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 64px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.about__section:last-child {
+    margin-bottom: 0;
+}
+
+.about__text {
+    text-align: left;
+    width: 100%;
+    margin-bottom: 32px;
+}
+
+.about__section-content {
+    font-size: 14px;
+    color: #888;
+    line-height: 1.8;
+}
+
+.about__section-content p {
+    margin-bottom: 16px;
+}
+
+.about__section-content p:last-child {
+    margin-bottom: 0;
+}
+
+.about__visual {
+    display: none; /* Hidden by default, shown after terminal animation */
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    width: 100%;
+}
+
+.about__visual canvas {
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 
 /* =============================================

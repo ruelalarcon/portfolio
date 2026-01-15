@@ -190,7 +190,8 @@ class TerminalAnimator {
 
       const line = document.createElement("div");
       line.className = "terminal-output";
-      line.innerHTML = lineText; // Allow HTML in output
+      // Use non-breaking space for empty lines to prevent collapse
+      line.innerHTML = lineText || "&nbsp;";
       this.container.appendChild(line);
 
       if (delayBetweenLines > 0) {

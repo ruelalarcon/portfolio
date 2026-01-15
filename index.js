@@ -3,6 +3,7 @@ import { Logo } from "./js/home/logo.js";
 import { NavigationTracker } from "./js/core/navigation.js";
 import { Description } from "./js/home/description.js";
 import { Projects } from "./js/home/projects.js";
+import { About } from "./js/home/about.js";
 import { TerminalAnimator } from "./js/lib/terminal-animator.js";
 
 // Disable automatic scroll restoration on page reload
@@ -95,3 +96,7 @@ const projectsTerminalElement = document.getElementById("projectsTerminal");
 const projectsTerminalAnimator = new TerminalAnimator(projectsTerminalElement);
 const projects = new Projects();
 projects.init(projectsTerminalAnimator);
+
+// Initialize about section
+const about = new About();
+about.init();
