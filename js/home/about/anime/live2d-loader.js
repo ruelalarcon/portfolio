@@ -4,6 +4,7 @@
  */
 
 import { preloader } from "./preloader.js";
+import { CascadiaASCIIFilter } from "./ascii-filter.js";
 
 class Live2DLoader {
   constructor() {
@@ -61,6 +62,10 @@ class Live2DLoader {
     this.model.scale.set(0.5);
     this.model.x = this.app.screen.width / 2; // Center horizontally
     this.model.y = this.app.screen.height / 1.5; // Slightly below center
+
+    // Apply ASCII filter with Cascadia Code font
+    const asciiFilter = new CascadiaASCIIFilter(12); // 12px cell size
+    this.model.filters = [asciiFilter];
   }
 
   /**
