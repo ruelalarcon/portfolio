@@ -6,6 +6,7 @@ import { Projects } from "./js/home/projects.js";
 import { About } from "./js/home/about.js";
 import { TerminalAnimator } from "./js/lib/terminal-animator.js";
 import { preloader } from "./js/home/about/anime/preloader.js";
+import { videoPreloader } from "./js/home/about/music/preloader.js";
 import { smoothScrollTo } from "./js/core/scroll.js";
 
 // Disable automatic scroll restoration on page reload
@@ -13,8 +14,9 @@ if ("scrollRestoration" in history) {
   history.scrollRestoration = "manual";
 }
 
-// Start preloading Live2D model early
+// Start preloading assets early
 preloader.preload();
+videoPreloader.preload();
 
 // Update header time
 function updateTime() {
