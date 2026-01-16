@@ -1,6 +1,5 @@
 import { TextMorph } from "./js/lib/text-morph.js";
 import { Logo } from "./js/home/logo.js";
-import { NavigationTracker } from "./js/core/navigation.js";
 import { Description } from "./js/home/description.js";
 import { Projects } from "./js/home/projects.js";
 import { About } from "./js/home/about.js";
@@ -37,9 +36,6 @@ function updateTime() {
 // Update time immediately and then every second
 updateTime();
 setInterval(updateTime, 1000);
-
-// Initialize navigation tracking
-const previousPage = NavigationTracker.init("home");
 
 // Initialize description animation system
 const descriptionElement = document.getElementById("heroDescription");
@@ -97,12 +93,8 @@ logo.onAnimationComplete = () => {
   }
 };
 
-// Determine animation duration based on previous page
-const animationDuration =
-  previousPage === "home" || previousPage === null ? 2200 : 800;
-
 // Start logo
-logo.init(animationDuration);
+logo.init(2200);
 
 // Setup hero scroll indicator click handler
 const heroScrollIndicator = document.getElementById("heroScrollIndicator");
