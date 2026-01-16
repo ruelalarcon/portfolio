@@ -5,6 +5,7 @@
  */
 
 import { noiseFunction } from "../core/math.js";
+import { smoothScrollTo } from "../core/scroll.js";
 
 // GitHub language colors mapping
 const LANGUAGE_COLORS = {
@@ -162,7 +163,7 @@ class Projects {
         if (simplebarInstance) {
           const scrollElement = simplebarInstance.getScrollElement();
           const targetOffset = aboutSection.offsetTop;
-          scrollElement.scrollTo({ top: targetOffset, behavior: "smooth" });
+          smoothScrollTo(scrollElement, targetOffset);
         }
       }
     });

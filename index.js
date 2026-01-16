@@ -6,6 +6,7 @@ import { Projects } from "./js/home/projects.js";
 import { About } from "./js/home/about.js";
 import { TerminalAnimator } from "./js/lib/terminal-animator.js";
 import { preloader } from "./js/home/about/anime/preloader.js";
+import { smoothScrollTo } from "./js/core/scroll.js";
 
 // Disable automatic scroll restoration on page reload
 if ("scrollRestoration" in history) {
@@ -113,7 +114,7 @@ if (heroScrollIndicator && bodyContent) {
       if (simplebarInstance) {
         const scrollElement = simplebarInstance.getScrollElement();
         const targetOffset = projectsSection.offsetTop;
-        scrollElement.scrollTo({ top: targetOffset, behavior: "smooth" });
+        smoothScrollTo(scrollElement, targetOffset);
       }
     }
   });
