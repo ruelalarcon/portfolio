@@ -91,9 +91,9 @@ class About {
       {
         type: "output",
         lines: [
-          "Though it's been pretty difficult, even since I was a kid I'd usually try to watch as many seasonal animes as I could. Nothing beats watching an anime as it releases its episodes week by week.",
+          "Watching anime has always been one of my favorite hobbies, ever since I was a kid. Nothing beats watching an anime as it releases its episodes week by week.",
           "",
-          "In general I'd say anime has been a pretty foundational part of my life, from entertainment to also being a major source of inspiration for my creative projects from music to programming.",
+          "In general I'd say anime has been a pretty foundational inspiration for my creative projects in both music to programming.",
         ],
         delay: 0,
       },
