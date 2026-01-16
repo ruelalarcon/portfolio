@@ -405,6 +405,20 @@ a {
     image-rendering: crisp-edges;
 }
 
+.about__thanks {
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    margin-top: 64px;
+    font-family: "Cascadia Code", monospace;
+    opacity: 0;
+    transition: opacity 0.8s ease-out;
+}
+
+.about__thanks.visible {
+    opacity: 1;
+}
+
 /* Live2D TUI pane specific styles */
 .tui-pane__content--live2d {
     min-height: 560px;
@@ -560,7 +574,7 @@ a {
 }
 
 .scroll-indicator__arrow {
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1;
 }
 

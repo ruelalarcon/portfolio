@@ -91,7 +91,7 @@ class About {
       {
         type: "output",
         lines: [
-          "Watching anime has always been one of my favorite hobbies, ever since I was a kid. Nothing beats watching an anime as it releases its episodes week by week.",
+          "Watching anime has always been one of my favorite hobbies, ever since I was a kid. Nothing beats watching an anime as its episodes release week by week.",
           "",
           "In general I'd say anime has been a pretty foundational inspiration for my creative projects in both music to programming.",
         ],
@@ -198,6 +198,12 @@ class About {
     const animation = new MusicAnimation();
     await animation.init(container);
     this.animations.push(animation);
+
+    // Show thanks message
+    const thanksElement = document.querySelector(".about__thanks");
+    if (thanksElement) {
+      thanksElement.classList.add("visible");
+    }
   }
 
   /**
