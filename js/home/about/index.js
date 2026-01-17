@@ -59,7 +59,19 @@ class About {
         delay: 0,
       },
       { type: "pause", duration: 400 },
-      { type: "command", text: "lua cube.lua" },
+      { type: "command", text: "poetry install" },
+      { type: "pause", duration: 100 },
+      {
+        type: "output",
+        lines: [
+          "Installing dependencies from lock file",
+          "",
+          "No dependencies to install or update",
+        ],
+        delay: 50,
+      },
+      { type: "pause", duration: 200 },
+      { type: "command", text: "poetry run python main.py" },
       { type: "pause", duration: 100 },
       { type: "callback", fn: () => this._showCodingVisual(visualElement) },
     ];
@@ -86,15 +98,18 @@ class About {
         delay: 0,
       },
       { type: "pause", duration: 400 },
-      { type: "command", text: "make" },
+      { type: "command", text: "vcpkg install" },
       { type: "pause", duration: 100 },
       {
         type: "output",
-        lines: ["gcc -c waifu.c -o waifu.o", "gcc waifu.o -o waifu"],
+        lines: [
+          "Detecting compiler hash...",
+          "All requested packages are currently installed.",
+        ],
         delay: 50,
       },
       { type: "pause", duration: 200 },
-      { type: "command", text: "./waifu" },
+      { type: "command", text: "cmake --build build && ./build/waifu" },
       { type: "pause", duration: 100 },
       { type: "callback", fn: () => this._showAnimeVisual(visualElement) },
     ];
@@ -123,7 +138,7 @@ class About {
         delay: 0,
       },
       { type: "pause", duration: 400 },
-      { type: "command", text: "cd music_video/ && cargo run" },
+      { type: "command", text: "cargo run" },
       { type: "pause", duration: 100 },
       {
         type: "output",
