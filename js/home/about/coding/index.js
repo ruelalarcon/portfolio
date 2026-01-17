@@ -3,10 +3,9 @@
  * Interactive 3D ASCII cube that rotates based on mouse movement
  */
 
-import { WebGLASCIIRenderer } from "../../lib/ascii-renderer/webgl.js";
-import { CubeRenderer } from "./coding/cube-renderer.js";
+import { WebGLASCIIRenderer } from "../../../lib/ascii-renderer/webgl.js";
+import { CubeRenderer } from "./cube-renderer.js";
 
-// Character set for WebGL renderer - must include all characters the cube uses
 const ASCII_CHARS = " -|/\\⟋⟍";
 
 class CodingAnimation {
@@ -17,23 +16,19 @@ class CodingAnimation {
     this.height = 36;
     this.animationId = null;
 
-    // Cube configuration
     this.cubeSize = 17;
     this.sensitivity = 0.3;
 
-    // Rotation angles
     this.rotationX = 0;
     this.rotationY = 0;
     this.rotationZ = 0;
 
-    // Rotation velocities
     this.velocityX = 0.01;
     this.velocityY = 0.015;
     this.velocityZ = 0.005;
     this.friction = 0.9999;
     this.smoothing = 0.03;
 
-    // Mouse tracking
     this.mouseX = 0;
     this.mouseY = 0;
     this.prevMouseX = 0;
@@ -41,13 +36,9 @@ class CodingAnimation {
     this.isFirstMove = true;
     this.container = null;
 
-    // Bind methods
     this.handleMouseMove = this.handleMouseMove.bind(this);
   }
 
-  /**
-   * Initialize the animation
-   */
   async init(container) {
     if (!container) return;
     this.container = container;
@@ -70,9 +61,6 @@ class CodingAnimation {
     this._startAnimation();
   }
 
-  /**
-   * Handle mouse movement
-   */
   handleMouseMove(event) {
     this.mouseX = event.clientX;
     this.mouseY = event.clientY;
@@ -84,9 +72,6 @@ class CodingAnimation {
     }
   }
 
-  /**
-   * Update rotation
-   */
   updateRotation() {
     const deltaX = this.mouseX - this.prevMouseX;
     const deltaY = this.mouseY - this.prevMouseY;
@@ -104,15 +89,11 @@ class CodingAnimation {
     this.prevMouseX = this.mouseX;
     this.prevMouseY = this.mouseY;
 
-    // Update rotation angles
     this.rotationX += this.velocityX;
     this.rotationY += this.velocityY;
     this.rotationZ += this.velocityZ;
   }
 
-  /**
-   * Start animation loop
-   */
   _startAnimation() {
     const animate = () => {
       this.updateRotation();
@@ -133,9 +114,6 @@ class CodingAnimation {
     animate();
   }
 
-  /**
-   * Update cube size
-   */
   setSize(size) {
     this.cubeSize = size;
     if (this.cubeRenderer) {
@@ -143,16 +121,10 @@ class CodingAnimation {
     }
   }
 
-  /**
-   * Update sensitivity
-   */
   setSensitivity(sensitivity) {
     this.sensitivity = sensitivity;
   }
 
-  /**
-   * Cleanup
-   */
   destroy() {
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);

@@ -7,7 +7,6 @@
 import { noiseFunction } from "../core/math.js";
 import { smoothScrollTo } from "../core/scroll.js";
 
-// GitHub language colors mapping
 const LANGUAGE_COLORS = {
   JavaScript: "#f1e05a",
   TypeScript: "#3178c6",
@@ -35,15 +34,14 @@ const LANGUAGE_COLORS = {
 class Projects {
   constructor() {
     this.projects = [];
-    this.shownIndex = null; // Currently shown project (preview or selected)
-    this.selectedIndex = null; // Selected/locked project (clicked)
-    this.previewIndex = null; // Preview project (hovered)
+    this.shownIndex = null;
+    this.selectedIndex = null;
+    this.previewIndex = null;
     this.mouseY = 0;
     this.processItems = [];
-    this.noiseOffsets = []; // Per-process noise offsets for smooth animation
-    this.onComplete = null; // Callback when TUI is shown
+    this.noiseOffsets = [];
+    this.onComplete = null;
 
-    // DOM element references
     this.listElement = document.getElementById("projectsList");
     this.nameElement = document.getElementById("projectName");
     this.descriptionElement = document.getElementById(
@@ -51,19 +49,17 @@ class Projects {
     );
     this.techElement = document.getElementById("projectTech");
     this.linksElement = document.getElementById("projectLinks");
-    this.layoutElement = null; // Will be set when showing TUI
+    this.layoutElement = null;
   }
 
   init(terminalAnimator) {
     this._parseProjectsFromHTML();
 
-    // Hide the TUI layout initially
     this.layoutElement = document.querySelector(".projects__layout");
     if (this.layoutElement) {
       this.layoutElement.style.display = "none";
     }
 
-    // Setup terminal animation sequence with view trigger
     const sequence = [
       { type: "command", text: "make" },
       { type: "pause", duration: 100 },
@@ -108,44 +104,31 @@ class Projects {
       { type: "callback", fn: () => this._showTUI() },
     ];
 
-    // Setup view trigger - animation will run every time it comes into view
     terminalAnimator.setupViewTrigger(sequence);
   }
 
-  /**
-   * Show the TUI layout and initialize interaction
-   */
   _showTUI() {
-    // Show the layout
     if (this.layoutElement) {
       this.layoutElement.style.display = "grid";
     }
 
     this._renderProcessList();
 
-    // Show default state initially
     this._showDefaultState();
 
-    // Track mouse position for memory proximity calculation
     this._setupMouseTracking();
 
-    // Show scroll indicator
     this._showScrollIndicator();
 
-    // Call completion callback if provided
     if (this.onComplete) {
       this.onComplete();
     }
   }
 
-  /**
-   * Create and show scroll indicator for About section
-   */
   _showScrollIndicator() {
     const container = document.querySelector(".projects .section__container");
     if (!container) return;
 
-    // Create scroll indicator
     const indicator = document.createElement("div");
     indicator.className = "scroll-indicator show";
     indicator.innerHTML = `
@@ -153,12 +136,10 @@ class Projects {
       <span class="scroll-indicator__arrow">v</span>
     `;
 
-    // Add click handler
     indicator.addEventListener("click", () => {
       const aboutSection = document.getElementById("about");
       const bodyContent = document.getElementById("bodyContent");
       if (aboutSection && bodyContent) {
-        // Get the SimpleBar instance and scroll to the about section
         const simplebarInstance = window.SimpleBar.instances.get(bodyContent);
         if (simplebarInstance) {
           const scrollElement = simplebarInstance.getScrollElement();
@@ -168,25 +149,18 @@ class Projects {
       }
     });
 
-    // Append to container
     container.appendChild(indicator);
   }
 
-  /**
-   * Parse project data from hidden HTML element and remove it
-   * Automatically generates random PIDs for each project
-   */
   _parseProjectsFromHTML() {
     const dataElement = document.getElementById("projectsData");
     if (!dataElement) return;
 
     const articles = dataElement.querySelectorAll("article");
 
-    // Generate random starting PID (10000-50000 range for realistic process IDs)
     let currentPid = Math.floor(Math.random() * 40000) + 10000;
 
     this.projects = Array.from(articles).map((article) => {
-      // Use current PID and increment by random amount (50-500) for next one
       const pid = currentPid;
       currentPid += Math.floor(Math.random() * 450) + 50;
 
@@ -194,7 +168,6 @@ class Projects {
       const language = article.dataset.language || "";
       const name = article.querySelector("h3")?.textContent || "";
 
-      // Check for rich HTML description container, fallback to first <p> text
       const descriptionContainer = article.querySelector("[data-description]");
       const description = descriptionContainer
         ? descriptionContainer.innerHTML
@@ -210,13 +183,9 @@ class Projects {
       return { pid, command, language, name, description, tech, links };
     });
 
-    // Remove the data element from DOM
     dataElement.remove();
   }
 
-  /**
-   * Render the process list with header and project rows
-   */
   _renderProcessList() {
     const header = `<div class="process-header"><span class="process-col process-col--pid">PID</span><span class="process-col process-col--language">LANG</span><span class="process-col process-col--name">COMMAND</span><span class="process-col process-col--mem">MEM (MB)</span></div>`;
 
@@ -229,12 +198,10 @@ class Projects {
 
     this.listElement.innerHTML = header + rows;
 
-    // Store process item elements for memory updates
     this.processItems = Array.from(
       this.listElement.querySelectorAll(".process-item"),
     );
 
-    // Add hover and click listeners to process items
     this.processItems.forEach((item) => {
       item.addEventListener("mouseenter", () => {
         this.previewProject(parseInt(item.dataset.index));
@@ -244,17 +211,12 @@ class Projects {
       });
     });
 
-    // Clear preview when mouse leaves the list
     this.listElement.addEventListener("mouseleave", () => {
       this.clearPreview();
     });
   }
 
-  /**
-   * Preview a project on hover (only if not selected)
-   */
   previewProject(index) {
-    // If selected, ignore preview
     if (this.selectedIndex !== null) return;
 
     this.previewIndex = index;
@@ -265,19 +227,14 @@ class Projects {
     this._updateDetailPanes(project);
   }
 
-  /**
-   * Clear preview and return to selected state or default
-   */
   clearPreview() {
     if (this.selectedIndex !== null) {
-      // If selected, return to selected project
       this.shownIndex = this.selectedIndex;
       this.previewIndex = null;
       const project = this.projects[this.selectedIndex];
       this._updateActiveState();
       this._updateDetailPanes(project);
     } else {
-      // If not selected, return to default empty state
       this.shownIndex = null;
       this.previewIndex = null;
       this._updateActiveState();
@@ -285,17 +242,12 @@ class Projects {
     }
   }
 
-  /**
-   * Toggle selection on a project
-   */
   toggleSelection(index) {
     if (this.selectedIndex === index) {
-      // Clicking the selected item unselects it
       this.selectedIndex = null;
       this.previewIndex = null;
       this.shownIndex = null;
     } else {
-      // Select this item
       this.selectedIndex = index;
       this.previewIndex = null;
       this.shownIndex = index;
@@ -305,9 +257,6 @@ class Projects {
     this._updateActiveState();
   }
 
-  /**
-   * Select a project without toggling
-   */
   selectProject(index) {
     this.selectedIndex = index;
     this.shownIndex = index;
@@ -316,9 +265,6 @@ class Projects {
     this._updateDetailPanes(project);
   }
 
-  /**
-   * Update active state in process list
-   */
   _updateActiveState() {
     this.listElement.querySelectorAll(".process-item").forEach((item, i) => {
       const isShown = i === this.shownIndex;
@@ -329,9 +275,6 @@ class Projects {
     });
   }
 
-  /**
-   * Update all detail panes with project data
-   */
   _updateDetailPanes(project) {
     this.nameElement.textContent = project.name;
     this.descriptionElement.innerHTML = project.description;
@@ -339,9 +282,6 @@ class Projects {
     this._renderLinks(project.links);
   }
 
-  /**
-   * Render links pane content
-   */
   _renderLinks(links) {
     if (links.length === 0) {
       this.linksElement.innerHTML =
@@ -357,9 +297,6 @@ class Projects {
       .join("");
   }
 
-  /**
-   * Show default empty state
-   */
   _showDefaultState() {
     const placeholderText = "Hover over a project to preview, click to view";
     this.nameElement.innerHTML = `<span class="tui-pane__placeholder">${placeholderText}</span>`;
@@ -368,24 +305,16 @@ class Projects {
     this.linksElement.innerHTML = `<span class="tui-pane__placeholder">${placeholderText}</span>`;
   }
 
-  /**
-   * Setup mouse tracking for memory proximity calculation
-   */
   _setupMouseTracking() {
-    // Initialize random noise offsets for each process
     this.noiseOffsets = this.projects.map(() => Math.random() * 1000);
 
     document.addEventListener("mousemove", (e) => {
       this.mouseY = e.clientY;
     });
 
-    // Start animation loop
     this._startMemoryAnimation();
   }
 
-  /**
-   * Start continuous memory bar animation
-   */
   _startMemoryAnimation() {
     const animate = () => {
       this._updateMemoryBars();
@@ -394,58 +323,42 @@ class Projects {
     animate();
   }
 
-  /**
-   * Update memory bars based on vertical proximity to cursor
-   */
   _updateMemoryBars() {
-    const time = Date.now() / 1000; // Time in seconds
+    const time = Date.now() / 1000;
 
     this.processItems.forEach((item, index) => {
       const rect = item.getBoundingClientRect();
       const itemCenterY = rect.top + rect.height / 2;
 
-      // Calculate vertical distance
       const distance = Math.abs(this.mouseY - itemCenterY);
 
-      // Calculate proximity factor (closer = higher value)
-      // Max distance of 200px for full falloff
       const maxDistance = 200;
       const proximity = Math.max(0, 1 - distance / maxDistance);
 
-      // Add smooth noise for activity variation using noiseFunction
       const noiseOffset = this.noiseOffsets[index];
-      // Use noiseFunction with offset as spatial coordinates and time
-      // Normalize output from ~[-1,1] to [-0.5, 0.5]
       const noise = noiseFunction(noiseOffset, index, time) * 0.5;
 
-      // Calculate base value from proximity (0-85, weighted at 85%)
       const proximityValue = proximity * 85;
 
-      // Add noise variation
       const noiseVariation = 20 + noise * 40;
 
-      // Combine proximity and noise, clamped to 0-99
       const combinedValue = Math.max(
         0,
         Math.min(99, proximityValue + noiseVariation),
       );
       const memValue = Math.floor(combinedValue);
 
-      // Calculate bar fill (0-6 characters) using the same combined value
       const barFillValue = combinedValue / 100;
       const barFill = Math.floor(barFillValue * 6 + 0.5);
 
-      // Build bar with filled and empty characters
       const filledBar = "█".repeat(barFill);
       const emptyBar = "░".repeat(6 - barFill);
       const bar = filledBar + emptyBar;
 
-      // Update DOM
       const memValueSpan = item.querySelector(".mem-value");
       const memBarSpan = item.querySelector(".mem-bar");
 
       if (memValueSpan && memBarSpan) {
-        // Use non-breaking space for trailing space so HTML doesn't collapse it
         const formattedValue = memValue.toString().padEnd(2, "\u00A0");
         memValueSpan.textContent = formattedValue;
         memBarSpan.textContent = bar;

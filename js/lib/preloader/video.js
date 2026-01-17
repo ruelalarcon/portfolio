@@ -1,18 +1,17 @@
 /**
  * Video Preloader
- * Preloads the video file early to avoid loading delays
+ * Preloads video files early to avoid loading delays
  */
 
-const VIDEO_URL = "resources/video.mp4";
-
 class VideoPreloader {
-  constructor() {
+  constructor(videoUrl) {
+    this.videoUrl = videoUrl;
     this.preloadPromise = null;
   }
 
   /**
    * Start preloading the video
-   * This should be called early in the page lifecycle
+   * Should be called early in the page lifecycle
    */
   preload() {
     if (this.preloadPromise) {
@@ -42,7 +41,7 @@ class VideoPreloader {
         { once: true },
       );
 
-      video.src = VIDEO_URL;
+      video.src = this.videoUrl;
       video.load();
     });
 
@@ -59,7 +58,4 @@ class VideoPreloader {
   }
 }
 
-// Singleton instance
-const videoPreloader = new VideoPreloader();
-
-export { videoPreloader };
+export { VideoPreloader };

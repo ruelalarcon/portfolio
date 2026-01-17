@@ -1,18 +1,16 @@
 /**
  * WebGL-based character grid renderer
- * General-purpose module for rendering colored character grids with transformations
+ * Renders colored character grids with optional transformations using GPU acceleration
  */
 
 import { focusManager } from "../../core/focus-manager.js";
 
 export class WebGLASCIIRenderer {
   constructor(gridWidth, gridHeight, options = {}) {
-    // Grid dimensions
     this.gridWidth = gridWidth;
     this.gridHeight = gridHeight;
     this.totalCells = gridWidth * gridHeight;
 
-    // Configuration
     if (!options.charSet) {
       throw new Error("WebGLASCIIRenderer requires a charSet in options");
     }
@@ -22,9 +20,8 @@ export class WebGLASCIIRenderer {
     this.textureFontSize = options.textureFontSize || 48;
     this.displayFontSize = options.displayFontSize || 12;
     this.enableTextSelection = options.enableTextSelection !== false;
-    this.enableFocusOptimization = options.enableFocusOptimization !== false; // Default: enabled
+    this.enableFocusOptimization = options.enableFocusOptimization !== false;
 
-    // WebGL state
     this.gl = null;
     this.glCanvas = null;
     this.charTexture = null;
@@ -35,23 +32,20 @@ export class WebGLASCIIRenderer {
     this.displayCharWidth = 0;
     this.displayCharHeight = 0;
 
-    // Character map for quick lookups
     this.charToIndex = new Map();
     for (let i = 0; i < this.charSet.length; i++) {
       this.charToIndex.set(this.charSet[i], i);
     }
 
-    // Text selection state
     this.selectionOverlay = null;
     this.isSelecting = false;
     this.selectionStart = null;
     this.selectionEnd = null;
     this.currentChars = null;
 
-    // Focus optimization state
     this.hasFocus = false;
     this.focusId = null;
-    this.pendingFrameData = null; // Store frame data when sleeping
+    this.pendingFrameData = null;
   }
 
   /**
@@ -60,11 +54,8 @@ export class WebGLASCIIRenderer {
    * @returns {Object} Character dimensions and canvas reference
    */
   async init(container) {
-    // Wait for fonts to load
     await document.fonts.ready;
 
-    // Measure character dimensions using actual DOM rendering (same method as DOMASCIIRenderer)
-    // This ensures 1:1 sizing between both renderers
     const measureSpan = document.createElement("span");
     measureSpan.style.font = `${this.displayFontSize}px ${this.font}`;
     measureSpan.style.lineHeight = "1";
@@ -78,7 +69,6 @@ export class WebGLASCIIRenderer {
     this.displayCharHeight = rect.height;
     document.body.removeChild(measureSpan);
 
-    // Calculate texture dimensions by scaling up from display dimensions
     this.charWidth = Math.ceil(
       (this.displayCharWidth * this.textureFontSize) / this.displayFontSize,
     );
@@ -86,7 +76,6 @@ export class WebGLASCIIRenderer {
       (this.displayCharHeight * this.textureFontSize) / this.displayFontSize,
     );
 
-    // Create WebGL canvas
     this.glCanvas = document.createElement("canvas");
     this.glCanvas.width = this.gridWidth * this.charWidth;
     this.glCanvas.height = this.gridHeight * this.charHeight;
@@ -94,10 +83,8 @@ export class WebGLASCIIRenderer {
     this.glCanvas.style.height = `${this.gridHeight * this.displayCharHeight}px`;
     this.glCanvas.style.imageRendering = "auto";
 
-    // Setup container
     container.innerHTML = "";
 
-    // Create wrapper for canvas + overlay positioning
     const canvasWrapper = document.createElement("div");
     canvasWrapper.style.position = "relative";
     canvasWrapper.style.display = "inline-block";
@@ -105,7 +92,6 @@ export class WebGLASCIIRenderer {
     canvasWrapper.appendChild(this.glCanvas);
     container.appendChild(canvasWrapper);
 
-    // Initialize WebGL
     this.gl = this.glCanvas.getContext("webgl", {
       alpha: false,
       antialias: false,
@@ -118,21 +104,17 @@ export class WebGLASCIIRenderer {
 
     await this._initWebGL();
 
-    // Optional text selection
     if (this.enableTextSelection) {
       this._initTextSelection(container);
     }
 
-    // Register with focus manager if optimization is enabled
     if (this.enableFocusOptimization) {
       this.focusId = `webgl-renderer-${Date.now()}-${Math.random()}`;
       focusManager.register(this.focusId, this.glCanvas, (hasFocus) => {
         this._onFocusChange(hasFocus);
       });
-      // Start with focus initially
       this.hasFocus = true;
     } else {
-      // Always have focus if optimization is disabled
       this.hasFocus = true;
     }
 
@@ -148,10 +130,8 @@ export class WebGLASCIIRenderer {
   async _initWebGL() {
     const gl = this.gl;
 
-    // Create character texture atlas
     this._createCharTexture();
 
-    // Vertex shader with transformation support
     const vsSource = `
       attribute vec2 aPosition;
       attribute vec2 aTexCoord;
@@ -166,7 +146,6 @@ export class WebGLASCIIRenderer {
       varying float vCharIndex;
 
       void main() {
-        // Apply scale relative to character center, then offset
         vec2 localPos = aPosition - aCenter;
         vec2 scaledPos = localPos * aScale;
         vec2 finalPos = scaledPos + aCenter + aOffset;
@@ -177,7 +156,6 @@ export class WebGLASCIIRenderer {
       }
     `;
 
-    // Fragment shader
     const fsSource = `
       precision mediump float;
 
@@ -190,7 +168,6 @@ export class WebGLASCIIRenderer {
       uniform float uAtlasRows;
 
       void main() {
-        // Calculate atlas coordinates
         float charX = mod(vCharIndex, uAtlasCols);
         float charY = floor(vCharIndex / uAtlasCols);
 
@@ -206,7 +183,6 @@ export class WebGLASCIIRenderer {
       }
     `;
 
-    // Compile and link shaders
     const vertexShader = this._createShader(gl, gl.VERTEX_SHADER, vsSource);
     const fragmentShader = this._createShader(gl, gl.FRAGMENT_SHADER, fsSource);
 
@@ -223,7 +199,6 @@ export class WebGLASCIIRenderer {
 
     gl.useProgram(this.program);
 
-    // Set uniform values
     const atlasColsLoc = gl.getUniformLocation(this.program, "uAtlasCols");
     const atlasRowsLoc = gl.getUniformLocation(this.program, "uAtlasRows");
     const atlasCols = 16;
@@ -231,10 +206,8 @@ export class WebGLASCIIRenderer {
     gl.uniform1f(atlasColsLoc, atlasCols);
     gl.uniform1f(atlasRowsLoc, atlasRows);
 
-    // Setup buffers
     this._setupBuffers();
 
-    // Get background color from document body
     const bgColor = getComputedStyle(document.body).backgroundColor;
     const rgb = bgColor.match(/\d+/g).map((n) => parseInt(n) / 255);
     gl.clearColor(rgb[0], rgb[1], rgb[2], 1.0);
@@ -261,18 +234,15 @@ export class WebGLASCIIRenderer {
     const atlasCols = 16;
     const atlasRows = Math.ceil(this.charSet.length / atlasCols);
 
-    // Create canvas for character atlas
     const charCanvas = document.createElement("canvas");
     charCanvas.width = this.charWidth * atlasCols;
     charCanvas.height = this.charHeight * atlasRows;
     const ctx = charCanvas.getContext("2d");
 
-    // Background from document body
     const bgColor = getComputedStyle(document.body).backgroundColor;
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, charCanvas.width, charCanvas.height);
 
-    // Render characters
     ctx.fillStyle = "white";
     ctx.font = `${this.textureFontSize}px ${this.font}`;
     ctx.textBaseline = "top";
@@ -284,7 +254,6 @@ export class WebGLASCIIRenderer {
       ctx.fillText(this.charSet[i], x, y);
     }
 
-    // Create WebGL texture
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(
@@ -317,7 +286,6 @@ export class WebGLASCIIRenderer {
       indices: gl.createBuffer(),
     };
 
-    // Generate static geometry for all character quads
     const positions = new Float32Array(this.totalCells * 8);
     const texCoords = new Float32Array(this.totalCells * 8);
     const centers = new Float32Array(this.totalCells * 8);
@@ -334,7 +302,6 @@ export class WebGLASCIIRenderer {
       const py = 1.0 - y * cellHeight;
 
       const vi = i * 8;
-      // Quad vertices
       const halfW = cellWidth / 2;
       const halfH = cellHeight / 2;
       const cx = px + halfW;
@@ -349,7 +316,6 @@ export class WebGLASCIIRenderer {
       positions[vi + 6] = cx - halfW;
       positions[vi + 7] = cy - halfH;
 
-      // Center position for each vertex (same for all 4 vertices of the quad)
       centers[vi] = cx;
       centers[vi + 1] = cy;
       centers[vi + 2] = cx;
@@ -359,7 +325,6 @@ export class WebGLASCIIRenderer {
       centers[vi + 6] = cx;
       centers[vi + 7] = cy;
 
-      // Texture coordinates
       texCoords[vi] = 0;
       texCoords[vi + 1] = 0;
       texCoords[vi + 2] = 1;
@@ -369,7 +334,6 @@ export class WebGLASCIIRenderer {
       texCoords[vi + 6] = 0;
       texCoords[vi + 7] = 1;
 
-      // Indices
       const ii = i * 6;
       const base = i * 4;
       indices[ii] = base;
@@ -380,7 +344,6 @@ export class WebGLASCIIRenderer {
       indices[ii + 5] = base + 3;
     }
 
-    // Upload static data
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.position);
     gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
 
@@ -393,7 +356,6 @@ export class WebGLASCIIRenderer {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
-    // Allocate dynamic buffers (4 vertices per cell)
     const vertexCount = this.totalCells * 4;
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.color);
     gl.bufferData(gl.ARRAY_BUFFER, vertexCount * 3 * 4, gl.DYNAMIC_DRAW);
@@ -408,15 +370,10 @@ export class WebGLASCIIRenderer {
     gl.bufferData(gl.ARRAY_BUFFER, vertexCount * 2 * 4, gl.DYNAMIC_DRAW);
   }
 
-  /**
-   * Handle focus change from FocusManager
-   * @param {boolean} hasFocus - Whether this renderer now has focus
-   */
   _onFocusChange(hasFocus) {
     const wasAsleep = !this.hasFocus;
     this.hasFocus = hasFocus;
 
-    // If waking up and we have pending frame data, render it
     if (wasAsleep && hasFocus && this.pendingFrameData) {
       this._renderFrame(this.pendingFrameData);
       this.pendingFrameData = null;
@@ -425,31 +382,20 @@ export class WebGLASCIIRenderer {
 
   /**
    * Render the character grid
-   * @param {Object} frameData - Frame data with characters, colors, and optional transformations
-   * @param {Array<string>} frameData.chars - Characters for each cell (length = gridWidth * gridHeight)
-   * @param {Array<Array<number>>} frameData.colors - RGB colors for each cell [[r,g,b], ...] (0-1 range)
-   * @param {Array<Object>} [frameData.transforms] - Optional transformations per cell
-   * @param {number} [frameData.transforms[].scale] - Uniform scale factor (default: 1.0)
-   * @param {number} [frameData.transforms[].scaleX] - X scale factor (default: 1.0)
-   * @param {number} [frameData.transforms[].scaleY] - Y scale factor (default: 1.0)
-   * @param {number} [frameData.transforms[].offsetX] - X offset in clip space (default: 0)
-   * @param {number} [frameData.transforms[].offsetY] - Y offset in clip space (default: 0)
+   * @param {Object} frameData - Frame data with characters, colors, and optional transforms
+   * @param {Array<string>} frameData.chars - Characters for each cell
+   * @param {Array<Array<number>>} frameData.colors - RGB colors (0-1 range)
+   * @param {Array<Object>} frameData.transforms - Optional per-cell transforms
    */
   render(frameData) {
-    // If we don't have focus, store the frame data and skip rendering
     if (!this.hasFocus) {
       this.pendingFrameData = frameData;
       return;
     }
 
-    // Render immediately if we have focus
     this._renderFrame(frameData);
   }
 
-  /**
-   * Internal render method that actually performs WebGL rendering
-   * @param {Object} frameData - Frame data
-   */
   _renderFrame(frameData) {
     const gl = this.gl;
     const { chars, colors, transforms } = frameData;
@@ -460,12 +406,10 @@ export class WebGLASCIIRenderer {
       );
     }
 
-    // Store current frame for text selection
     if (this.enableTextSelection) {
       this.currentChars = chars;
     }
 
-    // Prepare data arrays
     const vertexCount = this.totalCells * 4;
     const colorData = new Float32Array(vertexCount * 3);
     const charIndexData = new Float32Array(vertexCount);
@@ -477,39 +421,31 @@ export class WebGLASCIIRenderer {
       const color = colors[i];
       const transform = transforms?.[i] || {};
 
-      // Get character index
       const charIdx = this.charToIndex.get(char) || 0;
 
-      // Extract transformation values
       const scale = transform.scale || 1.0;
       const scaleX = transform.scaleX !== undefined ? transform.scaleX : scale;
       const scaleY = transform.scaleY !== undefined ? transform.scaleY : scale;
       const offsetX = transform.offsetX || 0;
       const offsetY = transform.offsetY || 0;
 
-      // Set data for all 4 vertices of this quad
       for (let v = 0; v < 4; v++) {
         const vi = i * 4 + v;
 
-        // Color
         colorData[vi * 3] = color[0];
         colorData[vi * 3 + 1] = color[1];
         colorData[vi * 3 + 2] = color[2];
 
-        // Character index
         charIndexData[vi] = charIdx;
 
-        // Scale
         scaleData[vi * 2] = scaleX;
         scaleData[vi * 2 + 1] = scaleY;
 
-        // Offset
         offsetData[vi * 2] = offsetX;
         offsetData[vi * 2 + 1] = offsetY;
       }
     }
 
-    // Update buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.color);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, colorData);
 
@@ -522,7 +458,6 @@ export class WebGLASCIIRenderer {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.offset);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, offsetData);
 
-    // Set up attributes
     const posLoc = gl.getAttribLocation(this.program, "aPosition");
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.position);
     gl.enableVertexAttribArray(posLoc);
@@ -558,23 +493,16 @@ export class WebGLASCIIRenderer {
     gl.enableVertexAttribArray(centerLoc);
     gl.vertexAttribPointer(centerLoc, 2, gl.FLOAT, false, 0, 0);
 
-    // Draw
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
     gl.drawElements(gl.TRIANGLES, this.totalCells * 6, gl.UNSIGNED_SHORT, 0);
 
-    // Update selection overlay if active
     if (this.enableTextSelection && this.selectionStart && this.selectionEnd) {
       this._renderSelection();
     }
   }
 
-  /**
-   * Initialize text selection overlay and event handlers
-   * @param {HTMLElement} container - Container element for the overlay
-   */
   _initTextSelection(container) {
-    // Create selection overlay
     this.selectionOverlay = document.createElement("canvas");
     this.selectionOverlay.width = this.glCanvas.width;
     this.selectionOverlay.height = this.glCanvas.height;
@@ -585,7 +513,6 @@ export class WebGLASCIIRenderer {
     this.selectionOverlay.style.height = this.glCanvas.style.height;
     this.selectionOverlay.style.pointerEvents = "none";
 
-    // Append to the canvas wrapper (parent of glCanvas)
     this.glCanvas.parentElement.appendChild(this.selectionOverlay);
 
     this._setupSelectionHandlers();
@@ -654,7 +581,6 @@ export class WebGLASCIIRenderer {
     };
 
     const onCopy = (e) => {
-      // Only intercept copy if we have an active selection in this renderer
       if (
         this.selectionStart &&
         this.selectionEnd &&
@@ -665,7 +591,6 @@ export class WebGLASCIIRenderer {
         const text = this._getSelectedText();
         e.clipboardData.setData("text/plain", text);
       }
-      // Otherwise, let the browser handle the copy event normally
     };
 
     document.addEventListener("mousedown", onMouseDown);
@@ -687,7 +612,6 @@ export class WebGLASCIIRenderer {
     const start = Math.min(this.selectionStart.index, this.selectionEnd.index);
     const end = Math.max(this.selectionStart.index, this.selectionEnd.index);
 
-    // Windows selection style
     ctx.fillStyle = "#0236a0";
 
     for (let i = start; i <= end; i++) {
@@ -696,7 +620,6 @@ export class WebGLASCIIRenderer {
       ctx.fillRect(x, y, this.charWidth, this.charHeight);
     }
 
-    // Draw white text over selection
     ctx.fillStyle = "white";
     ctx.font = `${this.textureFontSize}px ${this.font}`;
     ctx.textBaseline = "top";
@@ -721,7 +644,6 @@ export class WebGLASCIIRenderer {
     for (let i = start; i <= end; i++) {
       const x = i % this.gridWidth;
       const char = this.currentChars[i];
-      // Skip undefined characters (shouldn't happen, but safety check)
       if (char !== undefined) {
         text += char;
       }
@@ -733,18 +655,10 @@ export class WebGLASCIIRenderer {
     return text;
   }
 
-  /**
-   * Get the canvas element
-   * @returns {HTMLCanvasElement}
-   */
   getCanvas() {
     return this.glCanvas;
   }
 
-  /**
-   * Get character and grid dimensions
-   * @returns {Object}
-   */
   getDimensions() {
     return {
       gridWidth: this.gridWidth,
@@ -756,9 +670,6 @@ export class WebGLASCIIRenderer {
     };
   }
 
-  /**
-   * Cleanup method - unregister from focus manager
-   */
   destroy() {
     if (this.enableFocusOptimization && this.focusId) {
       focusManager.unregister(this.focusId);

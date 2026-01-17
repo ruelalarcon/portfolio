@@ -1,10 +1,23 @@
 /**
  * Music Animation
- * Coordinator for video player in the music section
+ * Coordinates video player and playbar for the music section
  */
 
-import { VideoPlayer } from "./music/video-player.js";
-import { Playbar } from "./music/playbar.js";
+import { VideoPlayer } from "./video-player.js";
+import { Playbar } from "./playbar.js";
+import { VideoPreloader } from "../../../lib/preloader/video.js";
+
+const VIDEO_URL = "resources/video.mp4";
+
+const preloader = new VideoPreloader(VIDEO_URL);
+
+/**
+ * Start preloading the video
+ * Should be called early in the page lifecycle
+ */
+function preload() {
+  return preloader.preload();
+}
 
 class MusicAnimation {
   constructor() {
@@ -13,49 +26,31 @@ class MusicAnimation {
   }
 
   /**
-   * Initialize the animation
+   * Initialize the video player and playbar
    * @param {HTMLElement} container - Container element for the video and playbar
    */
   async init(container) {
     if (!container) return;
 
-    // Initialize video player
     this.videoPlayer = new VideoPlayer();
     const videoElement = await this.videoPlayer.init(
       container,
-      () => {
-        // Setup playbar after video is ready
-        this._setupPlaybar(container, videoElement);
-      },
-      () => {
-        // Update playbar each frame
-        this._updatePlaybar();
-      },
+      () => this._setupPlaybar(container, videoElement),
+      () => this._updatePlaybar(),
     );
   }
 
-  /**
-   * Setup playbar controls
-   * @param {HTMLElement} container - Container for the playbar
-   * @param {HTMLVideoElement} videoElement - Video element to control
-   */
   _setupPlaybar(container, videoElement) {
     this.playbar = new Playbar(videoElement, container);
     this.playbar.init();
   }
 
-  /**
-   * Update playbar display
-   */
   _updatePlaybar() {
     if (this.playbar) {
       this.playbar.update();
     }
   }
 
-  /**
-   * Cleanup method
-   */
   destroy() {
     if (this.videoPlayer && this.videoPlayer.destroy) {
       this.videoPlayer.destroy();
@@ -68,4 +63,4 @@ class MusicAnimation {
   }
 }
 
-export { MusicAnimation };
+export { MusicAnimation, preload };

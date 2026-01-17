@@ -3,10 +3,8 @@
  * Renders a rotating 3D cube using ASCII characters with simple Euler angles
  */
 
-// Character aspect ratio (height/width) for monospace font
 const CHAR_ASPECT_RATIO = 2.0;
 
-// Angle to character mappings for line rendering
 const ANGLE_CHAR_MAP = [
   { angle: 0, char: "-" },
   { angle: 45, char: "⟍" },
@@ -22,20 +20,19 @@ const ANGLE_CHAR_MAP = [
   { angle: -135, char: "⟍" },
 ];
 
-// Cube edges (pairs of vertex indices)
 const CUBE_EDGES = [
   [0, 1],
   [1, 2],
   [2, 3],
-  [3, 0], // Back face
+  [3, 0],
   [4, 5],
   [5, 6],
   [6, 7],
-  [7, 4], // Front face
+  [7, 4],
   [0, 4],
   [1, 5],
   [2, 6],
-  [3, 7], // Connecting edges
+  [3, 7],
 ];
 
 class CubeRenderer {
@@ -47,9 +44,6 @@ class CubeRenderer {
     this.initGrid();
   }
 
-  /**
-   * Initialize empty grid
-   */
   initGrid() {
     this.grid = [];
     for (let y = 0; y < this.height; y++) {
@@ -61,7 +55,9 @@ class CubeRenderer {
   }
 
   /**
-   * Get character and threshold based on angle
+   * Get the appropriate ASCII character for a given angle
+   * @param {number} angleDegrees - Line angle in degrees
+   * @returns {Object} Character and threshold for line drawing
    */
   getCharForAngle(angleDegrees) {
     let closestMapping = null;
@@ -85,9 +81,6 @@ class CubeRenderer {
     return { char: closestMapping.char, threshold: threshold };
   }
 
-  /**
-   * Calculate the angle range covered by a mapping
-   */
   calculateAngleRange(mapping) {
     if (ANGLE_CHAR_MAP.length <= 1) return 45;
 
@@ -102,9 +95,6 @@ class CubeRenderer {
     return distances[0] || 45;
   }
 
-  /**
-   * Calculate angle between two points
-   */
   calculateAngle(x1, y1, x2, y2) {
     const dx = x2 - x1;
     const dy = y2 - y1;
@@ -113,9 +103,6 @@ class CubeRenderer {
     return angle;
   }
 
-  /**
-   * Calculate distance from point to line segment
-   */
   distanceToLineSegment(px, py, x1, y1, x2, y2) {
     const dx = x2 - x1;
     const dy = y2 - y1;
@@ -138,9 +125,6 @@ class CubeRenderer {
     return Math.sqrt(dpx * dpx + dpy * dpy);
   }
 
-  /**
-   * Draw line using ASCII characters
-   */
   drawLine(x0, y0, x1, y1, char, threshold) {
     if (x0 === x1 && y0 === y1) {
       if (x0 >= 0 && x0 < this.width && y0 >= 0 && y0 < this.height) {
@@ -179,9 +163,6 @@ class CubeRenderer {
     }
   }
 
-  /**
-   * 3D rotation around X axis
-   */
   rotateX(point, angle) {
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
@@ -192,9 +173,6 @@ class CubeRenderer {
     };
   }
 
-  /**
-   * 3D rotation around Y axis
-   */
   rotateY(point, angle) {
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
@@ -205,9 +183,6 @@ class CubeRenderer {
     };
   }
 
-  /**
-   * 3D rotation around Z axis
-   */
   rotateZ(point, angle) {
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
@@ -218,9 +193,6 @@ class CubeRenderer {
     };
   }
 
-  /**
-   * Project 3D point to 2D screen
-   */
   project3D(point) {
     const scale = 200 / (200 + point.z);
     return {
@@ -230,20 +202,17 @@ class CubeRenderer {
     };
   }
 
-  /**
-   * Get cube vertices
-   */
   getCubeVertices() {
     const s = this.size;
     return [
-      { x: -s, y: -s, z: -s }, // 0
-      { x: s, y: -s, z: -s }, // 1
-      { x: s, y: s, z: -s }, // 2
-      { x: -s, y: s, z: -s }, // 3
-      { x: -s, y: -s, z: s }, // 4
-      { x: s, y: -s, z: s }, // 5
-      { x: s, y: s, z: s }, // 6
-      { x: -s, y: s, z: s }, // 7
+      { x: -s, y: -s, z: -s },
+      { x: s, y: -s, z: -s },
+      { x: s, y: s, z: -s },
+      { x: -s, y: s, z: -s },
+      { x: -s, y: -s, z: s },
+      { x: s, y: -s, z: s },
+      { x: s, y: s, z: s },
+      { x: -s, y: s, z: s },
     ];
   }
 
@@ -259,7 +228,6 @@ class CubeRenderer {
 
     const vertices = this.getCubeVertices();
 
-    // Rotate all vertices
     const rotatedVertices = vertices.map((v) => {
       let rotated = this.rotateX(v, rotationX);
       rotated = this.rotateY(rotated, rotationY);
@@ -267,10 +235,8 @@ class CubeRenderer {
       return rotated;
     });
 
-    // Project to 2D
     const projectedVertices = rotatedVertices.map((v) => this.project3D(v));
 
-    // Sort edges by average Z depth (painter's algorithm)
     const edgesWithDepth = CUBE_EDGES.map((edge) => {
       const avgZ =
         (rotatedVertices[edge[0]].z + rotatedVertices[edge[1]].z) / 2;
@@ -278,7 +244,6 @@ class CubeRenderer {
     });
     edgesWithDepth.sort((a, b) => a.avgZ - b.avgZ);
 
-    // Draw all edges
     edgesWithDepth.forEach(({ edge }) => {
       const v1 = projectedVertices[edge[0]];
       const v2 = projectedVertices[edge[1]];
@@ -289,7 +254,6 @@ class CubeRenderer {
       this.drawLine(v1.x, v1.y, v2.x, v2.y, charInfo.char, charInfo.threshold);
     });
 
-    // Flatten grid to character array
     const chars = [];
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
@@ -300,9 +264,6 @@ class CubeRenderer {
     return chars;
   }
 
-  /**
-   * Update cube size
-   */
   setSize(size) {
     this.size = size;
   }

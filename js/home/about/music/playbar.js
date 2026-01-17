@@ -1,6 +1,6 @@
 /**
  * Video playbar controls
- * Standalone module with integrated constants
+ * Handles play/pause, seeking, and progress display
  */
 
 const GLYPHS = "░▒▓█▀▄▌▐╔╗╚╝║═╠╣╦╩╬├┤┬┴┼│─■□◊◦•○●";
@@ -58,7 +58,6 @@ export class Playbar {
           if (this.video.duration && isFinite(this.video.duration)) {
             const targetTime = seekProgress * this.video.duration;
 
-            // Check if the target time is seekable
             const seekable = this.video.seekable;
             let canSeek = false;
             for (let i = 0; i < seekable.length; i++) {
@@ -99,17 +98,15 @@ export class Playbar {
    * @param {number} targetTime - Target time in seconds
    */
   smoothSeek(targetTime) {
-    // Cancel any ongoing seek animation
     if (this.seekAnimationId) {
       cancelAnimationFrame(this.seekAnimationId);
     }
 
     const startTime = this.video.currentTime;
     const startTimestamp = performance.now();
-    const duration = 200; // 0.2s in milliseconds
+    const duration = 200;
     const wasPlaying = !this.video.paused;
 
-    // Pause video during seek
     this.video.pause();
     this.isSeeking = true;
     this.seekStartTime = startTime;
@@ -119,22 +116,18 @@ export class Playbar {
       const elapsed = timestamp - startTimestamp;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Ease-out cubic for smooth deceleration
       const easedProgress = 1 - Math.pow(1 - progress, 3);
 
-      // Interpolate between start and target time
       const currentTime = startTime + (targetTime - startTime) * easedProgress;
       this.video.currentTime = currentTime;
 
       if (progress < 1) {
         this.seekAnimationId = requestAnimationFrame(animate);
       } else {
-        // Ensure we land exactly on target
         this.video.currentTime = targetTime;
         this.isSeeking = false;
         this.seekAnimationId = null;
 
-        // Resume playback if it was playing before
         if (wasPlaying) {
           this.video.play().catch((err) => console.error("Play error:", err));
         }
@@ -144,9 +137,6 @@ export class Playbar {
     this.seekAnimationId = requestAnimationFrame(animate);
   }
 
-  /**
-   * Update the playbar display
-   */
   update() {
     if (!this.playbarElement || !this.video) return;
 
@@ -175,7 +165,7 @@ export class Playbar {
   }
 
   /**
-   * Animate button text morphing
+   * Animate button text morphing with glitch effect
    * @param {string} targetText - Target text to morph to
    * @param {number} duration - Animation duration in milliseconds
    */
@@ -254,10 +244,6 @@ export class Playbar {
     }
   }
 
-  /**
-   * Check if currently seeking
-   * @returns {boolean} True if seeking
-   */
   isSeekingVideo() {
     return this.isSeeking;
   }

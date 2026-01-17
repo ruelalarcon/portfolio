@@ -1,7 +1,6 @@
 /**
  * Smooth scroll utility
  * Provides consistent cross-browser smooth scrolling using requestAnimationFrame
- * Standalone module - only imports easing function from math.js
  */
 
 import { easeInOutCubic } from "./math.js";
@@ -19,7 +18,6 @@ export function smoothScrollTo(element, targetTop, duration = 600) {
     const distance = targetTop - startTop;
     const startTime = performance.now();
 
-    // Skip animation if already at target
     if (Math.abs(distance) < 1) {
       resolve();
       return;

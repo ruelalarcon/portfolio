@@ -1,6 +1,6 @@
 /**
  * Video Player for Music Section
- * Handles video playback and ASCII rendering
+ * Handles video playback and ASCII rendering via WebGL
  */
 
 import { WebGLASCIIRenderer } from "../../../lib/ascii-renderer/webgl.js";
@@ -46,9 +46,7 @@ export class VideoPlayer {
     this.video.addEventListener(
       "loadedmetadata",
       () => this._onVideoLoaded(container, onReady),
-      {
-        once: true,
-      },
+      { once: true },
     );
     this.video.addEventListener("playing", () => this._renderFrame(), {
       once: true,
@@ -60,7 +58,6 @@ export class VideoPlayer {
   }
 
   async _onVideoLoaded(container, onReady) {
-    const aspectRatio = this.video.videoWidth / this.video.videoHeight;
     this.videoWidth = 106;
     this.videoHeight = 35;
     this.canvas.width = this.videoWidth;
@@ -72,13 +69,10 @@ export class VideoPlayer {
       onReady();
     }
 
-    // Don't auto-play, wait for user to click play
-    // Render first frame while paused
     this._renderFrame();
   }
 
   async _setupWebGL(container) {
-    // Create TUI pane wrapper with border
     const tuiPane = document.createElement("div");
     tuiPane.className = "tui-pane";
 
@@ -93,13 +87,12 @@ export class VideoPlayer {
 
     const content = document.createElement("div");
     content.className = "tui-pane__content";
-    content.style.padding = "0"; // No padding for canvas
+    content.style.padding = "0";
 
     tuiPane.appendChild(borderTop);
     tuiPane.appendChild(content);
     container.appendChild(tuiPane);
 
-    // Initialize WebGL renderer with video-specific configuration
     this.renderer = new WebGLASCIIRenderer(this.videoWidth, this.videoHeight, {
       charSet: ASCII_CHARS,
       font: "'Cascadia Code', monospace",
@@ -109,16 +102,14 @@ export class VideoPlayer {
     });
     const { canvas } = await this.renderer.init(content);
 
-    // Render initial frame with default character (first ASCII char) so canvas isn't black
     const totalPixels = this.videoWidth * this.videoHeight;
     const defaultChar = ASCII_CHARS[0];
-    const defaultColor = [0.5, 0.5, 0.5]; // Medium gray
+    const defaultColor = [0.5, 0.5, 0.5];
     this.renderer.render({
       chars: new Array(totalPixels).fill(defaultChar),
       colors: new Array(totalPixels).fill(defaultColor),
     });
 
-    // Handle fade-in animation
     canvas.style.opacity = "0";
     canvas.style.transition = "opacity 0.5s ease-in-out";
     requestAnimationFrame(() => {
@@ -127,8 +118,6 @@ export class VideoPlayer {
   }
 
   _renderFrame() {
-    // Always render the current frame, even when paused (for seeking)
-    // Draw video to canvas and get image data
     this.context.drawImage(this.video, 0, 0, this.videoWidth, this.videoHeight);
     const imageData = this.context.getImageData(
       0,
@@ -137,13 +126,10 @@ export class VideoPlayer {
       this.videoHeight,
     );
 
-    // Convert video data to character grid format
     const frameData = this._videoToFrameData(imageData);
 
-    // Render with WebGL
     this.renderer.render(frameData);
 
-    // Update playbar
     if (this.updateCallback) {
       this.updateCallback();
     }
@@ -169,14 +155,11 @@ export class VideoPlayer {
       const g = imageData.data[pixelIndex + 1];
       const b = imageData.data[pixelIndex + 2];
 
-      // Calculate brightness (weighted RGB)
       const brightness = (r * 77 + g * 150 + b * 29) >> 8;
 
-      // Map brightness to character index
       const charIdx = ~~((brightness * charCount) / 255);
       chars[i] = ASCII_CHARS[charIdx];
 
-      // Convert RGB to 0-1 range
       colors[i] = [r / 255, g / 255, b / 255];
     }
 
@@ -188,9 +171,6 @@ export class VideoPlayer {
     this.video.play();
   }
 
-  /**
-   * Cleanup method
-   */
   destroy() {
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);

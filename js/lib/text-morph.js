@@ -1,6 +1,6 @@
 /**
  * Text morphing animation utility
- * Standalone module with no external dependencies
+ * Animates text changes with a glitch effect using random glyphs
  */
 
 const GLYPHS = "░▒▓█▀▄▌▐╔╗╚╝║═╠╣╦╩╬├┤┬┴┼│─■□◊◦•○●";
@@ -15,7 +15,10 @@ export const TextMorph = {
     const startText = element.textContent;
     const maxLength = Math.max(startText.length, targetText.length);
     const startTimestamp = performance.now();
-    const characterDelays = Array.from({ length: maxLength }, () => Math.random() * 0.5);
+    const characterDelays = Array.from(
+      { length: maxLength },
+      () => Math.random() * 0.5,
+    );
 
     const animate = (timestamp) => {
       const elapsed = timestamp - startTimestamp;

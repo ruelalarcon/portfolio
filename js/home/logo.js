@@ -6,47 +6,38 @@
 import { DOMASCIIRenderer } from "../lib/ascii-renderer/dom.js";
 import { easeInOutCubic, noiseFunction } from "../core/math.js";
 
-// Logo data
 const LOGO_ASCII = atob(
-  "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAsLCAgICAgICAgICAgICAgICAgICAgICAsLCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApgN01NIiIiTXEuICAgICAgICAgICAgICAgICAgICBgN01NICAgICAgICAgICAgZGIgICAgICBgN01NICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgTU0gICBgTU0uICAgICAgICAgICAgICAgICAgICAgTU0gICAgICAgICAgIDtNTTogICAgICAgTU0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICBNTSAgICxNOSBgN01NIiBgN01NICAuZ1AiWWEgICBNTSAgICAgICAgICAsVl5NTS4gICAgICBNTSAgICw2IlliLiAgYDdNYixvZDggLHA2ImJvICAgLHBXIldxLmA3TU1wTU1NYi4gIAogIE1NbW1kTTkgICAgTU0gICAgTU0gLE0nICAgWWIgIE1NICAgICAgICAgLE0gIGBNTSAgICAgIE1NICA4KSAgIE1NICAgIE1NJyAiJzZNJyAgT08gIDZXJyAgIGBXYiBNTSAgICBNTSAgCiAgTU0gIFlNLiAgICBNTSAgICBNTSA4TSIiIiIiIiAgTU0gICAgICAgICBBYm1tbXFNQSAgICAgTU0gICAscG05TU0gICAgTU0gICAgOE0gICAgICAgOE0gICAgIE04IE1NICAgIE1NICAKICBNTSAgIGBNYi4gIE1NICAgIE1NIFlNLiAgICAsICBNTSAgICAgICAgQScgICAgIFZNTCAgICBNTSAgOE0gICBNTSAgICBNTSAgICBZTS4gICAgLCBZQS4gICAsQTkgTU0gICAgTU0gIAouSk1NTC4gLkpNTS4gYE1ib2QiWU1MLmBNYm1tZCcuSk1NTC4gICAgLkFNQS4gICAuQU1NQS4uSk1NTC5gTW9vOV5Zby4uSk1NTC4gICBZTWJtZCcgICBgWWJtZDknLkpNTUwgIEpNTUwu",
+  "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAsLCAgICAgICAgICAgICAgICAgICAgICAsLCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApgN01NIiIiTXEuICAgICAgICAgICAgICAgICAgICBgN01NICAgICAgICAgICAgZGIgICAgICBgN01NICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgTU0gICBgTU0uICAgICAgICAgICAgICAgICAgICAgTU0gICAgICAgICAgIDtNTTogICAgICAgTU0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICBNTSAgICxNOSBgN01NIiBgN01NICAuZ1AiWWEgICBNTSAgICAgICAgICAsVl5NTS4gICAgICBNTCAgICw2IlliLiAgYDdNYixvZDggLHA2ImJvICAgLHBXIldxLmA3TU1wTU1NYi4gIAogIE1NbW1kTTkgICAgTU0gICAgTU0gLE0nICAgWWIgIE1NICAgICAgICAgLE0gIGBNTSAgICAgIE1NICA4KSAgIE1NICAgIE1NJyAiJzZNJyAgT08gIDZXJyAgIGBXYiBNTSAgICBNTSAgCiAgTU0gIFlNLiAgICBNTSAgICBNTSA4TSIiIiIiIiAgTU0gICAgICAgICBBYm1tbXFNQSAgICAgTU0gICAscG05TU0gICAgTU0gICAgOE0gICAgICAgOE0gICAgIE04IE1NICAgIE1NICAKICBNTSAgIGBNYi4gIE1NICAgIE1NIFlNLiAgICAsICBNTSAgICAgICAgQScgICAgIFZNTCAgICBNTSAgOE0gICBNTSAgICBNTSAgICBZTS4gICAgLCBZQS4gICAsQTkgTU0gICAgTU0gIAouSk1NTC4gLkpNTS4gYE1ib2QiWU1MLmBNYm1tZCcuSk1NTC4gICAgLkFNQS4gICAuQU1NQS4uSk1NTC5gTW9vOV5Zby4uSk1NTC4gICBZTWJtZCcgICBgWWJtZDknLkpNTUwgIEpNTUwu",
 );
 const LOGO_LINES = LOGO_ASCII.split("\n");
 
-// Animation character sets
 const STATIC_CHARS = "░▒▓█▀▄▌▐■□▪▫●○◐◑◒◓";
 const GLITCH_CHARS = "╔╗╚╝║═╠╣╦╩╬├┤┬┴┼│─";
 
-// Complete character set for renderer (all unique chars in logo + animation chars)
 const ALL_CHARS = [...new Set(LOGO_ASCII + STATIC_CHARS + GLITCH_CHARS)].join(
   "",
 );
 
-// Default animation duration
 const DEFAULT_ANIMATION_DURATION = 2200;
 
 export class Logo {
   constructor(containerElement) {
     this.containerElement = containerElement;
 
-    // Calculate grid dimensions
     this.gridWidth = LOGO_LINES[0].length;
     this.gridHeight = LOGO_LINES.length;
     this.totalCells = this.gridWidth * this.gridHeight;
 
-    // Renderer
     this.renderer = null;
 
-    // Animation state
     this.animationDuration = DEFAULT_ANIMATION_DURATION;
     this.animationStartTime = null;
     this.characterSeeds = [];
     this.isAnimating = true;
     this.animationComplete = false;
 
-    // Callback for when animation finishes
     this.onAnimationComplete = null;
 
-    // Ripple effect state
     this.rippleState = {
       ripples: [],
       sparks: [],
@@ -63,13 +54,11 @@ export class Logo {
       lastCleanupTime: 0,
     };
 
-    // Performance: Reuse arrays to avoid allocations
     this.frameChars = new Array(this.totalCells);
     this.frameColors = new Array(this.totalCells);
     this.frameTransforms = new Array(this.totalCells);
     this.effectsCache = new Array(this.totalCells);
 
-    // Performance: Pre-compute aspect ratio constant (characters are taller than wide)
     this.aspectRatio = 2.2;
 
     this.onComplete = null;
@@ -78,12 +67,10 @@ export class Logo {
   async init(duration = DEFAULT_ANIMATION_DURATION) {
     this.animationDuration = duration;
 
-    // Generate character seeds for animation
     this.characterSeeds = Array.from({ length: this.totalCells }, () =>
       Math.random(),
     );
 
-    // Initialize renderer
     this.renderer = new DOMASCIIRenderer(this.gridWidth, this.gridHeight, {
       charSet: ALL_CHARS,
       font: "'Cascadia Code', monospace",
@@ -93,11 +80,9 @@ export class Logo {
 
     await this.renderer.init(this.containerElement);
 
-    // Setup ripple event listeners
     this._initGlobalMouseTracking();
     this._attachEventListeners();
 
-    // Start animation loop
     requestAnimationFrame((ts) => this._animate(ts));
   }
 
@@ -123,7 +108,6 @@ export class Logo {
     const clickX = (event.clientX - rect.left) / charWidth;
     const clickY = (event.clientY - rect.top) / charHeight;
 
-    // Create multiple ripples for click effect
     for (let i = 0; i < 8; i++) {
       this.rippleState.ripples.push({
         x: clickX,
@@ -135,7 +119,6 @@ export class Logo {
       });
     }
 
-    // Create sparks
     for (let i = 0; i < 30; i++) {
       const angle = Math.random() * Math.PI * 2;
       const sparkSpeed = 4 + Math.random() * 10;
@@ -163,7 +146,6 @@ export class Logo {
     this.rippleState.lastFrameTime = timestamp;
     this.rippleState.globalTime += deltaTime;
 
-    // Update mouse position for ripple effects
     if (!this.isAnimating) {
       this._updateMousePosition();
       this._updateRippleEffects(deltaTime);
@@ -171,10 +153,8 @@ export class Logo {
       this._updateSparks(deltaTime);
     }
 
-    // Render frame
     this._renderFrame(timestamp);
 
-    // Continue animation loop
     requestAnimationFrame((ts) => this._animate(ts));
   }
 
@@ -184,7 +164,6 @@ export class Logo {
     const transforms = this.frameTransforms;
 
     if (this.isAnimating) {
-      // Animation phase: glitch reveal
       const elapsed = timestamp - this.animationStartTime;
       const rawProgress = Math.min(elapsed / this.animationDuration, 1);
       const progress = easeInOutCubic(rawProgress);
@@ -199,24 +178,21 @@ export class Logo {
             progress,
             elapsed,
           );
-          colors[charIndex] = [1, 1, 1]; // White during animation
-          transforms[charIndex] = {}; // No transforms during animation
+          colors[charIndex] = [1, 1, 1];
+          transforms[charIndex] = {};
           charIndex++;
         }
       }
 
-      // Check if animation is complete
       if (rawProgress >= 1 && !this.animationComplete) {
         this.animationComplete = true;
         this.isAnimating = false;
 
-        // Trigger callback if set
         if (this.onAnimationComplete) {
           this.onAnimationComplete();
         }
       }
     } else {
-      // Ripple effect phase - calculate all effects once and cache
       let charIndex = 0;
       for (let y = 0; y < this.gridHeight; y++) {
         for (let x = 0; x < this.gridWidth; x++) {
@@ -228,20 +204,17 @@ export class Logo {
             timestamp,
           );
 
-          // Cache effects for _applyGlowEffects
           this.effectsCache[charIndex] = effects;
 
           chars[charIndex] = originalChar;
 
           if (effects.intensity > 0.01 && originalChar !== " ") {
-            // Apply colored effect
             const saturation = Math.min(100, 50 + effects.intensity * 60);
             const lightness = 40 + effects.intensity * 55;
             const colorMix = Math.min(1, effects.intensity * 2.5);
             const finalSaturation = saturation * colorMix;
             const finalLightness = lightness * colorMix + 95 * (1 - colorMix);
 
-            // Convert HSL to RGB
             const rgb = this._hslToRgb(
               effects.blendedHue / 360,
               finalSaturation / 100,
@@ -249,11 +222,9 @@ export class Logo {
             );
             colors[charIndex] = rgb;
           } else {
-            // Default white
             colors[charIndex] = [1, 1, 1];
           }
 
-          // Apply scale transform through renderer
           if (effects.scale > 1.0) {
             transforms[charIndex] = { scale: effects.scale };
           } else {
@@ -267,7 +238,6 @@ export class Logo {
 
     this.renderer.render({ chars, colors, transforms });
 
-    // Apply glow effects via direct DOM manipulation (not supported by WebGL)
     if (!this.isAnimating) {
       this._applyGlowEffects(timestamp);
     }
@@ -301,8 +271,6 @@ export class Logo {
   }
 
   _updateMousePosition() {
-    // Get the actual position of the first character to determine grid offset
-    // This accounts for text-align: center which creates horizontal padding
     const firstCharElement = this.renderer.charElements?.[0];
     if (!firstCharElement) return;
 
@@ -312,13 +280,11 @@ export class Logo {
     const gridLeft = firstCharRect.left;
     const gridTop = firstCharRect.top;
 
-    // Calculate mouse position relative to the actual character grid
     this.rippleState.mouseX =
       (this.rippleState.globalMouseX - gridLeft) / charWidth;
     this.rippleState.mouseY =
       (this.rippleState.globalMouseY - gridTop) / charHeight;
 
-    // Check if hovering over a valid character position
     const charX = Math.floor(this.rippleState.mouseX);
     const charY = Math.floor(this.rippleState.mouseY);
 
@@ -350,7 +316,6 @@ export class Logo {
     this.rippleState.lastMouseX = this.rippleState.mouseX;
     this.rippleState.lastMouseY = this.rippleState.mouseY;
 
-    // Only create effects if mouse is actually moving
     if (velocity < 0.01) return;
 
     this._addTrail(velocity);
@@ -379,7 +344,6 @@ export class Logo {
         speed: 25 + velocity * 5,
       });
 
-      // Add sparks
       const sparkCount = ~~(2 + velocity * 2);
       for (let i = 0; i < sparkCount; i++) {
         const angle = Math.random() * Math.PI * 2;
@@ -422,7 +386,6 @@ export class Logo {
   }
 
   _calculateRippleEffects(x, y, char, now) {
-    // Early exit for space characters (no effects needed)
     if (char === " ") {
       return { intensity: 0, blendedHue: 0, glowIntensity: 0, scale: 1 };
     }
@@ -435,7 +398,6 @@ export class Logo {
 
     const noise = noiseFunction(x, y, this.rippleState.globalTime) * 0.5 + 0.5;
 
-    // Trail effects (only if trails exist)
     if (this.rippleState.trails.length > 0) {
       for (const trail of this.rippleState.trails) {
         const impact = this._calculateTrailImpact(x, y, trail, now);
@@ -448,7 +410,6 @@ export class Logo {
       }
     }
 
-    // Hover effects
     if (this.rippleState.isHovering) {
       const impact = this._calculateHoverImpact(x, y);
       if (impact.intensity > 0) {
@@ -459,7 +420,6 @@ export class Logo {
         glowIntensity = Math.max(glowIntensity, impact.glow);
       }
 
-      // Ambient noise when hovering
       intensity = Math.min(
         1,
         intensity +
@@ -470,7 +430,6 @@ export class Logo {
       );
     }
 
-    // Ripple effects (only if ripples exist)
     if (this.rippleState.ripples.length > 0) {
       for (const ripple of this.rippleState.ripples) {
         const impact = this._calculateRippleImpact(x, y, ripple, now);
@@ -484,7 +443,6 @@ export class Logo {
       }
     }
 
-    // Spark effects (only if sparks exist)
     if (this.rippleState.sparks.length > 0) {
       for (const spark of this.rippleState.sparks) {
         const impact = this._calculateSparkImpact(x, y, spark, now);
@@ -508,8 +466,7 @@ export class Logo {
     const dy = (y - trail.y) * this.aspectRatio;
     const distanceSq = dx * dx + dy * dy;
 
-    // Early exit using squared distance (avoid sqrt)
-    if (distanceSq >= 9) return { intensity: 0, glow: 0 }; // 3^2 = 9
+    if (distanceSq >= 9) return { intensity: 0, glow: 0 };
 
     const age = (now - trail.time) / 400;
     if (age >= 1) return { intensity: 0, glow: 0 };
@@ -527,8 +484,7 @@ export class Logo {
     const dy = (y - this.rippleState.mouseY) * this.aspectRatio;
     const distanceSq = dx * dx + dy * dy;
 
-    // Early exit using squared distance (avoid sqrt)
-    if (distanceSq >= 25) return { intensity: 0, glow: 0 }; // 5^2 = 25
+    if (distanceSq >= 25) return { intensity: 0, glow: 0 };
 
     const distance = Math.sqrt(distanceSq);
     const impactIntensity = (1 - distance / 5) * 0.6;
@@ -553,7 +509,6 @@ export class Logo {
     let totalWeight = 0;
     let maxGlow = 0;
 
-    // Multi-ring effect
     for (let ring = 0; ring < ringCount; ring++) {
       const ringSpeed = baseSpeed - ring * 3;
       const ringRadius = age * ringSpeed;
@@ -582,7 +537,6 @@ export class Logo {
       }
     }
 
-    // Center glow
     let scale = 1;
     if (age < 0.4 && distance < 5) {
       const glow = (1 - distance / 5) * (1 - age / 0.4);
@@ -607,8 +561,7 @@ export class Logo {
     const dy = (y - spark.y) * this.aspectRatio;
     const distanceSq = dx * dx + dy * dy;
 
-    // Early exit using squared distance (avoid sqrt)
-    if (distanceSq >= 9) return { intensity: 0, glow: 0 }; // 3^2 = 9
+    if (distanceSq >= 9) return { intensity: 0, glow: 0 };
 
     const age = (now - spark.time) / 1000;
     const fade = Math.max(0, 1 - age / spark.lifetime);
@@ -623,21 +576,16 @@ export class Logo {
   }
 
   _applyGlowEffects(now) {
-    // Apply text-shadow glow effects via direct DOM manipulation
-    // (not supported by WebGL renderer, so this is DOM-specific enhancement)
     const charElements = this.renderer.charElements;
 
-    // Skip if using WebGL renderer (no charElements property)
     if (!charElements) return;
 
     let charIndex = 0;
     for (let y = 0; y < this.gridHeight; y++) {
       for (let x = 0; x < this.gridWidth; x++) {
         const originalChar = LOGO_LINES[y][x];
-        // Use cached effects from _renderFrame
         const effects = this.effectsCache[charIndex];
 
-        // Skip if effects not yet calculated (during animation phase)
         if (!effects) {
           charIndex++;
           continue;
@@ -646,7 +594,6 @@ export class Logo {
         const element = charElements[charIndex];
 
         if (element && effects.intensity > 0.01 && originalChar !== " ") {
-          // Apply glow via text-shadow
           if (effects.glowIntensity > 0.1) {
             const glowSize1 = ~~(effects.glowIntensity * 12);
             const glowSize2 = ~~(effects.glowIntensity * 24);
@@ -656,7 +603,6 @@ export class Logo {
             element.style.textShadow = "";
           }
         } else if (element && element.style.textShadow) {
-          // Clear glow
           element.style.textShadow = "";
         }
 

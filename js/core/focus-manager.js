@@ -10,7 +10,7 @@ class FocusManager {
       return FocusManager.instance;
     }
 
-    this.renderers = new Map(); // id -> { element, onFocusChange }
+    this.renderers = new Map();
     this.focusedId = null;
     this.updateInterval = null;
     this.isRunning = false;
@@ -27,12 +27,10 @@ class FocusManager {
   register(id, element, onFocusChange) {
     this.renderers.set(id, { element, onFocusChange });
 
-    // Start tracking if this is the first renderer
     if (!this.isRunning) {
       this.start();
     }
 
-    // Immediately check focus state
     this._updateFocus();
   }
 
@@ -43,33 +41,24 @@ class FocusManager {
   unregister(id) {
     this.renderers.delete(id);
 
-    // If the focused renderer was removed, recalculate
     if (this.focusedId === id) {
       this.focusedId = null;
       this._updateFocus();
     }
 
-    // Stop tracking if no more renderers
     if (this.renderers.size === 0) {
       this.stop();
     }
   }
 
-  /**
-   * Start periodic focus updates
-   */
   start() {
     if (this.isRunning) return;
 
     this.isRunning = true;
-    // Check focus every 100ms (10 times per second)
     this.updateInterval = setInterval(() => this._updateFocus(), 100);
-    this._updateFocus(); // Initial check
+    this._updateFocus();
   }
 
-  /**
-   * Stop periodic focus updates
-   */
   stop() {
     if (!this.isRunning) return;
 
@@ -80,36 +69,25 @@ class FocusManager {
     }
   }
 
-  /**
-   * Calculate distance from element to screen center
-   * @param {HTMLElement} element
-   * @returns {number} Distance in pixels
-   */
   _getDistanceToCenter(element) {
     const rect = element.getBoundingClientRect();
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
 
-    // Element center
     const elementCenterX = rect.left + rect.width / 2;
     const elementCenterY = rect.top + rect.height / 2;
 
-    // Euclidean distance
     const dx = elementCenterX - centerX;
     const dy = elementCenterY - centerY;
     return Math.sqrt(dx * dx + dy * dy);
   }
 
-  /**
-   * Update which renderer has focus
-   */
   _updateFocus() {
     if (this.renderers.size === 0) {
       this.focusedId = null;
       return;
     }
 
-    // Find renderer closest to screen center
     let closestId = null;
     let closestDistance = Infinity;
 
@@ -121,17 +99,14 @@ class FocusManager {
       }
     }
 
-    // If focus changed, notify all renderers
     if (closestId !== this.focusedId) {
       const previousId = this.focusedId;
       this.focusedId = closestId;
 
-      // Notify previous focused renderer it lost focus
       if (previousId && this.renderers.has(previousId)) {
         this.renderers.get(previousId).onFocusChange(false);
       }
 
-      // Notify new focused renderer it gained focus
       if (closestId && this.renderers.has(closestId)) {
         this.renderers.get(closestId).onFocusChange(true);
       }
@@ -148,7 +123,6 @@ class FocusManager {
   }
 }
 
-// Create singleton instance
 const focusManager = new FocusManager();
 
 export { focusManager };

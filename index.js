@@ -1,23 +1,25 @@
+/**
+ * Main entry point for the portfolio homepage
+ * Initializes all sections: logo, navigation, projects, and about
+ */
+
 import { TextMorph } from "./js/lib/text-morph.js";
 import { Logo } from "./js/home/logo.js";
 import { Description } from "./js/home/description.js";
 import { Projects } from "./js/home/projects.js";
-import { About } from "./js/home/about.js";
+import { About } from "./js/home/about/index.js";
 import { TerminalAnimator } from "./js/lib/terminal-animator.js";
-import { preloader } from "./js/home/about/anime/preloader.js";
-import { videoPreloader } from "./js/home/about/music/preloader.js";
+import { preload as preloadLive2D } from "./js/home/about/anime/index.js";
+import { preload as preloadVideo } from "./js/home/about/music/index.js";
 import { smoothScrollTo } from "./js/core/scroll.js";
 
-// Disable automatic scroll restoration on page reload
 if ("scrollRestoration" in history) {
   history.scrollRestoration = "manual";
 }
 
-// Start preloading assets early
-preloader.preload();
-videoPreloader.preload();
+preloadLive2D();
+preloadVideo();
 
-// Update header time
 function updateTime() {
   const now = new Date();
   const timeString = now.toLocaleTimeString("en-US", {
@@ -33,35 +35,28 @@ function updateTime() {
   }
 }
 
-// Update time immediately and then every second
 updateTime();
 setInterval(updateTime, 1000);
 
-// Initialize description animation system
 const descriptionElement = document.getElementById("heroDescription");
 const description = new Description(descriptionElement);
 
-// Button hover state
 let currentHoveredButton = null;
 let logoAnimationComplete = false;
 
-// Setup button hover effects
 document.querySelectorAll(".nav-link").forEach((button) => {
   button.addEventListener("mouseenter", () => {
-    // Don't do anything if logo animation hasn't completed yet
     if (!logoAnimationComplete) return;
 
     currentHoveredButton = button;
     TextMorph.morph(button, button.dataset.hover);
 
-    // Animate description text change
     if (button.dataset.description) {
       description.animateChange(button.dataset.description);
     }
   });
 
   button.addEventListener("mouseleave", () => {
-    // Don't do anything if logo animation hasn't completed yet
     if (!logoAnimationComplete) return;
 
     if (currentHoveredButton === button) {
@@ -69,41 +64,33 @@ document.querySelectorAll(".nav-link").forEach((button) => {
     }
     TextMorph.morph(button, button.dataset.default);
 
-    // Animate back to default description text
     description.animateToDefault();
   });
 });
 
-// Get DOM elements
 const logoElement = document.getElementById("heroLogo");
 const contentElement = document.getElementById("heroContent");
 
-// Initialize logo (combines animation and ripple effects)
 const logo = new Logo(logoElement);
 
-// Set up callback to reveal content when animation finishes
 logo.onAnimationComplete = () => {
   contentElement.classList.add("show");
   logoAnimationComplete = true;
 
-  // Show scroll indicator
   const heroScrollIndicator = document.getElementById("heroScrollIndicator");
   if (heroScrollIndicator) {
     heroScrollIndicator.classList.add("show");
   }
 };
 
-// Start logo
 logo.init(2200);
 
-// Setup hero scroll indicator click handler
 const heroScrollIndicator = document.getElementById("heroScrollIndicator");
 const bodyContent = document.getElementById("bodyContent");
 if (heroScrollIndicator && bodyContent) {
   heroScrollIndicator.addEventListener("click", () => {
     const projectsSection = document.getElementById("projects");
     if (projectsSection) {
-      // Get the SimpleBar instance and scroll to the projects section
       const simplebarInstance = window.SimpleBar.instances.get(bodyContent);
       if (simplebarInstance) {
         const scrollElement = simplebarInstance.getScrollElement();
@@ -114,19 +101,16 @@ if (heroScrollIndicator && bodyContent) {
   });
 }
 
-// Initialize projects section with terminal animation
 const projectsTerminalElement = document.getElementById("projectsTerminal");
 const projectsTerminalAnimator = new TerminalAnimator(projectsTerminalElement);
 const projects = new Projects();
 
-// Set up callback to initialize About section when Projects completes
 projects.onComplete = () => {
   const aboutSection = document.getElementById("about");
   if (aboutSection) {
     aboutSection.classList.add("visible");
   }
 
-  // Initialize about section
   const about = new About();
   about.init();
 };

@@ -7,22 +7,17 @@
  * Each section has its own terminal animation followed by a WebGL ASCII visualization
  */
 
-import { TerminalAnimator } from "../lib/terminal-animator.js";
-import { CodingAnimation } from "./about/coding.js";
-import { AnimeAnimation } from "./about/anime.js";
-import { MusicAnimation } from "./about/music.js";
+import { TerminalAnimator } from "../../lib/terminal-animator.js";
+import { CodingAnimation } from "./coding/index.js";
+import { AnimeAnimation } from "./anime/index.js";
+import { MusicAnimation } from "./music/index.js";
 
-/**
- * Calculate current age dynamically
- * Born: December 28, 2004
- */
 function calculateAge() {
-  const birthDate = new Date(2004, 11, 28); // Month is 0-indexed
+  const birthDate = new Date(2004, 11, 28);
   const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDiff = today.getMonth() - birthDate.getMonth();
 
-  // Adjust if birthday hasn't occurred this year yet
   if (
     monthDiff < 0 ||
     (monthDiff === 0 && today.getDate() < birthDate.getDate())
@@ -41,13 +36,9 @@ class About {
   }
 
   init() {
-    // Initialize first section - others will initialize when previous completes
     this._initCodingSection();
   }
 
-  /**
-   * Initialize coding section with terminal animation
-   */
   _initCodingSection() {
     const terminalElement = document.getElementById("codingTerminal");
     const visualElement = document.getElementById("codingVisual");
@@ -76,9 +67,6 @@ class About {
     animator.setupViewTrigger(sequence);
   }
 
-  /**
-   * Initialize anime section with terminal animation
-   */
   _initAnimeSection() {
     const terminalElement = document.getElementById("animeTerminal");
     const visualElement = document.getElementById("animeVisual");
@@ -114,9 +102,6 @@ class About {
     animator.setupViewTrigger(sequence);
   }
 
-  /**
-   * Initialize music section with terminal animation
-   */
   _initMusicSection() {
     const terminalElement = document.getElementById("musicTerminal");
     const visualElement = document.getElementById("musicVisual");
@@ -156,9 +141,6 @@ class About {
     animator.setupViewTrigger(sequence);
   }
 
-  /**
-   * Show coding visual after terminal animation
-   */
   async _showCodingVisual(container) {
     if (!container) return;
     container.style.display = "flex";
@@ -167,14 +149,10 @@ class About {
     await animation.init(container);
     this.animations.push(animation);
 
-    // Mark as complete and initialize next section
     this.codingComplete = true;
     this._initAnimeSection();
   }
 
-  /**
-   * Show anime visual after terminal animation
-   */
   async _showAnimeVisual(container) {
     if (!container) return;
     container.style.display = "flex";
@@ -183,14 +161,10 @@ class About {
     await animation.init(container);
     this.animations.push(animation);
 
-    // Mark as complete and initialize next section
     this.animeComplete = true;
     this._initMusicSection();
   }
 
-  /**
-   * Show music visual after terminal animation
-   */
   async _showMusicVisual(container) {
     if (!container) return;
     container.style.display = "flex";
@@ -199,16 +173,12 @@ class About {
     await animation.init(container);
     this.animations.push(animation);
 
-    // Show thanks message
     const thanksElement = document.querySelector(".about__thanks");
     if (thanksElement) {
       thanksElement.classList.add("visible");
     }
   }
 
-  /**
-   * Cleanup method
-   */
   destroy() {
     this.animations.forEach((animation) => {
       if (animation && animation.destroy) {
