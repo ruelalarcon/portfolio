@@ -6,6 +6,7 @@
 import { Live2DPreloader } from "../../../lib/preloader/live2d.js";
 import { CascadiaASCIIFilter } from "./filter.js";
 import { focusManager } from "../../../core/focus-manager.js";
+import { mobileManager } from "../../../core/mobile-manager.js";
 
 const MODEL_URL =
   "https://cdn.jsdelivr.net/gh/Eikanya/Live2d-model/%E5%B0%91%E5%A5%B3%E5%92%96%E5%95%A1%E6%9E%AA%20girls%20cafe%20gun/girl03/l2d04.u/l2d04.u.model3.json";
@@ -29,20 +30,34 @@ class AnimeAnimation {
   constructor() {
     this.app = null;
     this.model = null;
+    this.container = null;
+    this.tuiPane = null;
+    this.canvas = null;
+
     this.hasFocus = false;
     this.focusId = null;
-    this.canvas = null;
+    this.mobileListenerId = null;
   }
 
-  /**
-   * Initialize PixiJS application and load Live2D model
-   * @param {HTMLElement} container - Container element for the canvas
-   */
   async init(container) {
     if (!container) return;
+    this.container = container;
 
-    const tuiPane = document.createElement("div");
-    tuiPane.className = "tui-pane";
+    await this._initializePixiApp();
+    this._attachFocusManager();
+
+    this.mobileListenerId = mobileManager.register((isMobile) =>
+      this._handleMobileChange(isMobile),
+    );
+  }
+
+  async _initializePixiApp() {
+    if (this.tuiPane) {
+      this.tuiPane.remove();
+    }
+
+    this.tuiPane = document.createElement("div");
+    this.tuiPane.className = "tui-pane";
 
     const borderTop = document.createElement("div");
     borderTop.className = "tui-pane__border-top";
@@ -57,14 +72,22 @@ class AnimeAnimation {
     content.className = "tui-pane__content tui-pane__content--live2d";
     content.style.padding = "0";
 
-    tuiPane.appendChild(borderTop);
-    tuiPane.appendChild(content);
-    container.appendChild(tuiPane);
+    this.tuiPane.appendChild(borderTop);
+    this.tuiPane.appendChild(content);
+    this.container.appendChild(this.tuiPane);
 
     const canvas = document.createElement("canvas");
     canvas.id = "live2DCanvas";
     content.appendChild(canvas);
     this.canvas = canvas;
+
+    if (this.app) {
+      this.app.destroy(true, {
+        children: true,
+        texture: true,
+        baseTexture: true,
+      });
+    }
 
     this.app = new PIXI.Application({
       view: canvas,
@@ -95,7 +118,19 @@ class AnimeAnimation {
 
     const asciiFilter = new CascadiaASCIIFilter(12);
     this.model.filters = [asciiFilter];
+  }
 
+  async _handleMobileChange(isMobile) {
+    if (this.focusId) {
+      focusManager.unregister(this.focusId);
+      this.focusId = null;
+    }
+
+    await this._initializePixiApp();
+    this._attachFocusManager();
+  }
+
+  _attachFocusManager() {
     this.focusId = `anime-${Date.now()}-${Math.random()}`;
     focusManager.register(this.focusId, this.canvas, (hasFocus) => {
       this._onFocusChange(hasFocus);
@@ -116,10 +151,6 @@ class AnimeAnimation {
     }
   }
 
-  /**
-   * Patch internal model parameters (snake_case to UPPER_CASE)
-   * Fixes parameter naming issues with certain Live2D models
-   */
   _patchInternalModel(internalModel) {
     for (const prop of Object.keys(internalModel)) {
       if (prop.startsWith("idParam")) {
@@ -138,6 +169,11 @@ class AnimeAnimation {
   }
 
   destroy() {
+    if (this.mobileListenerId !== null) {
+      mobileManager.unregister(this.mobileListenerId);
+      this.mobileListenerId = null;
+    }
+
     if (this.focusId) {
       focusManager.unregister(this.focusId);
       this.focusId = null;
@@ -151,8 +187,10 @@ class AnimeAnimation {
       });
       this.app = null;
     }
+
     this.model = null;
     this.canvas = null;
+    this.tuiPane = null;
   }
 }
 
