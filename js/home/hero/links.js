@@ -3,7 +3,7 @@
  */
 
 import { TextMorph } from "../../lib/text-morph.js";
-import { mobileManager } from "../../core/mobile-manager.js";
+import { resizeManager } from "../../core/resize-manager.js";
 
 export class Links {
   constructor(linkElements, description) {
@@ -12,10 +12,10 @@ export class Links {
     this.currentHoveredButton = null;
     this.currentActiveButton = null;
     this.enabled = false;
-    this.isMobile = mobileManager.getIsMobile();
+    this.isMobile = resizeManager.getIsMobile();
 
-    mobileManager.register((isMobile) => {
-      this.isMobile = isMobile;
+    resizeManager.register(() => {
+      this.isMobile = resizeManager.getIsMobile();
       this._resetState();
     });
   }

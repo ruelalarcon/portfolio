@@ -6,7 +6,7 @@
 import { Live2DPreloader } from "../../../lib/preloader/live2d.js";
 import { CascadiaASCIIFilter } from "./filter.js";
 import { focusManager } from "../../../core/focus-manager.js";
-import { mobileManager } from "../../../core/mobile-manager.js";
+import { resizeManager } from "../../../core/resize-manager.js";
 
 const MODEL_URL =
   "https://cdn.jsdelivr.net/gh/Eikanya/Live2d-model/%E5%B0%91%E5%A5%B3%E5%92%96%E5%95%A1%E6%9E%AA%20girls%20cafe%20gun/girl03/l2d04.u/l2d04.u.model3.json";
@@ -46,8 +46,8 @@ class AnimeAnimation {
     await this._initializePixiApp();
     this._attachFocusManager();
 
-    this.mobileListenerId = mobileManager.register((isMobile) =>
-      this._handleMobileChange(isMobile),
+    this.mobileListenerId = resizeManager.register(() =>
+      this._handleMobileChange(),
     );
   }
 
@@ -120,7 +120,7 @@ class AnimeAnimation {
     this.model.filters = [asciiFilter];
   }
 
-  async _handleMobileChange(isMobile) {
+  async _handleMobileChange() {
     if (this.focusId) {
       focusManager.unregister(this.focusId);
       this.focusId = null;
@@ -170,7 +170,7 @@ class AnimeAnimation {
 
   destroy() {
     if (this.mobileListenerId !== null) {
-      mobileManager.unregister(this.mobileListenerId);
+      resizeManager.unregister(this.mobileListenerId);
       this.mobileListenerId = null;
     }
 

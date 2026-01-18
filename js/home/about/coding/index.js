@@ -5,7 +5,7 @@
 
 import { WebGLASCIIRenderer } from "../../../lib/ascii-renderer/webgl.js";
 import { CubeRenderer } from "./cube-renderer.js";
-import { mobileManager } from "../../../core/mobile-manager.js";
+import { resizeManager } from "../../../core/resize-manager.js";
 
 const ASCII_CHARS = " -|/\\⟋⟍";
 
@@ -52,15 +52,15 @@ class CodingAnimation {
     await this._initializeRenderer();
     this._attachEventListeners();
 
-    this.mobileListenerId = mobileManager.register((isMobile) =>
-      this._handleMobileChange(isMobile),
+    this.mobileListenerId = resizeManager.register(() =>
+      this._handleMobileChange(),
     );
 
     this._startAnimation();
   }
 
   async _initializeRenderer() {
-    const isMobile = mobileManager.getIsMobile();
+    const isMobile = resizeManager.getIsMobile();
     const cubeSize = isMobile ? MOBILE_CUBE_SIZE : DESKTOP_CUBE_SIZE;
     const fontSize = isMobile ? MOBILE_FONT_SIZE : DESKTOP_FONT_SIZE;
 
@@ -78,7 +78,7 @@ class CodingAnimation {
     this.cubeRenderer = new CubeRenderer(this.width, this.height, cubeSize);
   }
 
-  async _handleMobileChange(isMobile) {
+  async _handleMobileChange() {
     await this._initializeRenderer();
   }
 
@@ -146,7 +146,7 @@ class CodingAnimation {
     }
 
     if (this.mobileListenerId !== null) {
-      mobileManager.unregister(this.mobileListenerId);
+      resizeManager.unregister(this.mobileListenerId);
       this.mobileListenerId = null;
     }
 

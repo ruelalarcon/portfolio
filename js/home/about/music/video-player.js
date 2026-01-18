@@ -4,7 +4,7 @@
  */
 
 import { WebGLASCIIRenderer } from "../../../lib/ascii-renderer/webgl.js";
-import { mobileManager } from "../../../core/mobile-manager.js";
+import { resizeManager } from "../../../core/resize-manager.js";
 
 const ASCII_CHARS_SIMPLE = ".:-=+*#%@";
 const ASCII_CHARS_DENSE =
@@ -47,7 +47,7 @@ export class VideoPlayer {
    * @returns {Object} Grid dimensions, font size, and character set
    */
   _calculateDimensions(container) {
-    const isMobile = mobileManager.getIsMobile();
+    const isMobile = resizeManager.getIsMobile();
 
     if (!isMobile) {
       return {
@@ -142,7 +142,7 @@ export class VideoPlayer {
     });
     this.video.addEventListener("ended", () => this._onVideoEnded());
 
-    this.mobileListenerId = mobileManager.register(() =>
+    this.mobileListenerId = resizeManager.register(() =>
       this._handleMobileChange(),
     );
 
@@ -298,7 +298,7 @@ export class VideoPlayer {
     }
 
     if (this.mobileListenerId !== null) {
-      mobileManager.unregister(this.mobileListenerId);
+      resizeManager.unregister(this.mobileListenerId);
       this.mobileListenerId = null;
     }
 

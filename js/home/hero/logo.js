@@ -5,7 +5,7 @@
 
 import { DOMASCIIRenderer } from "../../lib/ascii-renderer/dom.js";
 import { easeInOutCubic, noiseFunction } from "../../core/math.js";
-import { mobileManager } from "../../core/mobile-manager.js";
+import { resizeManager } from "../../core/resize-manager.js";
 
 const LOGO_ASCII = atob(
   "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAsLCAgICAgICAgICAgICAgICAgICAgICAsLCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApgN01NIiIiTXEuICAgICAgICAgICAgICAgICAgICBgN01NICAgICAgICAgICAgZGIgICAgICBgN01NICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgTU0gICBgTU0uICAgICAgICAgICAgICAgICAgICAgTU0gICAgICAgICAgIDtNTTogICAgICAgTU0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICBNTSAgICxNOSBgN01NIiBgN01NICAuZ1AiWWEgICBNTSAgICAgICAgICAsVl5NTS4gICAgICBNTCAgICw2IlliLiAgYDdNYixvZDggLHA2ImJvICAgLHBXIldxLmA3TU1wTU1NYi4gIAogIE1NbW1kTTkgICAgTU0gICAgTU0gLE0nICAgWWIgIE1NICAgICAgICAgLE0gIGBNTSAgICAgIE1NICA4KSAgIE1NICAgIE1NJyAiJzZNJyAgT08gIDZXJyAgIGBXYiBNTSAgICBNTSAgCiAgTU0gIFlNLiAgICBNTSAgICBNTSA4TSIiIiIiIiAgTU0gICAgICAgICBBYm1tbXFNQSAgICAgTU0gICAscG05TU0gICAgTU0gICAgOE0gICAgICAgOE0gICAgIE04IE1NICAgIE1NICAKICBNTSAgIGBNYi4gIE1NICAgIE1NIFlNLiAgICAsICBNTSAgICAgICAgQScgICAgIFZNTCAgICBNTSAgOE0gICBNTSAgICBNTSAgICBZTS4gICAgLCBZQS4gICAsQTkgTU0gICAgTU0gIAouSk1NTC4gLkpNTS4gYE1ib2QiWU1MLmBNYm1tZCcuSk1NTC4gICAgLkFNQS4gICAuQU1NQS4uSk1NTC5gTW9vOV5Zby4uSk1NTC4gICBZTWJtZCcgICBgWWJtZDknLkpNTUwgIEpNTUwu",
@@ -28,7 +28,7 @@ export class Logo {
     this.containerElement = containerElement;
 
     this.logoLines = (
-      mobileManager.getIsMobile() ? LOGO_ASCII_MOBILE : LOGO_ASCII
+      resizeManager.getIsMobile() ? LOGO_ASCII_MOBILE : LOGO_ASCII
     ).split("\n");
 
     this.renderer = null;
@@ -70,8 +70,8 @@ export class Logo {
     this._initGlobalMouseTracking();
     this._attachEventListeners();
 
-    this.mobileListenerId = mobileManager.register((isMobile) =>
-      this._handleMobileChange(isMobile),
+    this.mobileListenerId = resizeManager.register(() =>
+      this._handleMobileChange(),
     );
 
     requestAnimationFrame((ts) => this._animate(ts));
@@ -105,7 +105,8 @@ export class Logo {
     await this.renderer.init(this.containerElement);
   }
 
-  async _handleMobileChange(isMobile) {
+  async _handleMobileChange() {
+    const isMobile = resizeManager.getIsMobile();
     this.logoLines = (isMobile ? LOGO_ASCII_MOBILE : LOGO_ASCII).split("\n");
     await this._initializeRenderer();
   }
@@ -662,7 +663,7 @@ export class Logo {
 
   destroy() {
     if (this.mobileListenerId !== null) {
-      mobileManager.unregister(this.mobileListenerId);
+      resizeManager.unregister(this.mobileListenerId);
       this.mobileListenerId = null;
     }
 

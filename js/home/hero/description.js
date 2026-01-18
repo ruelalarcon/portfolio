@@ -11,7 +11,7 @@
 
 import { noiseFunction } from "../../core/math.js";
 import { wait } from "../../core/async.js";
-import { mobileManager } from "../../core/mobile-manager.js";
+import { resizeManager } from "../../core/resize-manager.js";
 
 export class Description {
   constructor(descriptionElement) {
@@ -24,7 +24,7 @@ export class Description {
     this.defaultText = descriptionElement.dataset.default || "";
     this.defaultTextMobile =
       descriptionElement.dataset.defaultMobile || this.defaultText;
-    this.currentDefaultText = mobileManager.getIsMobile()
+    this.currentDefaultText = resizeManager.getIsMobile()
       ? this.defaultTextMobile
       : this.defaultText;
 
@@ -32,7 +32,8 @@ export class Description {
       this.textContent.textContent = this.currentDefaultText;
     }
 
-    mobileManager.register((isMobile) => {
+    resizeManager.register(() => {
+      const isMobile = resizeManager.getIsMobile();
       const newDefaultText = isMobile
         ? this.defaultTextMobile
         : this.defaultText;
