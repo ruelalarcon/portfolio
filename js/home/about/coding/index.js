@@ -5,19 +5,25 @@
 
 import { WebGLASCIIRenderer } from "../../../lib/ascii-renderer/webgl.js";
 import { CubeRenderer } from "./cube-renderer.js";
+import { mobileManager } from "../../../core/mobile-manager.js";
 
 const ASCII_CHARS = " -|/\\⟋⟍";
+
+const DESKTOP_CUBE_SIZE = 17;
+const MOBILE_CUBE_SIZE = 15;
+const DESKTOP_FONT_SIZE = 12;
+const MOBILE_FONT_SIZE = 11;
 
 class CodingAnimation {
   constructor() {
     this.renderer = null;
     this.cubeRenderer = null;
-    this.width = 80;
-    this.height = 36;
+    this.container = null;
     this.animationId = null;
+    this.mobileListenerId = null;
 
-    this.cubeSize = 17;
-    this.sensitivity = 0.3;
+    this.width = 62;
+    this.height = 35;
 
     this.rotationX = 0;
     this.rotationY = 0;
@@ -28,40 +34,59 @@ class CodingAnimation {
     this.velocityZ = 0.005;
     this.friction = 0.9999;
     this.smoothing = 0.03;
+    this.sensitivity = 0.3;
 
     this.mouseX = 0;
     this.mouseY = 0;
     this.prevMouseX = 0;
     this.prevMouseY = 0;
     this.isFirstMove = true;
-    this.container = null;
 
-    this.handleMouseMove = this.handleMouseMove.bind(this);
+    this._handleMouseMove = this._handleMouseMove.bind(this);
   }
 
   async init(container) {
     if (!container) return;
     this.container = container;
 
-    this.renderer = new WebGLASCIIRenderer(this.width, this.height, {
-      charSet: ASCII_CHARS,
-      displayFontSize: 12,
-    });
+    await this._initializeRenderer();
+    this._attachEventListeners();
 
-    await this.renderer.init(container);
-
-    this.cubeRenderer = new CubeRenderer(
-      this.width,
-      this.height,
-      this.cubeSize,
+    this.mobileListenerId = mobileManager.register((isMobile) =>
+      this._handleMobileChange(isMobile),
     );
-
-    document.addEventListener("mousemove", this.handleMouseMove);
 
     this._startAnimation();
   }
 
-  handleMouseMove(event) {
+  async _initializeRenderer() {
+    const isMobile = mobileManager.getIsMobile();
+    const cubeSize = isMobile ? MOBILE_CUBE_SIZE : DESKTOP_CUBE_SIZE;
+    const fontSize = isMobile ? MOBILE_FONT_SIZE : DESKTOP_FONT_SIZE;
+
+    if (this.renderer) {
+      this.renderer.destroy();
+    }
+
+    this.renderer = new WebGLASCIIRenderer(this.width, this.height, {
+      charSet: ASCII_CHARS,
+      displayFontSize: fontSize,
+    });
+
+    await this.renderer.init(this.container);
+
+    this.cubeRenderer = new CubeRenderer(this.width, this.height, cubeSize);
+  }
+
+  async _handleMobileChange(isMobile) {
+    await this._initializeRenderer();
+  }
+
+  _attachEventListeners() {
+    document.addEventListener("mousemove", this._handleMouseMove);
+  }
+
+  _handleMouseMove(event) {
     this.mouseX = event.clientX;
     this.mouseY = event.clientY;
 
@@ -72,7 +97,7 @@ class CodingAnimation {
     }
   }
 
-  updateRotation() {
+  _updateRotation() {
     const deltaX = this.mouseX - this.prevMouseX;
     const deltaY = this.mouseY - this.prevMouseY;
 
@@ -96,7 +121,7 @@ class CodingAnimation {
 
   _startAnimation() {
     const animate = () => {
-      this.updateRotation();
+      this._updateRotation();
 
       const chars = this.cubeRenderer.render(
         this.rotationX,
@@ -114,26 +139,20 @@ class CodingAnimation {
     animate();
   }
 
-  setSize(size) {
-    this.cubeSize = size;
-    if (this.cubeRenderer) {
-      this.cubeRenderer.setSize(size);
-    }
-  }
-
-  setSensitivity(sensitivity) {
-    this.sensitivity = sensitivity;
-  }
-
   destroy() {
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);
       this.animationId = null;
     }
 
-    document.removeEventListener("mousemove", this.handleMouseMove);
+    if (this.mobileListenerId !== null) {
+      mobileManager.unregister(this.mobileListenerId);
+      this.mobileListenerId = null;
+    }
 
-    if (this.renderer && this.renderer.destroy) {
+    document.removeEventListener("mousemove", this._handleMouseMove);
+
+    if (this.renderer) {
       this.renderer.destroy();
       this.renderer = null;
     }
