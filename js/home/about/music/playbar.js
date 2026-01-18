@@ -4,6 +4,11 @@
  */
 
 const GLYPHS = "░▒▓█▀▄▌▐╔╗╚╝║═╠╣╦╩╬├┤┬┴┼│─■□◊◦•○●";
+const PLAYBAR_FONT_SIZE = 12;
+const PLAYBAR_CHAR_WIDTH_RATIO = 0.6;
+const BUTTON_WIDTH = 10;
+const MIN_BAR_WIDTH = 10;
+const PLAYBAR_PADDING = 2;
 
 export class Playbar {
   constructor(video, container) {
@@ -22,6 +27,20 @@ export class Playbar {
     this.seekAnimationId = null;
 
     this.onTogglePlayPause = null;
+    this.barWidth = 90;
+  }
+
+  /**
+   * Update the progress bar width to match video pixel width
+   * @param {number} pixelWidth - Pixel width of the video display
+   */
+  setBarWidth(pixelWidth) {
+    const charWidth = PLAYBAR_FONT_SIZE * PLAYBAR_CHAR_WIDTH_RATIO;
+    const availableChars = Math.floor(pixelWidth / charWidth);
+    this.barWidth = Math.max(
+      MIN_BAR_WIDTH,
+      availableChars - BUTTON_WIDTH - PLAYBAR_PADDING,
+    );
   }
 
   /**
@@ -51,10 +70,9 @@ export class Playbar {
         if (barStart === -1) return;
 
         const barClickIndex = clickCharIndex - barStart - 1;
-        const barWidth = 90;
 
-        if (barClickIndex >= 0 && barClickIndex < barWidth) {
-          const seekProgress = barClickIndex / barWidth;
+        if (barClickIndex >= 0 && barClickIndex < this.barWidth) {
+          const seekProgress = barClickIndex / this.barWidth;
           if (this.video.duration && isFinite(this.video.duration)) {
             const targetTime = seekProgress * this.video.duration;
 
@@ -146,11 +164,10 @@ export class Playbar {
     const progress = this.video.duration
       ? this.video.currentTime / this.video.duration
       : 0;
-    const barWidth = 90;
-    const filledWidth = Math.floor(progress * barWidth);
+    const filledWidth = Math.floor(progress * this.barWidth);
 
     let progressBar = "[";
-    for (let i = 0; i < barWidth; i++) {
+    for (let i = 0; i < this.barWidth; i++) {
       if (i < filledWidth) {
         progressBar += "=";
       } else if (i === filledWidth) {

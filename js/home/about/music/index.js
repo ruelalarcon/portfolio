@@ -23,6 +23,8 @@ class MusicAnimation {
   constructor() {
     this.videoPlayer = null;
     this.playbar = null;
+    this.container = null;
+    this.videoElement = null;
   }
 
   /**
@@ -32,17 +34,26 @@ class MusicAnimation {
   async init(container) {
     if (!container) return;
 
+    this.container = container;
+
     this.videoPlayer = new VideoPlayer();
-    const videoElement = await this.videoPlayer.init(
+    this.videoElement = await this.videoPlayer.init(
       container,
-      () => this._setupPlaybar(container, videoElement),
+      (gridWidth, pixelWidth) => this._onGridSizeChange(gridWidth, pixelWidth),
       () => this._updatePlaybar(),
     );
   }
 
-  _setupPlaybar(container, videoElement) {
-    this.playbar = new Playbar(videoElement, container);
-    this.playbar.init();
+  _onGridSizeChange(gridWidth, pixelWidth) {
+    if (!this.playbar && this.videoElement && this.container) {
+      this.playbar = new Playbar(this.videoElement, this.container);
+      this.playbar.init();
+    }
+
+    if (this.playbar) {
+      this.playbar.setBarWidth(pixelWidth);
+      this.playbar.update();
+    }
   }
 
   _updatePlaybar() {
