@@ -489,6 +489,13 @@ a {
     margin-bottom: 32px;
 }
 
+.nav-link-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
 .nav-link {
     display: inline-block;
     padding: 10px 0;
@@ -509,6 +516,42 @@ a {
     opacity: 0.3;
     pointer-events: none;
     color: #333;
+}
+
+.nav-link-info {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #555;
+    font-family: "Cascadia Code", monospace;
+    font-size: 14px;
+    padding: 10px 0;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+
+.nav-link-info:hover {
+    color: #fff;
+}
+
+.nav-link-info.active {
+    color: #fff;
+}
+
+/* Mobile styles */
+@media (max-width: 999px) {
+    .hero__nav {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .nav-link-wrapper {
+        justify-content: center;
+    }
+
+    .nav-link-info {
+        display: inline-block;
+    }
 }
 
 .hero__description {

@@ -37,62 +37,77 @@
                     <div class="hero__logo" id="heroLogo"></div>
                     <div class="hero__content" id="heroContent">
                         <nav class="hero__nav">
-                            <a
-                                href="https://github.com/ruelalarcon"
-                                class="nav-link"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                data-default="[ github ]"
-                                data-hover="[ github/ruelalarcon ]"
-                                data-description="This is my primary github. You can find my open source projects here."
-                                >[ github ]</a
-                            >
-                            <a
-                                href="https://github.com/riptxde"
-                                class="nav-link"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                data-default="[ alt ]"
-                                data-hover="[ github/riptxde ]"
-                                data-description="This is my secondary github, where I go by 'riptxde'. I prefer to make it difficult to find my real name online, so if you'd like to verify that I'm riptxde, you can match the SHA256 hash of 'ruelalarcon' to my profile description."
-                                >[ alt ]</a
-                            >
-                            <a
-                                href="https://www.linkedin.com/in/ruelnalarcon/"
-                                class="nav-link"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                data-default="[ linkedin ]"
-                                data-hover="[ linkedin/ruelnalarcon ]"
-                                data-description="My professional profile. Feel free to connect with me and check out my very occasional posts."
-                                >[ linkedin ]</a
-                            >
-                            <a
-                                href="https://riptxde.itch.io/"
-                                class="nav-link"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                data-default="[ itch.io ]"
-                                data-hover="[ riptxde.itch.io ]"
-                                data-description="My game development portfolio, where you can find a few games I've created with my groupmates for University and for Game Jams."
-                                >[ itch.io ]</a
-                            >
-                            <a
-                                href="mailto:ruel.alarcon@usask.ca"
-                                class="nav-link"
-                                data-default="[ email ]"
-                                data-hover="[ ruel.alarcon@usask.ca ]"
-                                data-description="Send me an email. I'm sure I'd love to hear from you."
-                                >[ email ]</a
-                            >
+                            <div class="nav-link-wrapper">
+                                <a
+                                    href="https://github.com/ruelalarcon"
+                                    class="nav-link"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    data-default="[ github ]"
+                                    data-hover="[ github/ruelalarcon ]"
+                                    data-description="This is my primary github. You can find my open source projects here."
+                                    >[ github ]</a
+                                >
+                                <button class="nav-link-info" data-default="[ ? ]" data-active="[ ! ]">[ ? ]</button>
+                            </div>
+                            <div class="nav-link-wrapper">
+                                <a
+                                    href="https://github.com/riptxde"
+                                    class="nav-link"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    data-default="[ alt ]"
+                                    data-hover="[ github/riptxde ]"
+                                    data-description="This is my secondary github, where I go by 'riptxde'. I prefer to make it difficult to find my real name online, so if you'd like to verify that I'm riptxde, you can match the SHA256 hash of 'ruelalarcon' to my profile description."
+                                    >[ alt ]</a
+                                >
+                                <button class="nav-link-info" data-default="[ ? ]" data-active="[ ! ]">[ ? ]</button>
+                            </div>
+                            <div class="nav-link-wrapper">
+                                <a
+                                    href="https://www.linkedin.com/in/ruelnalarcon/"
+                                    class="nav-link"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    data-default="[ linkedin ]"
+                                    data-hover="[ linkedin/ruelnalarcon ]"
+                                    data-description="My professional profile. Feel free to connect with me and check out my very occasional posts."
+                                    >[ linkedin ]</a
+                                >
+                                <button class="nav-link-info" data-default="[ ? ]" data-active="[ ! ]">[ ? ]</button>
+                            </div>
+                            <div class="nav-link-wrapper">
+                                <a
+                                    href="https://riptxde.itch.io/"
+                                    class="nav-link"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    data-default="[ itch.io ]"
+                                    data-hover="[ riptxde.itch.io ]"
+                                    data-description="My game development portfolio, where you can find a few games I've created with my groupmates for University and for Game Jams."
+                                    >[ itch.io ]</a
+                                >
+                                <button class="nav-link-info" data-default="[ ? ]" data-active="[ ! ]">[ ? ]</button>
+                            </div>
+                            <div class="nav-link-wrapper">
+                                <a
+                                    href="mailto:ruel.alarcon@usask.ca"
+                                    class="nav-link"
+                                    data-default="[ email ]"
+                                    data-hover="[ ruel.alarcon@usask.ca ]"
+                                    data-description="Send me an email. I'm sure I'd love to hear from you."
+                                    >[ email ]</a
+                                >
+                                <button class="nav-link-info" data-default="[ ? ]" data-active="[ ! ]">[ ? ]</button>
+                            </div>
                         </nav>
                         <div
                             class="hero__description"
                             id="heroDescription"
                             data-default="Hai~ :3 Try hovering over the buttons above."
+                            data-default-mobile="Hai~ :3 Each link above has a question mark button for more info!"
                         >
-                            <span class="hero__description-text"
-                                >Hai~ :3 Try hovering over the buttons above.</span
+                            <span class="hero__description-text"></span
                             ><span class="terminal-cursor terminal-cursor--block">█</span>
                         </div>
                     </div>

@@ -11,6 +11,7 @@
 
 import { noiseFunction } from "../../core/math.js";
 import { wait } from "../../core/async.js";
+import { mobileManager } from "../../core/mobile-manager.js";
 
 export class Description {
   constructor(descriptionElement) {
@@ -21,6 +22,26 @@ export class Description {
     this.cursor = descriptionElement.querySelector(".terminal-cursor");
     this.currentAnimation = null;
     this.defaultText = descriptionElement.dataset.default || "";
+    this.defaultTextMobile =
+      descriptionElement.dataset.defaultMobile || this.defaultText;
+    this.currentDefaultText = mobileManager.getIsMobile()
+      ? this.defaultTextMobile
+      : this.defaultText;
+
+    if (this.textContent) {
+      this.textContent.textContent = this.currentDefaultText;
+    }
+
+    mobileManager.register((isMobile) => {
+      const newDefaultText = isMobile
+        ? this.defaultTextMobile
+        : this.defaultText;
+
+      if (this.currentDefaultText !== newDefaultText) {
+        this.currentDefaultText = newDefaultText;
+        this.animateToDefault();
+      }
+    });
 
     this.settings = {
       pauseBeforeNormalMode: 300,
@@ -296,6 +317,6 @@ export class Description {
   }
 
   animateToDefault() {
-    return this.animateChange(this.defaultText);
+    return this.animateChange(this.currentDefaultText);
   }
 }
