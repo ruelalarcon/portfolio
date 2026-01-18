@@ -330,7 +330,8 @@
                                     <span class="tui-pane__title">Info</span>
                                 </div>
                                 <div class="tui-pane__content tui-pane__content--small">
-                                    Hi there~! &lt;3 This is a collection of some of my programming projects. <br><br> Clicking on a project in the <i>Processes</i> list will select it. If you click the same one again, that'll unlock it so you can hover for previews again.
+                                    <span class="info-text">Hi there~! &lt;3 This is a collection of some of my programming projects. <br><br> Clicking on a project in the <i>Processes</i> list will select it. If you click the same one again, that'll unlock it so you can hover for previews again.</span>
+                                    <span class="info-text--mobile">Hi there~! &lt;3 This is a collection of some of my programming projects. <br><br> Clicking on a project in the <i>Processes</i> list will select it.</span>
                                 </div>
                                 <div class="tui-pane__border-bottom"></div>
                             </div>
@@ -339,42 +340,66 @@
                         <!-- Right panes: Details -->
                         <div class="projects__details">
                             <!-- Name pane -->
-                            <div class="tui-pane">
+                            <div class="tui-pane no-project">
                                 <div class="tui-pane__border-top">
                                     <span class="tui-pane__title">Name</span>
                                 </div>
-                                <div class="tui-pane__content tui-pane__content--small" id="projectName"></div>
+                                <div class="tui-pane__content tui-pane__content--small">
+                                    <div class="tui-pane__placeholder">
+                                        <span class="placeholder-text">Hover over a project to preview, click to view</span>
+                                        <span class="placeholder-text--mobile">Click a project to view</span>
+                                    </div>
+                                    <div class="tui-pane__data" id="projectName"></div>
+                                </div>
                                 <div class="tui-pane__border-bottom"></div>
                             </div>
 
                             <!-- Description pane -->
-                            <div class="tui-pane">
+                            <div class="tui-pane no-project">
                                 <div class="tui-pane__border-top">
                                     <span class="tui-pane__title">Description</span>
                                 </div>
                                 <div class="tui-pane__content tui-pane__content--medium">
-                                    <div id="projectDescription" data-simplebar data-simplebar-auto-hide="false">
-                                        <div id="projectDescriptionContent"></div>
+                                    <div class="tui-pane__placeholder">
+                                        <span class="placeholder-text">Hover over a project to preview, click to view</span>
+                                        <span class="placeholder-text--mobile">Click a project to view</span>
+                                    </div>
+                                    <div class="tui-pane__data">
+                                        <div id="projectDescription" data-simplebar data-simplebar-auto-hide="false">
+                                            <div id="projectDescriptionContent"></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="tui-pane__border-bottom"></div>
                             </div>
 
                             <!-- Technologies pane -->
-                            <div class="tui-pane">
+                            <div class="tui-pane no-project">
                                 <div class="tui-pane__border-top">
                                     <span class="tui-pane__title">Technologies</span>
                                 </div>
-                                <div class="tui-pane__content tui-pane__content--small" id="projectTech"></div>
+                                <div class="tui-pane__content tui-pane__content--small">
+                                    <div class="tui-pane__placeholder">
+                                        <span class="placeholder-text">Hover over a project to preview, click to view</span>
+                                        <span class="placeholder-text--mobile">Click a project to view</span>
+                                    </div>
+                                    <div class="tui-pane__data" id="projectTech"></div>
+                                </div>
                                 <div class="tui-pane__border-bottom"></div>
                             </div>
 
                             <!-- Links pane -->
-                            <div class="tui-pane">
+                            <div class="tui-pane no-project">
                                 <div class="tui-pane__border-top">
                                     <span class="tui-pane__title">Links</span>
                                 </div>
-                                <div class="tui-pane__content tui-pane__content--small" id="projectLinks"></div>
+                                <div class="tui-pane__content tui-pane__content--small">
+                                    <div class="tui-pane__placeholder">
+                                        <span class="placeholder-text">Hover over a project to preview, click to view</span>
+                                        <span class="placeholder-text--mobile">Click a project to view</span>
+                                    </div>
+                                    <div class="tui-pane__data" id="projectLinks"></div>
+                                </div>
                                 <div class="tui-pane__border-bottom"></div>
                             </div>
                         </div>

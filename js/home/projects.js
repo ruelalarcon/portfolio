@@ -50,6 +50,7 @@ class Projects {
     this.techElement = document.getElementById("projectTech");
     this.linksElement = document.getElementById("projectLinks");
     this.layoutElement = null;
+    this.detailPanes = [];
   }
 
   init(terminalAnimator) {
@@ -111,6 +112,10 @@ class Projects {
     if (this.layoutElement) {
       this.layoutElement.style.display = "grid";
     }
+
+    this.detailPanes = document.querySelectorAll(
+      ".projects__details .tui-pane",
+    );
 
     this._renderProcessList();
 
@@ -313,6 +318,7 @@ class Projects {
   }
 
   _updateDetailPanes(project) {
+    this.detailPanes.forEach((pane) => pane.classList.remove("no-project"));
     this.nameElement.textContent = project.name;
     this.descriptionElement.innerHTML = project.description;
     this.techElement.textContent = project.tech;
@@ -335,11 +341,11 @@ class Projects {
   }
 
   _showDefaultState() {
-    const placeholderText = "Hover over a project to preview, click to view";
-    this.nameElement.innerHTML = `<span class="tui-pane__placeholder">${placeholderText}</span>`;
-    this.descriptionElement.innerHTML = `<span class="tui-pane__placeholder">${placeholderText}</span>`;
-    this.techElement.innerHTML = `<span class="tui-pane__placeholder">${placeholderText}</span>`;
-    this.linksElement.innerHTML = `<span class="tui-pane__placeholder">${placeholderText}</span>`;
+    this.detailPanes.forEach((pane) => pane.classList.add("no-project"));
+    this.nameElement.textContent = "";
+    this.descriptionElement.innerHTML = "";
+    this.techElement.textContent = "";
+    this.linksElement.innerHTML = "";
   }
 
   _setupMouseTracking() {

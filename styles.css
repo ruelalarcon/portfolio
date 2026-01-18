@@ -968,6 +968,18 @@ a {
 }
 
 /* Content padding */
+.tui-pane__content--medium .tui-pane__placeholder {
+    padding: 13px;
+}
+
+.tui-pane__content--medium .tui-pane__data {
+    height: 100%;
+}
+
+#projectDescription {
+    height: 100%;
+}
+
 #projectDescriptionContent {
     padding: 13px;
 }
@@ -1026,6 +1038,103 @@ a {
 #projectDescriptionContent li {
     margin-bottom: 6px;
     line-height: 1.6;
+}
+
+/* =============================================
+   Projects Info and Placeholder Visibility
+   ============================================= */
+
+.info-text--mobile {
+    display: none;
+}
+
+.placeholder-text--mobile {
+    display: none;
+}
+
+.tui-pane.no-project .tui-pane__data {
+    display: none;
+}
+
+.tui-pane:not(.no-project) .tui-pane__placeholder {
+    display: none;
+}
+
+.tui-pane__placeholder {
+    color: #4f4f4f;
+    font-style: italic;
+}
+
+/* =============================================
+   Projects Mobile Layout
+   ============================================= */
+
+@media (max-width: 999px) {
+    .info-text {
+        display: none;
+    }
+
+    .info-text--mobile {
+        display: inline;
+    }
+
+    .placeholder-text {
+        display: none;
+    }
+
+    .placeholder-text--mobile {
+        display: inline;
+    }
+
+    .projects__layout {
+        grid-template-columns: 1fr;
+    }
+
+    .projects__processes {
+        display: contents;
+    }
+
+    .projects__details {
+        display: contents;
+    }
+
+    .projects__processes .tui-pane:has(#projectsList) {
+        order: 2;
+    }
+
+    .projects__processes .tui-pane:has(.tui-pane__content--small) {
+        order: 1;
+    }
+
+    .projects__details .tui-pane:nth-child(1) {
+        order: 3;
+    }
+
+    .projects__details .tui-pane:nth-child(2) {
+        order: 4;
+    }
+
+    .projects__details .tui-pane:nth-child(3) {
+        order: 5;
+    }
+
+    .projects__details .tui-pane:nth-child(4) {
+        order: 6;
+    }
+
+    .process-header th:last-child,
+    .process-item td:last-child {
+        display: none;
+    }
+
+    .tui-pane__content {
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+
+    .projects__processes .tui-pane:has(#projectsList) .tui-pane__content {
+        overflow-x: auto;
+    }
 }
 
 /* =============================================
