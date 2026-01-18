@@ -671,7 +671,8 @@ a {
 
 .projects__layout {
     display: none; /* Hidden by default, shown after terminal animation */
-    grid-template-columns: auto 1fr;
+    display: grid;
+    grid-template-columns: min-content 1fr;
     gap: 16px;
     max-width: 1400px;
     margin: 0 auto;
@@ -687,7 +688,6 @@ a {
 
 .projects__processes {
     gap: 16px;
-    width: 560px;
 }
 
 .projects__processes .tui-pane {
@@ -783,24 +783,37 @@ a {
     text-align: left;
 }
 
+/* Process Table */
+.process-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Cascadia Code", monospace;
+    table-layout: auto;
+}
+
 /* Process List Header */
 .process-header {
-    display: grid;
-    grid-template-columns: 80px 100px auto 85px;
-    column-gap: 16px;
-    padding: 5px 13px;
     color: #888;
     font-weight: bold;
     user-select: none;
-    font-family: "Cascadia Code", monospace;
+}
+
+.process-header th {
+    padding: 5px 13px;
+    text-align: left;
+    font-weight: bold;
+}
+
+.process-header th:first-child {
+    padding-left: 11px;
+}
+
+.process-header th:last-child {
+    padding-right: 11px;
 }
 
 /* Process List Items */
 .process-item {
-    display: grid;
-    grid-template-columns: 80px 100px auto 85px;
-    column-gap: 16px;
-    padding: 2px 13px;
     cursor: pointer;
     color: #666;
     transition:
@@ -808,10 +821,23 @@ a {
         color 0.15s,
         border-left-color 0.15s;
     user-select: none;
-    font-family: "Cascadia Code", monospace;
     line-height: 1.6;
     border-left: 2px solid transparent;
+}
+
+.process-item td {
+    padding: 2px 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.process-item td:first-child {
     padding-left: 11px;
+}
+
+.process-item td:last-child {
+    padding-right: 11px;
 }
 
 .process-item.shown {
@@ -825,28 +851,10 @@ a {
 }
 
 /* Process columns */
-.process-col {
-    overflow: hidden;
-    text-overflow: ellipsis;
+.process-table td,
+.process-table th {
+    width: 1%;
     white-space: nowrap;
-}
-
-.process-col--pid {
-    text-align: left;
-}
-
-.process-col--language {
-    text-align: left;
-}
-
-.process-col--name {
-    text-align: left;
-    white-space: nowrap;
-}
-
-.process-col--mem {
-    text-align: left;
-    font-family: "Cascadia Code", monospace;
 }
 
 /* Project Links Container */

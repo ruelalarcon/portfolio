@@ -187,16 +187,33 @@ class Projects {
   }
 
   _renderProcessList() {
-    const header = `<div class="process-header"><span class="process-col process-col--pid">PID</span><span class="process-col process-col--language">LANG</span><span class="process-col process-col--name">COMMAND</span><span class="process-col process-col--mem">MEM (MB)</span></div>`;
-
     const rows = this.projects
       .map((project, index) => {
         const color = LANGUAGE_COLORS[project.language] || "#666";
-        return `<div class="process-item" data-index="${index}"><span class="process-col process-col--pid">${project.pid}</span><span class="process-col process-col--language" style="color: ${color}">${project.language}</span><span class="process-col process-col--name">${project.command}</span><span class="process-col process-col--mem"><span class="mem-value">0</span> <span class="mem-bar">░░░░░░</span></span></div>`;
+        return `<tr class="process-item" data-index="${index}">
+          <td>${project.pid}</td>
+          <td style="color: ${color}">${project.language}</td>
+          <td>${project.command}</td>
+          <td><span class="mem-value">0</span> <span class="mem-bar">░░░░░░</span></td>
+        </tr>`;
       })
       .join("");
 
-    this.listElement.innerHTML = header + rows;
+    this.listElement.innerHTML = `
+      <table class="process-table">
+        <thead>
+          <tr class="process-header">
+            <th>PID</th>
+            <th>LANG</th>
+            <th>COMMAND</th>
+            <th>MEM (MB)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    `;
 
     this.processItems = Array.from(
       this.listElement.querySelectorAll(".process-item"),
