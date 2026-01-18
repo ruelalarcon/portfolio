@@ -5,11 +5,14 @@
 
 import { DOMASCIIRenderer } from "../../lib/ascii-renderer/dom.js";
 import { easeInOutCubic, noiseFunction } from "../../core/math.js";
+import { mobileManager } from "../../core/mobile-manager.js";
 
 const LOGO_ASCII = atob(
   "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAsLCAgICAgICAgICAgICAgICAgICAgICAsLCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApgN01NIiIiTXEuICAgICAgICAgICAgICAgICAgICBgN01NICAgICAgICAgICAgZGIgICAgICBgN01NICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgTU0gICBgTU0uICAgICAgICAgICAgICAgICAgICAgTU0gICAgICAgICAgIDtNTTogICAgICAgTU0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICBNTSAgICxNOSBgN01NIiBgN01NICAuZ1AiWWEgICBNTSAgICAgICAgICAsVl5NTS4gICAgICBNTCAgICw2IlliLiAgYDdNYixvZDggLHA2ImJvICAgLHBXIldxLmA3TU1wTU1NYi4gIAogIE1NbW1kTTkgICAgTU0gICAgTU0gLE0nICAgWWIgIE1NICAgICAgICAgLE0gIGBNTSAgICAgIE1NICA4KSAgIE1NICAgIE1NJyAiJzZNJyAgT08gIDZXJyAgIGBXYiBNTSAgICBNTSAgCiAgTU0gIFlNLiAgICBNTSAgICBNTSA4TSIiIiIiIiAgTU0gICAgICAgICBBYm1tbXFNQSAgICAgTU0gICAscG05TU0gICAgTU0gICAgOE0gICAgICAgOE0gICAgIE04IE1NICAgIE1NICAKICBNTSAgIGBNYi4gIE1NICAgIE1NIFlNLiAgICAsICBNTSAgICAgICAgQScgICAgIFZNTCAgICBNTSAgOE0gICBNTSAgICBNTSAgICBZTS4gICAgLCBZQS4gICAsQTkgTU0gICAgTU0gIAouSk1NTC4gLkpNTS4gYE1ib2QiWU1MLmBNYm1tZCcuSk1NTC4gICAgLkFNQS4gICAuQU1NQS4uSk1NTC5gTW9vOV5Zby4uSk1NTC4gICBZTWJtZCcgICBgWWJtZDknLkpNTUwgIEpNTUwu",
 );
-const LOGO_LINES = LOGO_ASCII.split("\n");
+const LOGO_ASCII_MOBILE = atob(
+  "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAsLCAgCmA3TU0iIiJNcS4gICAgICAgICAgICAgICAgICAgIGA3TU0gIAogIE1NICAgYE1NLiAgICAgICAgICAgICAgICAgICAgIE1NICAKICBNTSAgICxNOSBgN01NICBgN01NICAuZ1AiWWEgICBNTSAgCiAgTU1tbWRNOSAgICBNTSAgICBNTSAsTScgICBZYiAgTU0gIAogIE1NICBZTS4gICAgTU0gICAgTU0gOE0iIiIiIiIgIE1NICAKICBNTSAgIGBNYi4gIE1NICAgIE1NIFlNLiAgICAsICBNTSAgCi5KTU1MLiAuSk1NLiBgTWJvZCJZTUwuYE1ibW1kJy5KTU1MLg==",
+);
 
 const STATIC_CHARS = "░▒▓█▀▄▌▐■□▪▫●○◐◑◒◓";
 const GLITCH_CHARS = "╔╗╚╝║═╠╣╦╩╬├┤┬┴┼│─";
@@ -24,15 +27,15 @@ export class Logo {
   constructor(containerElement) {
     this.containerElement = containerElement;
 
-    this.gridWidth = LOGO_LINES[0].length;
-    this.gridHeight = LOGO_LINES.length;
-    this.totalCells = this.gridWidth * this.gridHeight;
+    this.logoLines = (
+      mobileManager.getIsMobile() ? LOGO_ASCII_MOBILE : LOGO_ASCII
+    ).split("\n");
 
     this.renderer = null;
+    this.mobileListenerId = null;
 
     this.animationDuration = DEFAULT_ANIMATION_DURATION;
     this.animationStartTime = null;
-    this.characterSeeds = [];
     this.isAnimating = true;
     this.animationComplete = false;
 
@@ -54,11 +57,6 @@ export class Logo {
       lastCleanupTime: 0,
     };
 
-    this.frameChars = new Array(this.totalCells);
-    this.frameColors = new Array(this.totalCells);
-    this.frameTransforms = new Array(this.totalCells);
-    this.effectsCache = new Array(this.totalCells);
-
     this.aspectRatio = 2.2;
 
     this.onComplete = null;
@@ -67,9 +65,35 @@ export class Logo {
   async init(duration = DEFAULT_ANIMATION_DURATION) {
     this.animationDuration = duration;
 
+    await this._initializeRenderer();
+
+    this._initGlobalMouseTracking();
+    this._attachEventListeners();
+
+    this.mobileListenerId = mobileManager.register((isMobile) =>
+      this._handleMobileChange(isMobile),
+    );
+
+    requestAnimationFrame((ts) => this._animate(ts));
+  }
+
+  async _initializeRenderer() {
+    this.gridWidth = this.logoLines[0].length;
+    this.gridHeight = this.logoLines.length;
+    this.totalCells = this.gridWidth * this.gridHeight;
+
+    this.frameChars = new Array(this.totalCells);
+    this.frameColors = new Array(this.totalCells);
+    this.frameTransforms = new Array(this.totalCells);
+    this.effectsCache = new Array(this.totalCells);
+
     this.characterSeeds = Array.from({ length: this.totalCells }, () =>
       Math.random(),
     );
+
+    if (this.renderer) {
+      this.renderer.destroy();
+    }
 
     this.renderer = new DOMASCIIRenderer(this.gridWidth, this.gridHeight, {
       charSet: ALL_CHARS,
@@ -79,11 +103,11 @@ export class Logo {
     });
 
     await this.renderer.init(this.containerElement);
+  }
 
-    this._initGlobalMouseTracking();
-    this._attachEventListeners();
-
-    requestAnimationFrame((ts) => this._animate(ts));
+  async _handleMobileChange(isMobile) {
+    this.logoLines = (isMobile ? LOGO_ASCII_MOBILE : LOGO_ASCII).split("\n");
+    await this._initializeRenderer();
   }
 
   _initGlobalMouseTracking() {
@@ -171,7 +195,7 @@ export class Logo {
       let charIndex = 0;
       for (let y = 0; y < this.gridHeight; y++) {
         for (let x = 0; x < this.gridWidth; x++) {
-          const originalChar = LOGO_LINES[y][x];
+          const originalChar = this.logoLines[y][x];
           chars[charIndex] = this._getAnimationChar(
             originalChar,
             charIndex,
@@ -196,7 +220,7 @@ export class Logo {
       let charIndex = 0;
       for (let y = 0; y < this.gridHeight; y++) {
         for (let x = 0; x < this.gridWidth; x++) {
-          const originalChar = LOGO_LINES[y][x];
+          const originalChar = this.logoLines[y][x];
           const effects = this._calculateRippleEffects(
             x,
             y,
@@ -290,11 +314,11 @@ export class Logo {
 
     if (
       charY >= 0 &&
-      charY < LOGO_LINES.length &&
+      charY < this.logoLines.length &&
       charX >= 0 &&
-      charX < LOGO_LINES[charY].length
+      charX < this.logoLines[charY].length
     ) {
-      const hoveredChar = LOGO_LINES[charY][charX];
+      const hoveredChar = this.logoLines[charY][charX];
       this.rippleState.isHovering = hoveredChar !== " ";
     } else {
       this.rippleState.isHovering = false;
@@ -583,7 +607,7 @@ export class Logo {
     let charIndex = 0;
     for (let y = 0; y < this.gridHeight; y++) {
       for (let x = 0; x < this.gridWidth; x++) {
-        const originalChar = LOGO_LINES[y][x];
+        const originalChar = this.logoLines[y][x];
         const effects = this.effectsCache[charIndex];
 
         if (!effects) {
@@ -634,5 +658,17 @@ export class Logo {
     }
 
     return [r, g, b];
+  }
+
+  destroy() {
+    if (this.mobileListenerId !== null) {
+      mobileManager.unregister(this.mobileListenerId);
+      this.mobileListenerId = null;
+    }
+
+    if (this.renderer) {
+      this.renderer.destroy();
+      this.renderer = null;
+    }
   }
 }
