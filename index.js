@@ -1,17 +1,14 @@
 /**
  * Main entry point for the portfolio homepage
- * Initializes all sections: logo, navigation, projects, and about
+ * Initializes all sections: hero, projects, and about
  */
 
-import { TextMorph } from "./js/lib/text-morph.js";
-import { Logo } from "./js/home/logo.js";
-import { Description } from "./js/home/description.js";
+import { Hero } from "./js/home/hero/index.js";
 import { Projects } from "./js/home/projects.js";
 import { About } from "./js/home/about/index.js";
 import { TerminalAnimator } from "./js/lib/terminal-animator.js";
 import { preload as preloadLive2D } from "./js/home/about/anime/index.js";
 import { preload as preloadVideo } from "./js/home/about/music/index.js";
-import { smoothScrollTo } from "./js/core/scroll.js";
 
 if ("scrollRestoration" in history) {
   history.scrollRestoration = "manual";
@@ -38,68 +35,8 @@ function updateTime() {
 updateTime();
 setInterval(updateTime, 1000);
 
-const descriptionElement = document.getElementById("heroDescription");
-const description = new Description(descriptionElement);
-
-let currentHoveredButton = null;
-let logoAnimationComplete = false;
-
-document.querySelectorAll(".nav-link").forEach((button) => {
-  button.addEventListener("mouseenter", () => {
-    if (!logoAnimationComplete) return;
-
-    currentHoveredButton = button;
-    TextMorph.morph(button, button.dataset.hover);
-
-    if (button.dataset.description) {
-      description.animateChange(button.dataset.description);
-    }
-  });
-
-  button.addEventListener("mouseleave", () => {
-    if (!logoAnimationComplete) return;
-
-    if (currentHoveredButton === button) {
-      currentHoveredButton = null;
-    }
-    TextMorph.morph(button, button.dataset.default);
-
-    description.animateToDefault();
-  });
-});
-
-const logoElement = document.getElementById("heroLogo");
-const contentElement = document.getElementById("heroContent");
-
-const logo = new Logo(logoElement);
-
-logo.onAnimationComplete = () => {
-  contentElement.classList.add("show");
-  logoAnimationComplete = true;
-
-  const heroScrollIndicator = document.getElementById("heroScrollIndicator");
-  if (heroScrollIndicator) {
-    heroScrollIndicator.classList.add("show");
-  }
-};
-
-logo.init(2200);
-
-const heroScrollIndicator = document.getElementById("heroScrollIndicator");
-const bodyContent = document.getElementById("bodyContent");
-if (heroScrollIndicator && bodyContent) {
-  heroScrollIndicator.addEventListener("click", () => {
-    const projectsSection = document.getElementById("projects");
-    if (projectsSection) {
-      const simplebarInstance = window.SimpleBar.instances.get(bodyContent);
-      if (simplebarInstance) {
-        const scrollElement = simplebarInstance.getScrollElement();
-        const targetOffset = projectsSection.offsetTop;
-        smoothScrollTo(scrollElement, targetOffset);
-      }
-    }
-  });
-}
+const hero = new Hero();
+hero.init(2200);
 
 const projectsTerminalElement = document.getElementById("projectsTerminal");
 const projectsTerminalAnimator = new TerminalAnimator(projectsTerminalElement);

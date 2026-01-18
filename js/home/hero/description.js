@@ -9,8 +9,8 @@
  * - Occasional typos with QWERTY keyboard proximity
  */
 
-import { noiseFunction } from "../core/math.js";
-import { wait } from "../core/async.js";
+import { noiseFunction } from "../../core/math.js";
+import { wait } from "../../core/async.js";
 
 export class Description {
   constructor(descriptionElement) {
