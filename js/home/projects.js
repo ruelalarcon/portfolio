@@ -262,16 +262,17 @@ class Projects {
   toggleSelection(index) {
     if (this.selectedIndex === index) {
       this.selectedIndex = null;
-      this.previewIndex = null;
-      this.shownIndex = null;
+      this.previewIndex = index;
+      this.shownIndex = index;
+      this._updateActiveState();
     } else {
       this.selectedIndex = index;
       this.previewIndex = null;
       this.shownIndex = index;
       const project = this.projects[index];
       this._updateDetailPanes(project);
+      this._updateActiveState();
     }
-    this._updateActiveState();
   }
 
   selectProject(index) {
@@ -283,10 +284,29 @@ class Projects {
   }
 
   _updateActiveState() {
-    this.listElement.querySelectorAll(".process-item").forEach((item, i) => {
+    const hadShown = this.processItems.some((item) =>
+      item.classList.contains("shown"),
+    );
+    const hadSelected = this.processItems.some((item) =>
+      item.classList.contains("selected"),
+    );
+    const hasShown = this.shownIndex !== null;
+    const hasSelected = this.selectedIndex !== null;
+
+    const transitionShown = hadShown !== hasShown;
+    const transitionSelected = hadSelected !== hasSelected;
+
+    this.processItems.forEach((item, i) => {
       const isShown = i === this.shownIndex;
       const isSelected = i === this.selectedIndex;
+      const wasShown = item.classList.contains("shown");
+      const wasSelected = item.classList.contains("selected");
 
+      const shouldTransition =
+        (transitionShown && wasShown !== isShown) ||
+        (transitionSelected && wasSelected !== isSelected);
+
+      item.classList.toggle("transitioning", shouldTransition);
       item.classList.toggle("shown", isShown);
       item.classList.toggle("selected", isSelected);
     });

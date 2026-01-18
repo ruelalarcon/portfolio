@@ -816,13 +816,12 @@ a {
 .process-item {
     cursor: pointer;
     color: #666;
-    transition:
-        background-color 0.15s,
-        color 0.15s,
-        border-left-color 0.15s;
     user-select: none;
     line-height: 1.6;
-    border-left: 2px solid transparent;
+}
+
+.process-item.transitioning {
+    transition: color 0.15s;
 }
 
 .process-item td {
@@ -830,6 +829,7 @@ a {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    position: relative;
 }
 
 .process-item td:first-child {
@@ -840,14 +840,53 @@ a {
     padding-right: 11px;
 }
 
+/* Background highlight using ::after pseudo-element */
+.process-item td::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background-color: transparent;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.process-item.transitioning td::after {
+    transition: background-color 0.15s;
+}
+
 .process-item.shown {
-    background-color: rgba(255, 255, 255, 0.05);
     color: #888;
 }
 
-.process-item.selected {
+.process-item.shown td::after {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.process-item.selected td::after {
     background-color: rgba(255, 255, 255, 0.1);
-    border-left-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Left border indicator using ::before pseudo-element */
+.process-item td:first-child::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: transparent;
+    pointer-events: none;
+}
+
+.process-item.transitioning td:first-child::before {
+    transition: background-color 0.15s;
+}
+
+.process-item.selected td:first-child::before {
+    background-color: rgba(255, 255, 255, 0.6);
 }
 
 /* Process columns */
