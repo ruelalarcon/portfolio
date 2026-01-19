@@ -57,18 +57,6 @@ async function createCharAtlas(displayFontSize = 12, textureFontSize = 48) {
     ctx.fillText(char, x, 0);
   }
 
-  console.log("Character atlas created:", {
-    displayFontSize,
-    textureFontSize,
-    displayCharWidth,
-    displayCharHeight,
-    charWidth,
-    charHeight,
-    atlasWidth,
-    atlasHeight,
-    charCount: ASCII_CHARS.length,
-  });
-
   return {
     canvas,
     charWidth,
@@ -172,7 +160,6 @@ class CascadiaASCIIFilter extends PIXI.Filter {
     ];
 
     this.isReady = true;
-    console.log("CascadiaASCIIFilter ready");
   }
 
   apply(filterManager, input, output, clear) {
