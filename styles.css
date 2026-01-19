@@ -530,16 +530,16 @@ a {
     transition: color 0.15s;
 }
 
-.nav-link-info:hover {
-    color: #fff;
-}
-
 .nav-link-info.active {
     color: #fff;
 }
 
 /* Mobile styles */
 @media (max-width: 999px) {
+    .hero__container {
+        margin-top: -15vh;
+    }
+
     .hero__nav {
         flex-direction: column;
         gap: 16px;
@@ -547,6 +547,10 @@ a {
 
     .nav-link-wrapper {
         justify-content: center;
+    }
+
+    .nav-link:hover {
+        color: #555;
     }
 
     .nav-link-info {
