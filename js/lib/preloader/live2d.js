@@ -24,6 +24,10 @@ class Live2DPreloader {
         const json = await fetch(this.modelUrl).then((res) => res.json());
         json.url = this.modelUrl;
 
+        if (this.modifier) {
+          this.modifier(json);
+        }
+
         await this._preloadSubfiles(json);
 
         this.modelData = json;
@@ -115,6 +119,7 @@ class Live2DPreloader {
    * @param {Function} modifier - Function that receives and modifies the JSON
    */
   modifyModelData(modifier) {
+    this.modifier = modifier;
     if (this.modelData) {
       modifier(this.modelData);
     }

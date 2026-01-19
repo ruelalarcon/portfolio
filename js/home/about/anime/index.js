@@ -109,6 +109,9 @@ class AnimeAnimation {
 
     this._patchInternalModel(this.model.internalModel);
 
+    const asciiFilter = new CascadiaASCIIFilter(12);
+    this.model.filters = [asciiFilter];
+
     this.app.stage.addChild(this.model);
 
     this.model.anchor.set(0.5, 0.5);
@@ -116,8 +119,7 @@ class AnimeAnimation {
     this.model.x = this.app.screen.width / 2;
     this.model.y = this.app.screen.height / 1.5;
 
-    const asciiFilter = new CascadiaASCIIFilter(12);
-    this.model.filters = [asciiFilter];
+    this.model.motion("Idle");
   }
 
   async _handleMobileChange() {
