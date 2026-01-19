@@ -117,7 +117,9 @@ class AnimeAnimation {
     this.model.anchor.set(0.5, 0.5);
     this.model.scale.set(0.5);
     this.model.x = this.app.screen.width / 2;
-    this.model.y = this.app.screen.height / 1.5;
+
+    const isMobile = resizeManager.getIsMobile();
+    this.model.y = this.app.screen.height / (isMobile ? 1.1 : 1.5);
 
     this.model.motion("Idle");
   }

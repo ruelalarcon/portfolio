@@ -1183,7 +1183,7 @@ a {
    Video Controls Styles
    ============================================= */
 
-.about__visual .tui-pane canvas {
+.about__visual canvas {
     max-width: 100%;
     height: auto !important;
 }
