@@ -6,6 +6,7 @@
 
 import { noiseFunction } from "../core/math.js";
 import { smoothScrollTo } from "../core/scroll.js";
+import { resizeManager } from "../core/resize-manager.js";
 
 const LANGUAGE_COLORS = {
   JavaScript: "#f1e05a",
@@ -41,6 +42,7 @@ class Projects {
     this.processItems = [];
     this.noiseOffsets = [];
     this.onComplete = null;
+    this.mobileListenerId = null;
 
     this.listElement = document.getElementById("projectsList");
     this.nameElement = document.getElementById("projectName");
@@ -125,9 +127,26 @@ class Projects {
 
     this._showScrollIndicator();
 
+    this.mobileListenerId = resizeManager.register(() =>
+      this._handleMobileChange(),
+    );
+
     if (this.onComplete) {
       this.onComplete();
     }
+  }
+
+  _handleMobileChange() {
+    if (this.layoutElement) {
+      this.layoutElement.style.display = "none";
+    }
+
+    // This solves a really niche issue with browsers retaining width despite shrinking the width due to overflow
+    setTimeout(() => {
+      if (this.layoutElement) {
+        this.layoutElement.style.display = "grid";
+      }
+    }, 50);
   }
 
   _showScrollIndicator() {
@@ -239,7 +258,7 @@ class Projects {
   }
 
   previewProject(index) {
-    if (this.selectedIndex !== null) return;
+    if (this.selectedIndex !== null || resizeManager.getIsMobile()) return;
 
     this.previewIndex = index;
     this.shownIndex = index;
@@ -267,9 +286,10 @@ class Projects {
   toggleSelection(index) {
     if (this.selectedIndex === index) {
       this.selectedIndex = null;
-      this.previewIndex = index;
-      this.shownIndex = index;
+      this.previewIndex = null;
+      this.shownIndex = null;
       this._updateActiveState();
+      this._showDefaultState();
     } else {
       this.selectedIndex = index;
       this.previewIndex = null;
@@ -407,6 +427,13 @@ class Projects {
         memBarSpan.textContent = bar;
       }
     });
+  }
+
+  destroy() {
+    if (this.mobileListenerId !== null) {
+      resizeManager.unregister(this.mobileListenerId);
+      this.mobileListenerId = null;
+    }
   }
 }
 

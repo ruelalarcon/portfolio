@@ -26,6 +26,16 @@ html {
     bottom: 0;
 }
 
+/* Hide horizontal scrollbar on SimpleBar's scroll element */
+.body-content .simplebar-content-wrapper {
+    overflow-x: hidden !important;
+}
+
+/* Hide SimpleBar horizontal track */
+.body-content .simplebar-track.simplebar-horizontal {
+    display: none;
+}
+
 a {
     text-decoration: none;
     color: #04a5e5;
