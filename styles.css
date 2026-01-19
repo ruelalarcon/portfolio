@@ -16,6 +16,8 @@ body {
 
 html {
     overflow: hidden;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 .body-content {
@@ -1160,6 +1162,20 @@ a {
     .process-table th:nth-child(3),
     .process-table td:nth-child(3) {
         max-width: 0;
+    }
+
+    /* Constrain about section visuals to fit mobile screens */
+    .about__visual .tui-pane {
+        max-width: 100%;
+    }
+
+    .tui-pane__content--live2d {
+        min-height: 400px;
+        height: 400px;
+    }
+
+    .about__visual canvas {
+        max-width: 100% !important;
     }
 }
 
