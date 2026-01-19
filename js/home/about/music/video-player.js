@@ -119,7 +119,7 @@ export class VideoPlayer {
     this.container = container;
 
     this.video = document.createElement("video");
-    this.video.src = "resources/video.mp4";
+    this.video.src = "assets/video.mp4";
     this.video.crossOrigin = "anonymous";
     this.video.volume = 0.2;
     this.video.muted = false;

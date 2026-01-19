@@ -1,1 +1,14 @@
-*.mp4
+# Only track specific files/folders for portfolio
+
+# Ignore absolutely everything
+/*
+
+# Allow only these specific items in root
+!/.gitignore
+!/favicon.ico
+!/index.html
+!/index.js
+!/styles.css
+
+# Allow js folder and everything within it
+!/js/

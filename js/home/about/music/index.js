@@ -7,7 +7,7 @@ import { VideoPlayer } from "./video-player.js";
 import { Playbar } from "./playbar.js";
 import { VideoPreloader } from "../../../lib/preloader/video.js";
 
-const VIDEO_URL = "resources/video.mp4";
+const VIDEO_URL = "assets/video.mp4";
 
 const preloader = new VideoPreloader(VIDEO_URL);
 
