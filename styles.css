@@ -893,11 +893,17 @@ a {
     background-color: rgba(255, 255, 255, 0.6);
 }
 
-/* Process columns */
+/* Process columns - auto-size to content except COMMAND */
 .process-table td,
 .process-table th {
     width: 1%;
     white-space: nowrap;
+}
+
+/* COMMAND column can grow and shrink */
+.process-table th:nth-child(3),
+.process-table td:nth-child(3) {
+    width: auto;
 }
 
 /* Project Links Container */
@@ -1137,7 +1143,13 @@ a {
     }
 
     .projects__processes .tui-pane:has(#projectsList) .tui-pane__content {
-        overflow-x: auto;
+        overflow-x: hidden;
+    }
+
+    /* On mobile, set max-width on COMMAND column to enable truncation */
+    .process-table th:nth-child(3),
+    .process-table td:nth-child(3) {
+        max-width: 0;
     }
 }
 
