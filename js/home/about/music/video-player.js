@@ -7,8 +7,7 @@ import { WebGLASCIIRenderer } from "../../../lib/ascii-renderer/webgl.js";
 import { resizeManager } from "../../../core/resize-manager.js";
 
 const ASCII_CHARS_SIMPLE = ".:-=+*#%@";
-const ASCII_CHARS_DENSE =
-  " .'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
+const ASCII_CHARS_DENSE = ".:;~+-*#&%B@$";
 const DENSE_CHARSET_THRESHOLD = 10;
 
 const DESKTOP_GRID_WIDTH = 106;
