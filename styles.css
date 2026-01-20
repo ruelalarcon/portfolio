@@ -1018,11 +1018,50 @@ a {
 
 #projectDescriptionContent img {
     max-width: 100%;
-    max-height: 250px;
+    max-height: 260px;
     height: auto;
     display: block;
     margin: 13px auto;
     border: 1px solid #555;
+    position: relative;
+}
+
+.image-enlarger-wrapper {
+    position: relative;
+    display: block;
+    margin: 13px auto;
+    width: fit-content;
+    max-width: 100%;
+}
+
+.image-enlarger-wrapper img {
+    display: block;
+    margin: 0;
+}
+
+.image-enlarger-wrapper::after {
+    content: "[ Click to Enlarge ]";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(40, 40, 40, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: "Cascadia Code", monospace;
+    font-size: 14px;
+    pointer-events: none;
+    border: 1px solid #555;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.image-enlarger-wrapper.show::after {
+    opacity: 1;
 }
 
 #projectDescriptionContent br {

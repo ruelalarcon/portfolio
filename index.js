@@ -7,6 +7,7 @@ import { Hero } from "./js/home/hero/index.js";
 import { Projects } from "./js/home/projects.js";
 import { About } from "./js/home/about/index.js";
 import { TerminalAnimator } from "./js/lib/terminal-animator.js";
+import { ImageEnlarger } from "./js/lib/image-enlarger.js";
 import { preload as preloadLive2D } from "./js/home/about/anime/index.js";
 import { preload as preloadVideo } from "./js/home/about/music/index.js";
 
@@ -53,3 +54,6 @@ projects.onComplete = () => {
 };
 
 projects.init(projectsTerminalAnimator);
+
+const imageEnlarger = new ImageEnlarger();
+imageEnlarger.init();
