@@ -5,6 +5,7 @@
 
 # Allow only these specific items in root
 !/.gitignore
+!/README.md
 !/favicon.ico
 !/index.html
 !/index.js
