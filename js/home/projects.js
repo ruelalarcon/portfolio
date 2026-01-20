@@ -46,13 +46,16 @@ class Projects {
 
     this.listElement = document.getElementById("projectsList");
     this.nameElement = document.getElementById("projectName");
-    this.descriptionElement = document.getElementById(
+    this.descriptionContainer = document.getElementById(
       "projectDescriptionContent",
     );
     this.techElement = document.getElementById("projectTech");
-    this.linksElement = document.getElementById("projectLinks");
+    this.linksContainer = document.getElementById("projectLinks");
     this.layoutElement = null;
     this.detailPanes = [];
+
+    this.projectDescriptionElements = [];
+    this.projectLinkElements = [];
   }
 
   init(terminalAnimator) {
@@ -120,6 +123,8 @@ class Projects {
     );
 
     this._renderProcessList();
+
+    this._preRenderAllProjects();
 
     this._showDefaultState();
 
@@ -337,35 +342,65 @@ class Projects {
     });
   }
 
-  _updateDetailPanes(project) {
-    this.detailPanes.forEach((pane) => pane.classList.remove("no-project"));
-    this.nameElement.textContent = project.name;
-    this.descriptionElement.innerHTML = project.description;
-    this.techElement.textContent = project.tech;
-    this._renderLinks(project.links);
+  _preRenderAllProjects() {
+    this.projects.forEach((project, index) => {
+      const descDiv = document.createElement("div");
+      descDiv.className = "project-description-content";
+      descDiv.style.display = "none";
+      descDiv.innerHTML = project.description;
+      this.descriptionContainer.appendChild(descDiv);
+      this.projectDescriptionElements.push(descDiv);
+
+      const linksDiv = document.createElement("div");
+      linksDiv.className = "project-links-content";
+      linksDiv.style.display = "none";
+
+      if (project.links.length === 0) {
+        linksDiv.innerHTML =
+          '<span class="tui-pane__placeholder">No links available</span>';
+      } else {
+        linksDiv.innerHTML = project.links
+          .map(
+            (link) =>
+              `<a href="${link.url}" class="project-link" target="_blank" rel="noopener noreferrer">${link.label} -></a>`,
+          )
+          .join("");
+      }
+
+      this.linksContainer.appendChild(linksDiv);
+      this.projectLinkElements.push(linksDiv);
+    });
   }
 
-  _renderLinks(links) {
-    if (links.length === 0) {
-      this.linksElement.innerHTML =
-        '<span class="tui-pane__placeholder">No links available</span>';
-      return;
-    }
+  _updateDetailPanes(project) {
+    this.detailPanes.forEach((pane) => pane.classList.remove("no-project"));
 
-    this.linksElement.innerHTML = links
-      .map(
-        (link) =>
-          `<a href="${link.url}" class="project-link" target="_blank" rel="noopener noreferrer">${link.label} -></a>`,
-      )
-      .join("");
+    const projectIndex = this.projects.indexOf(project);
+
+    this.nameElement.textContent = project.name;
+    this.techElement.textContent = project.tech;
+
+    this.projectDescriptionElements.forEach((elem, index) => {
+      elem.style.display = index === projectIndex ? "block" : "none";
+    });
+
+    this.projectLinkElements.forEach((elem, index) => {
+      elem.style.display = index === projectIndex ? "block" : "none";
+    });
   }
 
   _showDefaultState() {
     this.detailPanes.forEach((pane) => pane.classList.add("no-project"));
     this.nameElement.textContent = "";
-    this.descriptionElement.innerHTML = "";
     this.techElement.textContent = "";
-    this.linksElement.innerHTML = "";
+
+    this.projectDescriptionElements.forEach((elem) => {
+      elem.style.display = "none";
+    });
+
+    this.projectLinkElements.forEach((elem) => {
+      elem.style.display = "none";
+    });
   }
 
   _setupMouseTracking() {

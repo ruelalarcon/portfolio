@@ -1018,9 +1018,10 @@ a {
 
 #projectDescriptionContent img {
     max-width: 100%;
+    max-height: 250px;
     height: auto;
     display: block;
-    margin: 13px 0;
+    margin: 13px auto;
     border: 1px solid #555;
 }
 
