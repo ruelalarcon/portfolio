@@ -6,7 +6,7 @@
 import { Hero } from "./js/home/hero/index.js";
 import { Projects } from "./js/home/projects.js";
 import { About } from "./js/home/about/index.js";
-import { TerminalAnimator } from "./js/lib/terminal-animator.js";
+import { TerminalAnimator } from "./js/lib/terminal/animator.js";
 import { ImageEnlarger } from "./js/lib/image-enlarger.js";
 import { preload as preloadLive2D } from "./js/home/about/anime/index.js";
 import { preload as preloadVideo } from "./js/home/about/music/index.js";
@@ -39,8 +39,9 @@ setInterval(updateTime, 1000);
 const hero = new Hero();
 hero.init(2200);
 
-const projectsTerminalElement = document.getElementById("projectsTerminal");
-const projectsTerminalAnimator = new TerminalAnimator(projectsTerminalElement);
+const terminalAnimator = new TerminalAnimator();
+terminalAnimator.init();
+
 const projects = new Projects();
 
 projects.onComplete = () => {
@@ -50,10 +51,10 @@ projects.onComplete = () => {
   }
 
   const about = new About();
-  about.init();
+  about.init(terminalAnimator);
 };
 
-projects.init(projectsTerminalAnimator);
+projects.init(terminalAnimator);
 
 const imageEnlarger = new ImageEnlarger();
 imageEnlarger.init();

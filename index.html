@@ -122,7 +122,41 @@
             <section class="section projects" id="projects">
                 <div class="section__container">
                     <h2 class="section__title">~/my_projects/</h2>
-                    <div class="terminal-animation" id="projectsTerminal"></div>
+                    <div class="terminal-animation" id="projectsTerminal">
+                        <div data-command>make</div>
+                        <div data-pause="100"></div>
+                        <div data-output data-delay="50">
+                            <p>gcc -c src/project_manager.c -o build/project_manager.o</p>
+                            <p>gcc -c src/display_handler.c -o build/display_handler.o</p>
+                            <p>gcc -c src/process_monitor.c -o build/process_monitor.o</p>
+                            <p>gcc -c src/main.c -o build/main.o</p>
+                            <p>gcc build/project_manager.o build/display_handler.o build/process_monitor.o build/main.o -o build/my_projects</p>
+                            <p>ln -sf $(pwd)/build/my_projects /usr/local/bin/my_projects</p>
+                            <p>Build complete.</p>
+                        </div>
+                        <div data-pause="400"></div>
+                        <div data-command>./my_projects --help</div>
+                        <div data-pause="100"></div>
+                        <div data-output>
+                            <p>my_projects v1.0.0</p>
+                            <p></p>
+                            <p>DESCRIPTION:</p>
+                            <p>    A top/htop-style resource monitor for displaying projects.</p>
+                            <p>    Shows active projects with details including PID, language,</p>
+                            <p>    command name, and memory usage.</p>
+                            <p></p>
+                            <p>USAGE:</p>
+                            <p>    my_projects [OPTIONS]</p>
+                            <p></p>
+                            <p>OPTIONS:</p>
+                            <p>    --help        Show this help message</p>
+                            <p>    --version     Show version information</p>
+                        </div>
+                        <div data-pause="600"></div>
+                        <div data-command>./my_projects</div>
+                        <div data-pause="200"></div>
+                        <div data-callback="showTUI"></div>
+                    </div>
 
                     <!-- Project data for SEO - parsed by JS then removed -->
                     <div id="projectsData" style="display: none">
@@ -437,7 +471,29 @@
                     <!-- Coding Section -->
                     <div class="about__section">
                         <div class="about__text">
-                            <div class="terminal-animation" id="codingTerminal"></div>
+                            <div class="terminal-animation" id="codingTerminal">
+                                <div data-command>cat coding.txt</div>
+                                <div data-pause="100"></div>
+                                <div data-output>
+                                    <p>Hiya~ I'm currently {{age}} years old and originally from the Philippines, though I moved away by the time I was 1. My beginnings as a programmer started in elementary school, where I learned the basics of Lua by editing and writing scripts for Roblox exploits. From that point I became interested in stuff like Minecraft server plugins and eventually networking.</p>
+                                    <p></p>
+                                    <p>Now, I'm always working on my next project. I usually like keeping up with stuff like developments in AI (not strictly LLMs) and web technologies. That said, I also have a deep fondness for low-level code and code optimization, especially as scalability becomes more and more important for the internet.</p>
+                                </div>
+                                <div data-pause="400"></div>
+                                <div data-command>poetry install</div>
+                                <div data-pause="100"></div>
+                                <div data-output data-delay="50">
+                                    <p>Installing dependencies from lock file</p>
+                                    <p></p>
+                                    <p>Package operations: 1 install, 0 updates, 0 removals</p>
+                                    <p></p>
+                                    <p>  - Installing ascii-bresenham (1.2.0)</p>
+                                </div>
+                                <div data-pause="200"></div>
+                                <div data-command>poetry run python cube.py</div>
+                                <div data-pause="100"></div>
+                                <div data-callback="showVisual"></div>
+                            </div>
                         </div>
                         <div class="about__visual" id="codingVisual"></div>
                     </div>
@@ -445,7 +501,43 @@
                     <!-- Anime Section -->
                     <div class="about__section">
                         <div class="about__text">
-                            <div class="terminal-animation" id="animeTerminal"></div>
+                            <div class="terminal-animation" id="animeTerminal">
+                                <div data-command>cat anime.txt</div>
+                                <div data-pause="100"></div>
+                                <div data-output>
+                                    <p>Watching anime has always been one of my favorite hobbies, ever since I was a kid. Nothing beats watching an anime as its episodes release week by week.</p>
+                                    <p></p>
+                                    <p>In general I'd say anime has been a pretty foundational inspiration for my creative projects in both music and programming.</p>
+                                </div>
+                                <div data-pause="400"></div>
+                                <div data-command>vcpkg install</div>
+                                <div data-pause="100"></div>
+                                <div data-output data-delay="50">
+                                    <p>Detecting compiler hash...</p>
+                                    <p>The following packages will be built and installed:</p>
+                                    <p>    live2d[core]</p>
+                                    <p>Starting package 1/1: live2d</p>
+                                    <p>Building live2d...</p>
+                                    <p>Installing live2d...</p>
+                                    <p>Elapsed time to handle live2d: 2.1 s</p>
+                                    <p>Total install time: 2.1 s</p>
+                                </div>
+                                <div data-pause="200"></div>
+                                <div data-command>cmake --build build</div>
+                                <div data-pause="100"></div>
+                                <div data-output data-delay="30">
+                                    <p>[ 20%] Building CXX object CMakeFiles/waifu.dir/src/main.cpp.o</p>
+                                    <p>[ 40%] Building CXX object CMakeFiles/waifu.dir/src/renderer.cpp.o</p>
+                                    <p>[ 60%] Building CXX object CMakeFiles/waifu.dir/src/model.cpp.o</p>
+                                    <p>[ 80%] Building CXX object CMakeFiles/waifu.dir/src/physics.cpp.o</p>
+                                    <p>[ 90%] Linking CXX executable waifu</p>
+                                    <p>[100%] Built target waifu</p>
+                                </div>
+                                <div data-pause="200"></div>
+                                <div data-command>./build/waifu</div>
+                                <div data-pause="100"></div>
+                                <div data-callback="showVisual"></div>
+                            </div>
                         </div>
                         <div class="about__visual" id="animeVisual"></div>
                     </div>
@@ -453,7 +545,35 @@
                     <!-- Music Section -->
                     <div class="about__section">
                         <div class="about__text">
-                            <div class="terminal-animation" id="musicTerminal"></div>
+                            <div class="terminal-animation" id="musicTerminal">
+                                <div data-command>cat music.txt</div>
+                                <div data-pause="100"></div>
+                                <div data-output>
+                                    <p>Another fun fact about me is that I'm also a professional jazz pianist! Very occasionally, you may find me doing gigs at various places such as the Sundog Arts &amp; Entertainment Faire. After an introductory few years of classical lessons, I began self-teaching jazz piano and have been for over 10 years.</p>
+                                    <p></p>
+                                    <p>I also grew up listening to dubstep and EDM, so I've come to absolutely love electronic music, as well as genres that blend jazzy harmonies with interesting sound design, like Future Bass, Glitch Hop, and other EDM genres.</p>
+                                    <p></p>
+                                    <p>Below is one of my favorite songs! Simply scroll down and hit play.</p>
+                                </div>
+                                <div data-pause="400"></div>
+                                <div data-command>cargo build</div>
+                                <div data-pause="100"></div>
+                                <div data-output data-delay="60">
+                                    <p>   Compiling ffmpeg-sys v0.5.2</p>
+                                    <p>   Compiling ansi_colours v1.2.2</p>
+                                    <p>   Compiling music_video v0.1.0</p>
+                                    <p>    Finished dev [unoptimized + debuginfo] target(s) in 3.47s</p>
+                                </div>
+                                <div data-pause="200"></div>
+                                <div data-command>cargo run</div>
+                                <div data-pause="100"></div>
+                                <div data-output data-delay="80">
+                                    <p>    Finished dev [unoptimized + debuginfo] target(s) in 0.08s</p>
+                                    <p>     Running `target/debug/music_video`</p>
+                                </div>
+                                <div data-pause="100"></div>
+                                <div data-callback="showVisual"></div>
+                            </div>
                         </div>
                         <div class="about__visual" id="musicVisual"></div>
                     </div>

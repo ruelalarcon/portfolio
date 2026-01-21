@@ -1,25 +1,17 @@
 /**
- * TerminalAnimator
- * Reusable class for animating terminal command sequences
- * Supports typing commands, showing output, pauses, and callbacks
- * Automatically triggers animation when container comes into view
+ * TerminalInstance
+ * Individual terminal animation instance
+ * Handles typing commands, showing output, and executing callbacks
  */
 
-import { wait } from "../core/async.js";
-import { noiseFunction } from "../core/math.js";
+import { wait } from "../../core/async.js";
+import { noiseFunction } from "../../core/math.js";
 
-class TerminalAnimator {
-  /**
-   * @param {HTMLElement} container - The container element for terminal output
-   * @param {Object} options - Configuration options
-   * @param {string} options.prompt - Terminal prompt (e.g., "$", ">", "user@host:~$")
-   * @param {number} options.typingSpeed - Base typing speed in ms per character
-   * @param {number} options.typingVariance - Variance in typing speed (±ms)
-   * @param {number} options.viewDelay - Delay after coming into view before starting
-   * @param {number} options.threshold - Intersection observer threshold
-   */
-  constructor(container, options = {}) {
+class TerminalInstance {
+  constructor(container, sequence, transformerFn, options = {}) {
     this.container = container;
+    this.sequence = sequence;
+    this.transformerFn = transformerFn;
     this.prompt = options.prompt || "$";
     this.typingSpeed = options.typingSpeed || 35;
     this.typingVariance =
@@ -27,25 +19,21 @@ class TerminalAnimator {
     this.viewDelay = options.viewDelay !== undefined ? options.viewDelay : 500;
     this.threshold = options.threshold !== undefined ? options.threshold : 0.1;
 
+    this.callbacks = {};
     this.currentLine = null;
     this.cursor = null;
     this.isCancelled = false;
-    this.sequence = null;
     this.observer = null;
     this.isRunning = false;
+    this.hasRun = false;
   }
 
-  /**
-   * Setup intersection observer to run animation when container comes into view
-   * @param {Array} sequence - Array of command objects:
-   *   - { type: 'command', text: '...' } - Type a command
-   *   - { type: 'output', lines: [...], delay: ms } - Show output lines
-   *   - { type: 'pause', duration: ms } - Pause for duration
-   *   - { type: 'callback', fn: () => {} } - Execute callback function
-   */
-  setupViewTrigger(sequence) {
-    this.sequence = sequence;
-    this.hasRun = false;
+  registerCallback(name, fn) {
+    this.callbacks[name] = fn;
+  }
+
+  arm() {
+    if (this.observer) return;
 
     this.observer = new IntersectionObserver(
       (entries) => {
@@ -55,42 +43,44 @@ class TerminalAnimator {
           }
         });
       },
-      { threshold: this.threshold },
+      { threshold: this.threshold }
     );
 
     this.observer.observe(this.container);
   }
 
   async _onEnterView() {
-    if (!this.sequence || this.isRunning || this.hasRun) return;
+    if (this.isRunning || this.hasRun) return;
 
     this.hasRun = true;
-
     await wait(this.viewDelay);
-
-    await this.run(this.sequence);
+    await this.run();
   }
 
-  /**
-   * Run a sequence of terminal commands and outputs
-   * @param {Array} sequence - Array of command objects
-   */
-  async run(sequence) {
+  async run() {
     this.isRunning = true;
     this.isCancelled = false;
     this.container.innerHTML = "";
 
-    for (const step of sequence) {
+    for (const step of this.sequence) {
       if (this.isCancelled) break;
 
       if (step.type === "command") {
         await this._typeCommand(step.text);
       } else if (step.type === "output") {
-        await this._showOutput(step.lines, step.delay);
+        const lines = step.lines.map((line) => this.transformerFn(line));
+        await this._showOutput(lines, step.delay);
       } else if (step.type === "pause") {
         await wait(step.duration);
       } else if (step.type === "callback") {
-        await step.fn();
+        const fn = this.callbacks[step.name];
+        if (fn) {
+          await fn();
+        } else {
+          console.warn(
+            `TerminalInstance: callback "${step.name}" not registered`
+          );
+        }
       }
     }
 
@@ -172,4 +162,4 @@ class TerminalAnimator {
   }
 }
 
-export { TerminalAnimator };
+export { TerminalInstance };
