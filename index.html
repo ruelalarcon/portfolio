@@ -254,6 +254,7 @@
                             <h3>3CPF Specification</h3>
                             <div data-description>
                                 <p>Spec for 3CPF (3D Colored Point Frames), a binary file format for storing animated colored point data designed with simplicity of reading, writing, and playing in mind.</p>
+                                <img src="assets/3cpf_example.webp" alt="3cpf screenshot in hex editor" />
                                 <p>As far as I could tell, before creating this file format, there were no convenient file formats for animated and colored point data that did not also include massive amountts of unnecessary mesh data. Point cloud formats like <i>pcd</i> did exist but support for both animations and colors at once simply did not exist.</p>
                                 <p>In the end, I designed a new binary file format, <i>3cpf</i>, complete with a magic header number, and detailed documentation in the form of a spec document.</p>
                                 <p>I actually created this file format with a very specific goal in mind. I urge you to check out the 3cpf_projects to find out what that goal was.</p>
@@ -272,15 +273,19 @@
                                     <li><i>mat3cpf</i>, a CLI tool for rendering a simple 3cpf file</li>
                                     <li><i>minecraft3cpf</i>, a CLI tool for converting a 3cpf animation into a minecraft datapack which allows you to visualize an animation with colored moving minecraft blocks</li>
                                 </ul>
-                                <p>Yes, the entire reason I created this file format and suite of projects was to make Hatsune Miku dance in minecraft.</p>
+                                <p>Believe it or not, the entire reason I created this file format and suite of projects was to make Hatsune Miku (a <i>vocaloid</i> character) dance in minecraft.</p>
+                                <p>Anyway, here's an example of her in <i>mat3cpf</i> for example.</p>
+                                <img src="assets/mat3cpf_example.webp" alt="mat3cpf animation screenshot" />
+                                <p>If you'd like to see her in minecraft, click the <i>showcase</i> link in the section below.</p>
                             </div>
                             <p data-tech>Python, Blender, Matplotlib, MCFunction</p>
                             <a href="https://pypi.org/project/cpf3d/" rel="noopener noreferrer">cpf3d</a>
                             <a href="https://github.com/ruelalarcon/animated_surface_to_points" rel="noopener noreferrer">animated_surface_to_points</a>
                             <a href="https://github.com/ruelalarcon/mat3cpf" rel="noopener noreferrer">mat3cpf</a>
                             <a href="https://github.com/ruelalarcon/minecraft3cpf" rel="noopener noreferrer">minecraft3cpf</a>
-                            <a href="https://www.youtube.com/watch?v=7hrDonjMQtA" rel="noopener noreferrer">hatsune miku &lt;3</a>
+                            <a href="https://www.youtube.com/watch?v=7hrDonjMQtA" rel="noopener noreferrer">showcase</a>
                         </article>
+                        <p>Anyway, here's an example of the same in mat3cpf
 
                         <article data-command="rng_cracking_demo" data-language="JavaScript">
                             <h3>RNG Cracking Demo</h3>
