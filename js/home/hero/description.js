@@ -45,17 +45,17 @@ export class Description {
     });
 
     this.settings = {
-      pauseBeforeNormalMode: 300,
-      pauseInNormalMode: 100,
+      pauseBeforeNormalMode: 150,
+      pauseInNormalMode: 50,
       pauseBeforeInsertMode: 150,
 
-      selectionDisplay: 400,
-      deletionPause: 100,
+      selectionDisplay: 200,
+      deletionPause: 50,
       interruptedDeletionPause: 50,
 
-      typingBase: 30,
-      typingVariation: 15,
-      typingThinkingPause: { min: 100, max: 200 },
+      typingBase: 15,
+      typingVariation: 10,
+      typingThinkingPause: { min: 30, max: 80 },
       typingThinkingChance: 0.3,
 
       typoChance: 0.01,
@@ -68,10 +68,10 @@ export class Description {
       typoTypingSpeed: { min: 80, max: 120 },
       typoNoticePause: { min: 50, max: 100 },
       typoBackspaceSpeed: { min: 50, max: 80 },
-      typoWordSelectionDisplay: 200,
-      typoWordDeletionPause: 150,
-      typoBeforeCorrectChar: 100,
-      typoAfterWordRetype: 100,
+      typoWordSelectionDisplay: 150,
+      typoWordDeletionPause: 75,
+      typoBeforeCorrectChar: 50,
+      typoAfterWordRetype: 50,
     };
 
     this.keyboardProximity = {
