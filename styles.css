@@ -90,14 +90,14 @@ a {
             ellipse at center,
             transparent 0%,
             transparent 40%,
-            rgba(0, 0, 0, 0.2) 70%,
-            rgba(0, 0, 0, 0.6) 100%
+            rgba(0, 0, 0, 0.1) 70%,
+            rgba(0, 0, 0, 0.3) 100%
         ),
         linear-gradient(
             180deg,
-            rgba(0, 50, 0, 0.03) 0%,
+            rgba(0, 50, 0, 0.015) 0%,
             transparent 50%,
-            rgba(0, 30, 0, 0.05) 100%
+            rgba(0, 30, 0, 0.025) 100%
         );
 }
 
@@ -111,8 +111,8 @@ a {
         0deg,
         transparent,
         transparent 1px,
-        rgba(0, 0, 0, 0.4) 1px,
-        rgba(0, 0, 0, 0.4) 2px
+        rgba(0, 0, 0, 0.2) 1px,
+        rgba(0, 0, 0, 0.2) 2px
     );
     animation: scanline-move 10s linear infinite;
 }
@@ -172,34 +172,34 @@ a {
 @keyframes flicker {
     0%,
     100% {
-        opacity: 0.02;
+        opacity: 0.01;
     }
     10% {
-        opacity: 0.04;
+        opacity: 0.02;
     }
     20% {
-        opacity: 0.01;
+        opacity: 0.005;
     }
     30% {
-        opacity: 0.03;
+        opacity: 0.015;
     }
     40% {
-        opacity: 0.02;
-    }
-    50% {
-        opacity: 0.05;
-    }
-    60% {
         opacity: 0.01;
     }
+    50% {
+        opacity: 0.025;
+    }
+    60% {
+        opacity: 0.005;
+    }
     70% {
-        opacity: 0.03;
+        opacity: 0.015;
     }
     80% {
-        opacity: 0.02;
+        opacity: 0.01;
     }
     90% {
-        opacity: 0.04;
+        opacity: 0.02;
     }
 }
 
