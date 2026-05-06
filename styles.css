@@ -1,3 +1,24 @@
+/* =============================================
+   Design Tokens
+   ============================================= */
+
+:root {
+    --color-bg: #0a0a0a;
+    --color-border: #333;
+    --color-border-mid: #555;
+    --color-section-border: #222;
+
+    --color-text: #fff;
+    --color-text-dim: #888;
+    --color-text-muted: #777;
+    --color-text-faint: #666;
+    --color-text-placeholder: #707070;
+    --color-text-italic: #aaa;
+
+    --color-accent: #04a5e5;
+    --color-highlight-bg: #444;
+}
+
 /* Global Styles */
 * {
     margin: 0;
@@ -7,8 +28,8 @@
 
 body {
     font-family: "Cascadia Code", monospace;
-    background: #0a0a0a;
-    color: #fff;
+    background: var(--color-bg);
+    color: var(--color-text);
     height: 100vh;
     position: relative;
     overflow: hidden;
@@ -40,7 +61,7 @@ html {
 
 a {
     text-decoration: none;
-    color: #04a5e5;
+    color: var(--color-accent);
 }
 
 /* =============================================
@@ -197,21 +218,21 @@ a {
         rgba(20, 20, 20, 0.95),
         rgba(10, 10, 10, 0.9)
     );
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--color-border);
     display: flex;
     justify-content: space-between;
     font-size: 12px;
-    color: #666;
+    color: var(--color-text-dim);
     z-index: 100;
     backdrop-filter: blur(4px);
 }
 
 .terminal-header__prompt {
-    color: #666;
+    color: var(--color-text-dim);
 }
 
 .terminal-header__time {
-    color: #888;
+    color: var(--color-text-dim);
 }
 
 /* =============================================
@@ -229,9 +250,9 @@ a {
         rgba(20, 20, 20, 0.95),
         rgba(10, 10, 10, 0.9)
     );
-    border-top: 1px solid #333;
+    border-top: 1px solid var(--color-border);
     font-size: 11px;
-    color: #444;
+    color: var(--color-text-faint);
     text-align: center;
     z-index: 100;
 }
@@ -255,7 +276,7 @@ a {
     justify-content: center;
     padding: 96px 32px 64px;
     position: relative;
-    border-top: 1px solid #222;
+    border-top: 1px solid var(--color-section-border);
 }
 
 .section:first-of-type {
@@ -277,7 +298,7 @@ a {
 
 .section__title {
     font-size: 24px;
-    color: #888;
+    color: var(--color-text-dim);
     margin-bottom: 16px;
     font-weight: normal;
     font-family: "Cascadia Code", monospace;
@@ -295,7 +316,7 @@ a {
 .terminal-animation {
     font-family: "Cascadia Code", monospace;
     font-size: 14px;
-    color: #888;
+    color: var(--color-text-dim);
     text-align: left;
     margin-bottom: 32px;
     line-height: 1.6;
@@ -306,15 +327,15 @@ a {
 }
 
 .terminal-prompt {
-    color: #666;
+    color: var(--color-text-dim);
 }
 
 .terminal-command {
-    color: #fff;
+    color: var(--color-text);
 }
 
 .terminal-output {
-    color: #888;
+    color: var(--color-text-dim);
     margin-bottom: 0;
     white-space: pre-wrap;
     word-wrap: break-word;
@@ -324,14 +345,14 @@ a {
     animation: blink 1s step-end infinite;
     display: inline-block;
     vertical-align: baseline;
-    color: #666;
-    background: #666;
+    color: var(--color-text-dim);
+    background: var(--color-text-dim);
     margin-left: 1px;
 }
 
 .section__description {
     font-size: 14px;
-    color: #666;
+    color: var(--color-text-dim);
     text-align: center;
     max-width: 600px;
     margin: 0 auto 48px auto;
@@ -344,7 +365,7 @@ a {
 }
 
 .placeholder {
-    color: #555;
+    color: var(--color-text-muted);
     font-size: 14px;
 }
 
@@ -390,7 +411,7 @@ a {
 
 .about__section-content {
     font-size: 14px;
-    color: #888;
+    color: var(--color-text-dim);
     line-height: 1.8;
 }
 
@@ -419,7 +440,7 @@ a {
 
 .about__thanks {
     font-size: 14px;
-    color: #666;
+    color: var(--color-text-dim);
     text-align: center;
     margin-top: 64px;
     font-family: "Cascadia Code", monospace;
@@ -467,7 +488,7 @@ a {
 }
 
 .hero__logo {
-    color: #fff;
+    color: var(--color-text);
     font-size: 12px;
     line-height: 1.15;
     margin-bottom: 32px;
@@ -511,7 +532,7 @@ a {
 .nav-link {
     display: inline-block;
     padding: 10px 0;
-    color: #555;
+    color: var(--color-text-muted);
     text-decoration: none;
     transition:
         color 0.15s,
@@ -521,20 +542,20 @@ a {
 }
 
 .nav-link:hover {
-    color: #fff;
+    color: var(--color-text);
 }
 
 .nav-link.disabled {
     opacity: 0.3;
     pointer-events: none;
-    color: #333;
+    color: var(--color-border);
 }
 
 .nav-link-info {
     display: none;
     background: transparent;
     border: none;
-    color: #555;
+    color: var(--color-text-muted);
     font-family: "Cascadia Code", monospace;
     font-size: 14px;
     padding: 10px 0;
@@ -543,7 +564,7 @@ a {
 }
 
 .nav-link-info.active {
-    color: #fff;
+    color: var(--color-text);
 }
 
 /* Mobile styles */
@@ -562,7 +583,7 @@ a {
     }
 
     .nav-link:hover {
-        color: #555;
+        color: var(--color-text-muted);
     }
 
     .nav-link-info {
@@ -571,7 +592,7 @@ a {
 }
 
 .hero__description {
-    color: #666;
+    color: var(--color-text-dim);
     font-size: 0;
     font-family: "Cascadia Code", monospace;
     margin-top: 8px;
@@ -593,8 +614,8 @@ a {
 }
 
 .hero__description-text .highlighted {
-    background: #444;
-    color: #fff;
+    background: var(--color-highlight-bg);
+    color: var(--color-text);
 }
 
 /* =============================================
@@ -615,7 +636,7 @@ a {
     transition:
         opacity 0.8s ease-out,
         color 0.15s;
-    color: #555;
+    color: var(--color-text-muted);
     font-family: "Cascadia Code", monospace;
     font-size: 12px;
 }
@@ -625,7 +646,7 @@ a {
 }
 
 .scroll-indicator:hover {
-    color: #888;
+    color: var(--color-text-italic);
 }
 
 .scroll-indicator__text {
@@ -648,8 +669,8 @@ a {
 }
 
 .terminal-cursor--block {
-    background: #666;
-    color: #666;
+    background: var(--color-text-dim);
+    color: var(--color-text-dim);
     padding: 0;
     margin: 0;
 }
@@ -657,7 +678,7 @@ a {
 .terminal-cursor--insert {
     background: transparent;
     color: transparent;
-    border-left: 3px solid #666;
+    border-left: 3px solid var(--color-text-faint);
     margin-left: 0;
     padding-left: 3px;
     animation: none;
@@ -724,7 +745,7 @@ a {
     font-family: "Cascadia Code", monospace;
     font-size: 14px;
     line-height: 1.4;
-    border: 1px solid #555;
+    border: 1px solid var(--color-border-mid);
     position: relative;
 }
 
@@ -738,18 +759,18 @@ a {
 }
 
 .tui-pane__title {
-    color: #888;
+    color: var(--color-text-dim);
     padding: 0 0.5ch;
     position: absolute;
     left: 1ch;
     top: -10px;
-    background: #0a0a0a;
+    background: var(--color-bg);
     font-size: 14px;
     z-index: 1;
 }
 
 .tui-pane__content {
-    color: #888;
+    color: var(--color-text-dim);
     padding: 13px;
     min-height: 60px;
     white-space: normal;
@@ -793,7 +814,7 @@ a {
 }
 
 .tui-pane__placeholder {
-    color: #4f4f4f;
+    color: var(--color-text-placeholder);
     font-style: italic;
     display: inline-block;
     text-align: left;
@@ -809,7 +830,7 @@ a {
 
 /* Process List Header */
 .process-header {
-    color: #888;
+    color: var(--color-text-dim);
     font-weight: bold;
     user-select: none;
 }
@@ -831,7 +852,7 @@ a {
 /* Process List Items */
 .process-item {
     cursor: pointer;
-    color: #666;
+    color: var(--color-text-dim);
     user-select: none;
     line-height: 1.6;
 }
@@ -874,7 +895,7 @@ a {
 }
 
 .process-item.shown {
-    color: #888;
+    color: var(--color-text-dim);
 }
 
 .process-item.shown td::after {
@@ -928,7 +949,7 @@ a {
 /* Project Links */
 .project-link {
     display: block;
-    color: #666;
+    color: var(--color-text-dim);
     text-decoration: none;
     transition: color 0.15s;
     padding: 0;
@@ -936,7 +957,7 @@ a {
 }
 
 .project-link:hover {
-    color: #fff;
+    color: var(--color-text);
 }
 
 /* =============================================
@@ -945,7 +966,7 @@ a {
 
 /* Body scrollbar */
 #bodyContent .simplebar-scrollbar::before {
-    background-color: #555;
+    background-color: var(--color-border-mid);
     opacity: 1 !important;
     border-radius: 0;
     left: 0;
@@ -971,7 +992,7 @@ a {
 
 /* Override SimpleBar styles for terminal aesthetic */
 #projectDescription .simplebar-scrollbar::before {
-    background-color: #555;
+    background-color: var(--color-border-mid);
     opacity: 1 !important;
     border-radius: 0;
     left: 0;
@@ -1022,7 +1043,7 @@ a {
     height: auto;
     display: block;
     margin: 13px auto;
-    border: 1px solid #555;
+    border: 1px solid var(--color-border-mid);
     position: relative;
 }
 
@@ -1054,7 +1075,7 @@ a {
     font-family: "Cascadia Code", monospace;
     font-size: 14px;
     pointer-events: none;
-    border: 1px solid #555;
+    border: 1px solid var(--color-border-mid);
     box-sizing: border-box;
     opacity: 0;
     transition: opacity 0.2s ease;
@@ -1072,14 +1093,14 @@ a {
 
 #projectDescriptionContent strong,
 #projectDescriptionContent b {
-    color: #fff;
+    color: var(--color-text);
     font-weight: bold;
 }
 
 #projectDescriptionContent em,
 #projectDescriptionContent i {
     font-style: italic;
-    color: #aaa;
+    color: var(--color-text-italic);
 }
 
 #projectDescriptionContent code {
@@ -1088,7 +1109,7 @@ a {
     border-radius: 2px;
     font-family: "Cascadia Code", monospace;
     font-size: 13px;
-    color: #aaa;
+    color: var(--color-text-italic);
 }
 
 #projectDescriptionContent ul,
@@ -1123,7 +1144,7 @@ a {
 }
 
 .tui-pane__placeholder {
-    color: #4f4f4f;
+    color: var(--color-text-placeholder);
     font-style: italic;
 }
 
@@ -1239,7 +1260,7 @@ a {
 .video-play-button {
     background: transparent;
     border: none;
-    color: #555;
+    color: var(--color-text-muted);
     font-family: "Cascadia Code", monospace;
     font-size: 14px;
     padding: 10px 0;
@@ -1251,11 +1272,11 @@ a {
 }
 
 .video-play-button:hover {
-    color: #fff;
+    color: var(--color-text);
 }
 
 .video-progress {
-    color: #fff;
+    color: var(--color-text);
     font-family: "Cascadia Code", monospace;
     font-size: 12px;
     cursor: pointer;
@@ -1266,10 +1287,10 @@ a {
 
 @media (max-width: 999px) {
     .video-play-button:hover {
-        color: #555;
+        color: var(--color-text-muted);
     }
 
     .video-play-button.playing {
-        color: #fff;
+        color: var(--color-text);
     }
 }
