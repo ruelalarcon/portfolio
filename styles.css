@@ -638,7 +638,7 @@ a {
         color 0.15s;
     color: var(--color-text-muted);
     font-family: "Cascadia Code", monospace;
-    font-size: 12px;
+    font-size: 16px;
 }
 
 .scroll-indicator.show {
@@ -654,7 +654,7 @@ a {
 }
 
 .scroll-indicator__arrow {
-    font-size: 14px;
+    font-size: 18px;
     line-height: 1;
 }
 
