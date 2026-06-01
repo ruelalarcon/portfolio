@@ -225,6 +225,19 @@
                             <a href="https://github.com/ruelalarcon/spellcast_solver_cli" rel="noopener noreferrer">github</a>
                         </article>
 
+                        <article data-command="finsonar" data-language="Python">
+                            <h3>FinSonar</h3>
+                            <div data-description>
+                                <p>A financial analysis assistant that lets you chat with your data using any LLM. Load a CSV or a ticker symbol, ask questions in plain English, and get back interactive charts and calculations with the code execution running locally in a sandboxed Lua interpreter.</p>
+                                <img src="assets/finsonar_ui.webp" alt="FinSonar interface screenshot" />
+                                <p>Most AI data analysis tools that run code either spin up Docker containers per session or delegate to a paid sandbox service like e2b. Both felt like overkill for the problem, and I wanted something with zero infrastructure overhead.</p>
+                                <p>The trick is using <i>Lua</i> as the agent's execution language, embedded directly in the Python process via <i>lupa</i>. Lua was designed to be embedded and sandboxed, so you just nil out the dangerous globals (<code>os</code>, <code>io</code>, <code>require</code>, etc.) and you're done. The interpreter starts in milliseconds and the sandbox is trivially auditable.</p>
+                                <p>A built-in financial library (<i>finlib</i>) covering things like TVM, DCF valuation, bond pricing, portfolio analysis, and risk metrics is exposed into the Lua environment as callable globals. The LLM writes Lua that calls those functions, reads your data, and returns either prose or a Plotly chart rendered inline in the chat.</p>
+                            </div>
+                            <p data-tech>Python, Lua, Plotly Dash, lupa, aisuite, pandas, yfinance, NumPy, SciPy</p>
+                            <a href="https://github.com/ruelalarcon/finsonar" rel="noopener noreferrer">github</a>
+                        </article>
+
                         <article data-command="mino_taur" data-language="Python">
                             <h3>MinoTaur</h3>
                             <div data-description>
@@ -237,6 +250,19 @@
                             </div>
                             <p data-tech>Python, C++</p>
                             <a href="https://github.com/ruelalarcon/mino_taur" rel="noopener noreferrer">github</a>
+                        </article>
+
+                        <article data-command="shellhaven" data-language="Svelte">
+                            <h3>Shellhaven</h3>
+                            <div data-description>
+                                <p>A lightweight, self-hosted service manager that turns a folder of bash scripts into a browser-based dashboard with live terminals, automatic restarts, and CPU/memory monitoring.</p>
+                                <img src="assets/shellhaven_ui.webp" alt="Shellhaven interface screenshot" />
+                                <p>I originally managed my server with an <code>init.sh</code> script that spawned <i>GNU Screen</i> sessions for each service. It worked, but it was clunky and low on interactivity, especially for something like a Minecraft server where you need to type commands like <code>/op</code> or <code>/stop</code> directly into the process. systemd was the obvious alternative but I found it just as clunky for that use case, so I built Shellhaven instead.</p>
+                                <p>The server uses <i>node-pty</i> to spawn each script as a managed PTY process, and the frontend connects over WebSocket to stream I/O directly into an <i>xterm.js</i> terminal. Shells are configured via comment directives at the top of each script (<code># restart: always</code>, <code># group: backend</code>, etc.), so there is no separate config file to maintain.</p>
+                                <p>It also supports live rescanning. You can drop a new <code>.sh</code> file into <code>~/shells/</code>, click rescan, and the shell appears and starts immediately without restarting the service.</p>
+                            </div>
+                            <p data-tech>TypeScript, Svelte, Node.js, node-pty, xterm.js, WebSocket</p>
+                            <a href="https://github.com/ruelalarcon/shellhaven" rel="noopener noreferrer">github</a>
                         </article>
 
                         <article data-command="a_plus" data-language="Svelte">
