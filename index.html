@@ -238,6 +238,22 @@
                             <a href="https://github.com/ruelalarcon/finsonar" rel="noopener noreferrer">github</a>
                         </article>
 
+                        <article data-command="modern_tetris_projects" data-language="Rust">
+                            <h3>Modern Tetris Projects</h3>
+                            <div data-description>
+                                <p>Modern Tetris is one of those things I love enough that I cannot help trying to take it apart and rebuild it. That turned into three connected projects: <i>Frostetra</i>, a high-performance bot written in Rust; <i>Stacker Bot Protocol</i> (SBP), the protocol I created for connecting bots to game clients; and <i>Minorail</i>, a Python runner, evaluator, and visualizer for bots that speak SBP.</p>
+                                <img src="assets/minorail_ui.webp" alt="Minorail modern Tetris bot visualizer interface" />
+                                <p>Modern Tetris is vastly different from the NES-era classic most people picture when they hear "Tetris." SRS rotation and kicks, the seven-bag randomizer, hold pieces, spins, garbage, and other mechanics make searching for strong moves wildly more complicated than choosing a column and orientation. This <a href="https://www.youtube.com/watch?v=xoxKZIMgN9c">60-second explanation of modern Tetris</a> gives a much better sense of what the game has become.</p>
+                                <p><i>Frostetra</i> is where I got completely pulled into the performance side of the problem. Descended from Cold Clear 2, it uses column-major bitboards, optimized legal-move generation, speculative seven-bag search, a transposition-aware DAG, and multithreaded background workers. I spent days obsessing over its performance-critical Rust: writing deterministic profiling harnesses, benchmarking with Criterion, digging through CPU hotspots in Intel VTune, removing allocations from hot paths, and repeatedly tuning move generation and search bookkeeping.</p>
+                                <p>I created <i>SBP</i> because I wanted a clean, reusable boundary between a bot and whatever is running the game. It defines how clients provide rules and authoritative game snapshots, how bots return placements, and how both sides negotiate support for things such as kick systems, randomizers, board sizes, and piece streams. It is its own project rather than a Frostetra-specific interface, so other bots and clients can implement it too.</p>
+                                <p><i>Minorail</i> is the other side of that protocol: it owns the game state, launches bots, runs solo or head-to-head games, evaluates large batches, repairs desynchronized sessions, and provides terminal, web, headless, and WebSocket interfaces. I wrote it in Python because none of that is the real bottleneck. The expensive placement generation and tree search happen inside Frostetra, where Rust and all that profiling work actually matter.</p>
+                            </div>
+                            <p data-tech>Rust, Python, NiceGUI, WebSockets, Criterion, Intel VTune</p>
+                            <a href="https://github.com/ruelalarcon/minorail" rel="noopener noreferrer">minorail</a>
+                            <a href="https://github.com/ruelalarcon/stacker_bot_protocol" rel="noopener noreferrer">stacker_bot_protocol</a>
+                            <a href="https://github.com/ruelalarcon/frostetra" rel="noopener noreferrer">frostetra</a>
+                        </article>
+
                         <article data-command="shellhaven" data-language="Svelte">
                             <h3>Shellhaven</h3>
                             <div data-description>
